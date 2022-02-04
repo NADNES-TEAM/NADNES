@@ -1,5 +1,7 @@
 #ifndef BUS_H
 #define BUS_H
+#include <cstdint>
+
 namespace NES {
     struct bus_interface {
 
