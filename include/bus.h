@@ -9,7 +9,7 @@ namespace NES {
     };
 
     class Bus : BusInterface {
-
+        CPU cpu;
     };
 }
 #endif //BUS_H
