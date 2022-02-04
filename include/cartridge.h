@@ -2,6 +2,7 @@
 #define NADNES_CARTRIDGE_H
 
 #include <cstdint>
+#include <string>
 
 namespace NES {
 
