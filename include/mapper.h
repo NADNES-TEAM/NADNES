@@ -3,11 +3,11 @@
 #include <cstdint>
 
 namespace NES {
-    struct mapper_PPU_interface {
+    struct MapperPPUInterface {
         virtual uint8_t read(uint16_t address) = 0;
     };
 
-    struct mapper_CPU_interface {
+    struct MapperCPUInterface {
         virtual uint8_t read(uint16_t address) = 0;
     };
 
