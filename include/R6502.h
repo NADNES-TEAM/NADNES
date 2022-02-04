@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace NES {
-    class  CPU {
+    class CPU {
         union {
             struct {
                 bool CF: 1;
