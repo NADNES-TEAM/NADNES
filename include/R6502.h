@@ -1,7 +1,9 @@
 #ifndef R6502_H
 #define R6502_H
+#include <cstdint>
+
 namespace NES {
-    class CPU {
+    class  CPU {
         union {
             struct {
                 bool CF: 1;
@@ -12,9 +14,11 @@ namespace NES {
                 bool OF: 1;
                 bool NF: 1;
             };
-            char flags;
-        }
-
+            char flags{0};
+        };
+        uint8_t A{0}, X{0}, Y{0}, S{0};
+        uint16_t PC{0};
+        uint8_t P{0};
     };
 }
 #endif //R6502_H
