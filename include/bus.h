@@ -10,6 +10,10 @@ namespace NES {
 
     class Bus : BusInterface {
         CPU cpu;
+        uint8_t mem_read(uint16_t addr) override {
+            return 0;
+        }
+        void mem_write(uint16_t addr, uint8_t data) override {}
     };
 }
 #endif //BUS_H
