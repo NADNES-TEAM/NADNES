@@ -53,7 +53,8 @@ namespace NES {
 
 //Special:
 
-        void throw_exception();
+        void plug();
+        uint8_t throw_exception();
 //Instructions:
     void ADC(uint8_t data); void BCS(uint8_t data); void BNE(uint8_t data); void BVS(uint8_t data);void SEC(); void LDA(uint8_t data); void LSR(uint8_t data); void CLV(); void DEC(); void INC(); void JMP(); void PHA(); void STX(); void TSX();
     void AND(uint8_t data); void BEQ(uint8_t data); void BPL(uint8_t data); void CMP(uint8_t data);void CLC(); void ORA(uint8_t data); void ROR(uint8_t data); void DEX(); void INX(); void JSR(); void PHP(); void BRK(); void STY(); void TXA();
