@@ -8,8 +8,10 @@ namespace NES {
         virtual uint8_t mem_read(uint16_t addr) = 0;
     };
 
-    class Bus : BusInterface {
+    struct Bus : BusInterface {
         CPU cpu;
+        std::array<uint8_t, 1<<13> RAM{};
+        std::array<uint8_t, 1<<13> SRAM{};
         uint8_t mem_read(uint16_t addr) override {
             return 0;
         }

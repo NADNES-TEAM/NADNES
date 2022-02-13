@@ -258,10 +258,11 @@ namespace NES{
                             I{&CPU::plug,&CPU::throw_exception}}{}
     IncorrectOpcode::IncorrectOpcode(): std::runtime_error("Incorrect opcode!") {}
     uint8_t CPU::implicit() {
-        return 0;
+        return 0; //just do nothing
     }
 
      uint8_t CPU::immediate() {
+
         return 0;
     }
 
@@ -306,6 +307,7 @@ namespace NES{
     }
 
     uint8_t CPU::accumulator() {
+        accumulator_mod=true;
         return 0;
     }
 
