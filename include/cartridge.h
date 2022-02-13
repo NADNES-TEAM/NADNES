@@ -3,19 +3,35 @@
 
 #include <cstdint>
 #include <string>
+#include "mapper.h"
+#include <stdexcept>
+#include <memory>
+#include <vector>
 
 namespace NES {
+    struct PrgRomInterface {
+        virtual uint8_t PRG_ROM_read(uint16_t address) = 0;
+        virtual ~PrgRomInterface() = default;
+    };
 
-struct CartridgeInterface {
-    virtual void load(const std::string &file_name) = 0;
+    struct ChrRomInterface {
+        virtual uint8_t CHR_ROM_read(uint16_t address) = 0;
+        virtual ~ChrRomInterface() = default;
+    };
 
-    // mapper uses these methods
-    virtual uint8_t read(uint16_t addr) = 0;
-    virtual void write(uint16_t addr, uint8_t data) = 0;
-};
 
-class Cartridge : CartridgeInterface {
-};
+    class Cartridge : public PrgRomInterface, public ChrRomInterface {
+        static const uint16_t PRG_ROM_BANK_SIZE = 1 << 14;
+        static const uint16_t CHR_ROM_BANK_SIZE = 1 << 13;
+        std::unique_ptr<AbstractMapper> mapper;
+        std::vector<uint8_t> PRG_ROM;
+        std::vector<uint8_t> CHR_ROM;
+    public:
+        uint8_t PRG_ROM_read(uint16_t address) override;
+        uint8_t CHR_ROM_read(uint16_t address) override;
+        explicit Cartridge(const std::string &filename);
+    };
+
 
 }  // namespace NES
 

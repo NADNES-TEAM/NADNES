@@ -1,17 +1,24 @@
 #ifndef NADNES_MAPPER_H
 #define NADNES_MAPPER_H
+
 #include <cstdint>
+#include "nes_exceptions.h"
 
 namespace NES {
-    struct MapperPPUInterface {
-        virtual uint8_t read(uint16_t address) = 0;
+    enum class Mirroring {
+        Horizontal, Vertical
     };
 
-    struct MapperCPUInterface {
-        virtual uint8_t read(uint16_t address) = 0;
+    struct AbstractMapper {
+        virtual uint16_t map_PRG_ROM_address(uint16_t address) = 0;
+
+        virtual uint16_t map_CHR_ROM_address(uint16_t address) = 0;
+
+        virtual ~AbstractMapper() = default;
     };
 
 
-}
 
-#endif //NADNES_MAPPER_H
+}  // namespace NES
+
+#endif  // NADNES_MAPPER_H
