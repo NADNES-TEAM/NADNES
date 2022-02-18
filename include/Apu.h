@@ -10,12 +10,6 @@ public:
     Apu();
     ~Apu();
 
-    union {
-        struct {
-            std::uint8_t:  first_pulse
-        };
-    };
-
     private:
 };
 
