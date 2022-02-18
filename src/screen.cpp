@@ -3,11 +3,11 @@
 
 namespace NADNESS {
 
-void Screen::set_pixel(std::size_t row, std::size_t column, int8_t color) {
-    int R = color >> 4;
+void Screen::set_pixel(uint8_t row, uint8_t column, int8_t color) {
+    int R = (color >> 4) & 0b11;
     int G = (color >> 2) & 0b11;
     int B = color & 0b11;
-    // TODO: come up with a better formula
+    // TODO: tune colors
     R *= 64;
     G *= 64;
     B *= 64;
@@ -16,8 +16,7 @@ void Screen::set_pixel(std::size_t row, std::size_t column, int8_t color) {
 }
 
 void Screen::refresh_screen() {
-    // TODO: make screen scalable
-    QSize qSize(WIDTH * 3, HEIGHT * 3);
+    QSize qSize(WIDTH * WINDOW_SCALE, HEIGHT * WINDOW_SCALE);
     label.setPixmap(QPixmap::fromImage(image.scaled(
         qSize,
         Qt::AspectRatioMode::KeepAspectRatio
@@ -25,9 +24,8 @@ void Screen::refresh_screen() {
     label.show();
 }
 
-// TODO: change Format to something more suitable
 Screen::Screen() : image{WIDTH, HEIGHT, QImage::Format_RGB32} {
-    image.fill(Qt::GlobalColor::cyan);
+    image.fill(Qt::GlobalColor::gray);
 }
 
 }  // namespace NADNESS

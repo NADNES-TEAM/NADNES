@@ -7,11 +7,8 @@
 
 namespace NADNESS {
 class ScreenInterface {
-    // 0 <= row < 240
-    // 0 <= columns < 256
-    // 0 <= colour < 2^6
-    virtual void set_pixel(std::size_t row,
-                           std::size_t columns,
+    virtual void set_pixel(uint8_t row,
+                           uint8_t columns,
                            int8_t colour) = 0;
     virtual void refresh_screen() = 0;
 };
@@ -20,8 +17,11 @@ class Screen : ScreenInterface {
 public:
     explicit Screen();
 
-    void set_pixel(std::size_t row,
-                   std::size_t column,
+    // 0 <= row < 240
+    // 0 <= columns < 256
+    // 0 <= colour < 2^6
+    void set_pixel(uint8_t row,
+                   uint8_t column,
                    int8_t color) override;
 
     void refresh_screen() override;
