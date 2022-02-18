@@ -1,7 +1,7 @@
 #ifndef NADNES_SCREEN_OPTIONS_H
 #define NADNES_SCREEN_OPTIONS_H
 
-namespace NADNESS {
+namespace NADNES {
 
 const int WIDTH = 256;
 const int HEIGHT = 240;

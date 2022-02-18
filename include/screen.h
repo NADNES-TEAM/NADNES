@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QLabel>
 
-namespace NADNESS {
+namespace NADNES {
 class ScreenInterface {
     virtual void set_pixel(uint8_t row,
                            uint8_t columns,
@@ -32,6 +32,6 @@ private:
     QLabel label;
 };
 
-}  // namespace NADNESS
+}  // namespace NADNES
 
 #endif  // NADNES_SCREEN_H
