@@ -50,33 +50,34 @@ namespace NES {
                 if (cur_step == 0) {
                     VRAM_addr_reg.increase_x_scroll(); // inc hori(x)
 
-                } else if (cur_step == 1) {  //NT byte
+                } else if (cur_step == 1) {  // update shifters & NT byte
                     bg_shifter_low = (bg_shifter_low & 0xFF00) + bg_next_tile_low;
                     bg_shifter_high = (bg_shifter_high & 0xFF00) + bg_next_tile_high;
-                    //TODO: load attr shifters
+                    bg_cur_palette = bg_next_palette;
 
-                    bg_next_tile = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
+                    bg_next_tile_num = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
 
                 } else if (cur_step == 3) {  // AT byte
                     uint16_t address = (0x23C0 | (VRAM_addr_reg.nametable_y << 11) | (VRAM_addr_reg.nametable_x << 10) |
                                         ((VRAM_addr_reg.coarse_y_scroll / 4) * 8) |
                                         (VRAM_addr_reg.coarse_x_scroll / 4));
-                    bg_next_attr = PPU_read(address);
+                    bg_next_palette = PPU_read(address);
                     if ((VRAM_addr_reg.coarse_y_scroll & 0x03) >= 2) {
-                        bg_next_attr >>= 4;
+                        bg_next_palette >>= 4;
                     }
                     if ((VRAM_addr_reg.coarse_x_scroll & 0x03) >= 2) {
-                        bg_next_attr >>= 2;
+                        bg_next_palette >>= 2;
                     }
-                    bg_next_attr &= 0x03;
+                    bg_next_palette &= 0x03;
+
 
                 } else if (cur_step == 5) {  // Low BG tile byte
-                    uint16_t address = (ctrl_reg.bg_ptr_table << 12) + bg_next_tile * 16 + VRAM_addr_reg.fine_y_scroll;
+                    uint16_t address = (ctrl_reg.bg_ptr_table << 12) + bg_next_tile_num * 16 + VRAM_addr_reg.fine_y_scroll;
                     bg_next_tile_low = PPU_read(address);
 
                 } else if (cur_step == 7) {  // HIgh BG tile byte
                     uint16_t address =
-                            (ctrl_reg.bg_ptr_table << 12) + bg_next_tile * 16 + VRAM_addr_reg.fine_y_scroll + 8;
+                            (ctrl_reg.bg_ptr_table << 12) + bg_next_tile_num * 16 + VRAM_addr_reg.fine_y_scroll + 8;
                     bg_next_tile_high = PPU_read(address);
                 }
             }
@@ -90,7 +91,7 @@ namespace NES {
             }
 
             if (x_pos == 337 || x_pos == 339) {  // useless NT bytes at the end of scanline
-                bg_next_tile = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
+                bg_next_tile_num = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
             }
 
             if (y_pos == -1 || x_pos >= 280 || x_pos <= 304) {
@@ -105,21 +106,14 @@ namespace NES {
             }
         }
 
-        uint8_t cur_palette_bits = 0x00;
-        uint8_t cur_color_bits = 0x00;
+        uint8_t bg_color = 0x00;
         if (mask_reg.bg_enable) {
             uint8_t cur_pixel_low_bit = ((bg_shifter_low << fine_x_scroll) & 0x8000) == 0x8000;
             uint8_t cur_pixel_high_bit = ((bg_shifter_high << fine_x_scroll) & 0x8000) == 0x8000;
-            cur_color_bits = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
-
-            uint8_t cur_palette_low_bit = ((bg_shifter_low << fine_x_scroll) & 0x8000) == 0x8000;
-            uint8_t cur_palette_high_bit = ((bg_shifter_high << fine_x_scroll) & 0x8000) == 0x8000;
-            cur_palette_bits = cur_palette_high_bit * 2 + cur_pixel_low_bit;
-
-
+            bg_color = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
         }
 
-        screen.set_pixel(y_pos, x_pos, get_color_from_palette(cur_palette_bits, cur_color_bits));
+        screen.set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
 
         if (++x_pos >= 341) {
             x_pos = 0;
