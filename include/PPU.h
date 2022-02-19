@@ -2,34 +2,11 @@
 
 #include <cstdint>
 #include "screen.h"
+#include <vector>
 
 namespace NES {
-    class PPURegistersInterface {
-        virtual void write_ctrl_reg(uint8_t data) = 0;
-
-        virtual void write_mask_reg(uint8_t data) = 0;
-
-        virtual uint8_t read_status_reg() = 0;
-
-        virtual void write_scroll_reg(uint8_t data) = 0;
-    };
-
-    class OAMInterface {
-        virtual void set_OAM_address(uint8_t address) = 0;
-
-        virtual void OAM_write(uint8_t data) = 0;
-    };
-
-    class VRAMIoInterface {
-        virtual void set_VRAM_address(uint8_t address) = 0;
-
-        virtual void VRAM_write(uint8_t data) = 0;
-
-        virtual uint8_t VRAM_read_data() = 0;
-    };
-
     class AddressReg {
-        friend class PPU;
+        friend class Ppu;
 
         void increase_y_scroll();
 
@@ -45,17 +22,25 @@ namespace NES {
                 uint16_t coarse_y_scroll: 5;
                 uint16_t nametable_x: 1;
                 uint16_t nametable_y: 1;
-                uint16_t fine_y_scroll: 4;
+                uint16_t fine_y_scroll: 3;
+                uint16_t unused_loopy_bit: 1;
+            };
+            struct {
+                uint16_t address_low_byte: 8;
+                uint16_t address_high_byte: 6;
+                uint16_t z_bit: 1;
+                uint16_t unused_addr_bit: 1;
             };
             uint16_t reg;
         };
     };
 
-    class PPU : public PPURegistersInterface, public OAMInterface, public VRAMIoInterface {
+    class Ppu{
         // registers
         union {
             struct {
-                uint8_t base_nametable: 2;
+                uint8_t base_nametable_x: 1;
+                uint8_t base_nametable_y: 1;
                 uint8_t VRAM_addr_inc: 1;
                 uint8_t sprite_ptr_table: 1;
                 uint8_t bg_ptr_table: 1;
@@ -93,9 +78,12 @@ namespace NES {
         AddressReg VRAM_addr_reg;
         AddressReg VRAM_tmp_addr_reg;
         uint8_t fine_x_scroll = 0;
+        bool double_write_toggle = false;
+        uint8_t VRAM_read_buff = 0;
 //        uint8_t OAM_addr_reg = 0;
 
         // rendering state
+        bool is_rendering = false;
         uint16_t bg_shifter_low = 0;
         uint16_t bg_shifter_high = 0;
         uint8_t bg_cur_palette = 0;
@@ -116,34 +104,36 @@ namespace NES {
         const int HOR_PRERENDER_END = 337;
 
 //  connected devices
-        NADNESS::ScreenInterface &screen;
+        NES::ScreenInterface *screen;
+        std::vector<uint8_t> oam;
 
 
-        uint8_t PPU_read(uint16_t address);
+        [[nodiscard]] uint8_t PPU_read(uint16_t address) const;
 
-        uint8_t get_color_from_palette(uint8_t palette, uint8_t color);
+        [[nodiscard]] uint8_t get_color_from_palette(uint8_t palette, uint8_t color) const;
 
-        void PPU_write(uint8_t data);
-
-        void write_ctrl_reg(uint8_t data) override;
-
-        void write_mask_reg(uint8_t data) override;
-
-        uint8_t read_status_reg() override;
-
-        void write_scroll_reg(uint8_t data) override;
-
-        void set_OAM_address(uint8_t address) override;
-
-        void OAM_write(uint8_t data) override;
-
-        void set_VRAM_address(uint8_t address) override;
-
-        void VRAM_write(uint8_t data) override;
-
-        uint8_t VRAM_read_data() override;
+        void PPU_write(uint16_t address, uint8_t data);
 
     public:
+
+        void write_ctrl_reg(uint8_t data);
+
+        void write_mask_reg(uint8_t data);
+
+        uint8_t read_status_reg();
+
+        void write_scroll_reg(uint8_t data);
+
+        void set_OAM_address(uint8_t address);
+
+        void OAM_write(uint8_t data);
+
+        void set_VRAM_address(uint8_t address);
+
+        void VRAM_write(uint8_t data);
+
+        uint8_t VRAM_read();
+
         void tick();
     };
 
