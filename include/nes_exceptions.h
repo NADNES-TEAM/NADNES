@@ -1,39 +1,45 @@
-#ifndef NADNES_CARTRIDGE_EXCEPTIONS_H
-#define NADNES_CARTRIDGE_EXCEPTIONS_H
+#pragma once
 
 #include <stdexcept>
 #include <string>
 
 
 namespace NES {
-    struct InvalidMapperConfiguration : std::runtime_error {
-        InvalidMapperConfiguration() : std::runtime_error("Invalid mapper configuration") {};
+
+    struct CartridgeError : std::runtime_error {
+        [[nodiscard]] explicit CartridgeError(const std::string &msg) : std::runtime_error(msg) {}
     };
 
-    struct UnableToOpenFile : std::runtime_error {
-        explicit UnableToOpenFile(const std::string &filename)
-                : runtime_error("Unable to open file '" + filename + "'") {}
+    struct InvalidMapperConfigurationError : CartridgeError {
+        [[nodiscard]] InvalidMapperConfigurationError() : CartridgeError("Invalid mapper configuration") {};
     };
 
-    struct InvalidHeaderFormat : std::runtime_error {
-        InvalidHeaderFormat()
-                : std::runtime_error("Header format doesn't match iNES format") {
+    struct UnableToOpenFileError : CartridgeError {
+        [[nodiscard]] explicit UnableToOpenFileError(const std::string &filename)
+                : CartridgeError("Unable to open file '" + filename + "'") {}
+    };
+
+    struct InvalidHeaderFormatError : CartridgeError {
+        [[nodiscard]] InvalidHeaderFormatError()
+                : CartridgeError("Header format doesn't match iNES format") {
         }
     };
 
-    struct UnknownMapperType : std::runtime_error {
-        explicit UnknownMapperType(uint8_t type)
-                : std::runtime_error("Unknown mapper type: " + std::to_string(type)) {
+    struct UnknownMapperTypeError : CartridgeError {
+        [[nodiscard]] explicit UnknownMapperTypeError(uint16_t type)
+                : CartridgeError("Unknown mapper type: " + std::to_string(type)) {
         }
     };
 
 
-    struct AddressOutOfBounds : std::runtime_error {
-        explicit AddressOutOfBounds(uint16_t address, const std::string &type)
-                : std::runtime_error("Address '" + std::to_string(address) + "' can't be mapped to " + type + "_ROM") {
+    struct AddressOutOfBoundsError : CartridgeError {
+        [[nodiscard]] explicit AddressOutOfBoundsError(uint16_t address, const std::string &type) : CartridgeError(
+                "Address '" + std::to_string(address) + "' can't be mapped to " + type + " address space") {
         }
+    };
+
+    struct WritingToRomError : CartridgeError {
+        [[nodiscard]] WritingToRomError() : CartridgeError("Writing to ROM is denied") {}
     };
 
 }
-
-#endif //NADNES_CARTRIDGE_EXCEPTIONS_H

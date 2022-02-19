@@ -5,64 +5,51 @@
 
 
 namespace NES {
-    union HeaderFlags {
-        HeaderFlags(uint16_t all_) : all(all_) {};
-        struct {
-            uint16_t mirror_type: 1;
-            uint16_t PRG_RAM: 1;
-            uint16_t trainer: 1;
-            uint16_t four_screen: 1;
-            uint16_t mapper_lsb: 4;
-            uint16_t console_type: 2;
-            uint16_t nes_2_0: 2;
-            uint16_t mapper_msb: 4;
-        };
-        uint16_t all;
-    };
-
     enum class MapperTypes : uint8_t {
         NROM = 0
     };
 
-    std::unique_ptr<AbstractMapper>
-    construct_mapper(uint8_t PRG_banks_count, uint8_t CHR_banks_count, HeaderFlags flags) {
-        uint8_t mapper_number = (flags.mapper_msb << 4) + flags.mapper_lsb;
+    [[nodiscard]] std::unique_ptr<AbstractMapper> construct_mapper(const iNesHeader &header) {
+        uint8_t mapper_number = 0;
+        if (header.nes_2_0_id == 2) {
+            mapper_number = (header.mapper_high_bits << 4) + header.mapper_low_bits;
+        } else {
+            mapper_number = header.mapper_low_bits;
+        }
         MapperTypes mapper_type{mapper_number};
         switch (mapper_type) {
             case MapperTypes::NROM:
-                return std::make_unique<NROMMapper>(NROMMapper(Mirroring{flags.mirror_type},
-                                                               PRG_banks_count,
-                                                               CHR_banks_count));
+                return std::make_unique<NROMMapper>(NROMMapper(Mirroring{header.mirror_type},
+                                                               header.PRG_ROM_banks_lsb,
+                                                               header.CHR_ROM_banks_lsb));
             default:
-                throw UnknownMapperType(mapper_number);
+                throw UnknownMapperTypeError(mapper_number);
         }
 
 
     }
 
-    Cartridge::Cartridge(const std::string &filename) {
+    Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
         std::ifstream rom_file(filename, std::ios::binary);
         if (!rom_file.is_open()) {
-            throw UnableToOpenFile(filename);
+            throw UnableToOpenFileError(filename);
         }
         rom_file.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-        char header[5];
-        rom_file.read(header, 4);
-        if (std::string(header) != "NES\x1a") {
-            throw InvalidHeaderFormat();
+        iNesHeader header;
+        rom_file.read(reinterpret_cast<char *>(&header), 16);
+        if (header.id_str != ((0x1A << 24) + ('S' << 16) + ('E' << 8) + 'N')) {
+            throw InvalidHeaderFormatError();
         }
-        uint8_t PRG_banks_count = rom_file.get();
-        uint8_t CHR_banks_count = rom_file.get();
-        uint16_t header_flags = rom_file.get() + (rom_file.get() << 8);
-        mapper = construct_mapper(PRG_banks_count, CHR_banks_count, header_flags);
-        rom_file.seekg(8, std::ios_base::cur);
+        mapper = construct_mapper(header);
 
+        uint8_t PRG_banks_count = (header.PRG_ROM_size_msb << 4) + header.PRG_ROM_banks_lsb;
         uint16_t PRG_ROM_size = PRG_ROM_BANK_SIZE * PRG_banks_count;
         PRG_ROM.resize(PRG_ROM_size);
         for (uint16_t i = 0; i < PRG_ROM_size; i++) {
             PRG_ROM[i] = rom_file.get();
         }
 
+        uint8_t CHR_banks_count = (header.CHR_ROM_size_msb << 4) + header.CHR_ROM_banks_lsb;
         uint16_t CHR_ROM_size = CHR_ROM_BANK_SIZE * CHR_banks_count;
         CHR_ROM.resize(CHR_ROM_size);
         for (uint16_t i = 0; i < CHR_ROM_size; i++) {
@@ -70,12 +57,30 @@ namespace NES {
         }
     }
 
-    uint8_t Cartridge::PRG_ROM_read(uint16_t address) {
-        return PRG_ROM[mapper->map_PRG_ROM_address(address)];
+    uint8_t Cartridge::CPU_read(uint16_t address) const {
+        return PRG_ROM[mapper->map_read_from_CPU(address)];
     }
 
-    uint8_t Cartridge::CHR_ROM_read(uint16_t address) {
-        return CHR_ROM[mapper->map_CHR_ROM_address(address)];
+    uint8_t Cartridge::PPU_read(uint16_t address) const {
+        uint16_t mapped_address = mapper->map_PPU_address(address);
+        if (mapped_address >= CHR_ROM.size()) {
+            return CHR_RAM[mapped_address % CHR_ROM.size()];
+        } else {
+            return CHR_ROM[mapped_address];
+        }
+    }
+
+    void Cartridge::CPU_write(uint16_t address, uint8_t data) {
+        mapper->map_write_from_CPU(address, data);
+    }
+
+    void Cartridge::PPU_write(uint16_t address, uint8_t data) {
+        uint16_t mapped_address = mapper->map_PPU_address(address);
+        if (mapped_address >= CHR_ROM.size()) {
+            CHR_RAM[mapped_address % CHR_ROM.size()] = data;
+        } else {
+            throw WritingToRomError();
+        }
     }
 
 }  // namespace NES

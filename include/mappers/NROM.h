@@ -1,5 +1,4 @@
-#ifndef NADNES_NROM_H
-#define NADNES_NROM_H
+#pragma once
 
 #include "mapper.h"
 
@@ -11,11 +10,9 @@ namespace NES {
 
         NROMMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr);
 
-        uint16_t map_PRG_ROM_address(uint16_t address) override;
+        [[nodiscard]] uint16_t map_read_from_CPU(uint16_t address) const override;
 
-        uint16_t map_CHR_ROM_address(uint16_t address) override;
+        [[nodiscard]] uint16_t map_PPU_address(uint16_t address) const override;
     };
 
 }
-
-#endif //NADNES_NROM_H

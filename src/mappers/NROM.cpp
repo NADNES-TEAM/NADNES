@@ -6,22 +6,30 @@ namespace NES {
                                                                                PRG_banks_count(prg),
                                                                                CHR_banks_count(chr) {
         if (prg > 2 || chr != 1) {
-            throw InvalidMapperConfiguration();
-        }
-    }
-    uint16_t NROMMapper::map_PRG_ROM_address(uint16_t address) {
-        if (address >= 0x8000){
-            return (address % 0x8000) % 0x4000;
-        } else {
-            throw AddressOutOfBounds(address, "PRG");
+            throw InvalidMapperConfigurationError();
         }
     }
 
-    uint16_t NROMMapper::map_CHR_ROM_address(uint16_t address) {
-        if (address <= 0x2000) {
+    uint16_t NROMMapper::map_read_from_CPU(uint16_t address) const {
+        if (address >= 0x8000) {
+            return (address % (PRG_banks_count == 1 ? 0x4000 : 0x8000));
+        } else {
+            throw AddressOutOfBoundsError(address, "CPU");
+        }
+    }
+
+    uint16_t NROMMapper::map_PPU_address(uint16_t address) const {
+        if (address >= 0x3F00) {
+            throw AddressOutOfBoundsError(address, "PPU");
+        }
+        if (address < 0x2000) {
             return address;
         } else {
-            throw AddressOutOfBounds(address, "CHR");
+            if (mirror_type == Mirroring::Horizontal) {
+                return (address % 0x0400 + 0x0800 * (address >= 0x2800) + 0x2000);
+            } else {
+                return (address % 0x0800 + 0x2000);
+            }
         }
     }
 }
