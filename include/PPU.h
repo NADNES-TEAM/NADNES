@@ -4,7 +4,7 @@
 #include "screen.h"
 
 namespace NES {
-    struct PPURegistersInterface {
+    class PPURegistersInterface {
         virtual void write_ctrl_reg(uint8_t data) = 0;
 
         virtual void write_mask_reg(uint8_t data) = 0;
@@ -14,13 +14,13 @@ namespace NES {
         virtual void write_scroll_reg(uint8_t data) = 0;
     };
 
-    struct OAMInterface {
+    class OAMInterface {
         virtual void set_OAM_address(uint8_t address) = 0;
 
         virtual void OAM_write(uint8_t data) = 0;
     };
 
-    struct VRAMIoInterface {
+    class VRAMIoInterface {
         virtual void set_VRAM_address(uint8_t address) = 0;
 
         virtual void VRAM_write(uint8_t data) = 0;
@@ -28,7 +28,9 @@ namespace NES {
         virtual uint8_t VRAM_read_data() = 0;
     };
 
-    struct AddressReg {
+    class AddressReg {
+        friend class PPU;
+
         void increase_y_scroll();
 
         void increase_x_scroll();
@@ -50,6 +52,7 @@ namespace NES {
     };
 
     class PPU : public PPURegistersInterface, public OAMInterface, public VRAMIoInterface {
+        // registers
         union {
             struct {
                 uint8_t base_nametable: 2;
@@ -92,20 +95,18 @@ namespace NES {
         uint8_t fine_x_scroll = 0;
 //        uint8_t OAM_addr_reg = 0;
 
-
+        // rendering state
         uint16_t bg_shifter_low = 0;
         uint16_t bg_shifter_high = 0;
-        uint8_t bg_attr_shifter_low = 0;
-        uint8_t bg_attr_shifter_high = 0;
-        uint16_t bg_next_tile = 0;
-        uint8_t bg_next_attr = 0;
+        uint8_t bg_cur_palette = 0;
+        uint8_t bg_next_palette = 0;
+        uint16_t bg_next_tile_num = 0;
         uint8_t bg_next_tile_low = 0;
         uint8_t bg_next_tile_high = 0;
-
         int y_pos = 0;
         int x_pos = 0;
 
-//      [ )
+//      rendering constants [ )
         const int VERT_VISIBLE_BEGIN = -1;
         const int VERT_VISIBLE_END = 240;
 
@@ -114,6 +115,7 @@ namespace NES {
         const int HOR_PRERENDER_BEGIN = 321;
         const int HOR_PRERENDER_END = 337;
 
+//  connected devices
         NADNESS::ScreenInterface &screen;
 
 
@@ -123,7 +125,6 @@ namespace NES {
 
         void PPU_write(uint8_t data);
 
-    public:
         void write_ctrl_reg(uint8_t data) override;
 
         void write_mask_reg(uint8_t data) override;
@@ -142,6 +143,7 @@ namespace NES {
 
         uint8_t VRAM_read_data() override;
 
+    public:
         void tick();
     };
 
