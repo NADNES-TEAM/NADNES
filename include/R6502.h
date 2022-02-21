@@ -27,7 +27,7 @@ namespace NES {
                 bool ZF: 1;
                 bool ID: 1;
                 bool DM: 1;
-                bool BP: 1;
+                bool BC: 1;
                 bool OF: 1;
                 bool NF: 1;
             };
@@ -74,6 +74,8 @@ namespace NES {
 //Others
 
         void connect_bus(std::shared_ptr<Bus> bus_);
+        void add_relative();
+        void cmp_with(uint8_t T);
         void clock();
         void reset();
     };
