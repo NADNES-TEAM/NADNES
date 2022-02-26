@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(include)
 include_directories(include/mappers)
 include_directories(uis)
+find_package(SDL2 REQUIRED)
+include_directories((${SDL2_INCLUDE_DIRS})
 
 find_package(Qt6 COMPONENTS
         Core
@@ -64,7 +66,12 @@ add_executable(NADNES
         include/environment/cheating/search_cheat.h
         src/environment/cheating/apply_cheat.cpp
         src/environment/cheating/cheat_window.cpp
-        src/environment/cheating/search_cheat.cpp)
+        src/environment/cheating/search_cheat.cpp
+        src/ApuUnits.cpp
+        src/Apu.cpp
+        src/ApuExceptions.cpp
+        src/Pulse.cpp
+        include/Pulse.h)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")
@@ -77,4 +84,5 @@ target_link_libraries(NADNES
         Qt::Gui
         Qt::Widgets
         Qt::UiTools
-        Qt::Network)
+        Qt::Network
+        ${SDL2_LIBRARIES})
