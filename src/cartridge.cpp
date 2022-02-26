@@ -32,6 +32,7 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
 
     iNesHeader header;
     rom_file.read(reinterpret_cast<char *>(&header), 16);
+    // first 4 bytes should be "NES<EOF>" in little-endian, <EOF> = 0x1A
     if (header.id_str != ((0x1A << 24) + ('S' << 16) + ('E' << 8) + 'N')) {
         throw InvalidHeaderFormatError();
     }
@@ -47,7 +48,6 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
     uint16_t CHR_ROM_size = CHR_ROM_BANK_SIZE * CHR_banks_count;
     CHR_ROM.resize(CHR_ROM_size);
     rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_size);
-
 }
 
 uint8_t Cartridge::CPU_read(uint16_t address) const {
