@@ -11,7 +11,7 @@
 int main(int argc, char *argv[]) {
     QApplication application(argc, argv);
 
-    NADNES::Screen screen;
+    NES::Screen screen;
     screen.refresh_screen();
 
     return QApplication::exec();
