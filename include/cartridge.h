@@ -25,35 +25,35 @@ struct PpuToCartridgeInterface {
 };
 
 struct iNesHeader {
-    uint32_t id_str = 0;            // 0-3
-    uint8_t PRG_ROM_banks_lsb = 0;  // 4
-    uint8_t CHR_ROM_banks_lsb = 0;  // 5
-    struct {                        // 6
+    uint32_t id_str = 0;            // bytes 0-3
+    uint8_t PRG_ROM_banks_lsb = 0;  // byte 4
+    uint8_t CHR_ROM_banks_lsb = 0;  // byte 5
+    struct {                        // byte 6
         uint8_t mirror_type      : 1;
         uint8_t non_volatile_mem : 1;
         uint8_t trainer          : 1;
         uint8_t four_screen_mode : 1;
         uint8_t mapper_low_bits  : 4;
     };
-    struct {  // 7
+    struct {  // byte 7
         uint8_t console_type     : 2;
         uint8_t nes_2_0_id       : 2;
         uint8_t mapper_high_bits : 4;
     };
-    struct {  // 8
+    struct {  // byte 8
         uint8_t mapper_extra_bits : 4;
         uint8_t submapper_num     : 4;
     };
-    struct {  // 9
+    struct {  // byte 9
         uint8_t PRG_ROM_size_msb : 4;
         uint8_t CHR_ROM_size_msb : 4;
     };
     uint8_t unused_byte_10 = 0;
-    struct {  // 11
+    struct {  // byte 11
         uint8_t CHR_RAM_size   : 4;
         uint8_t CHR_NVRAM_size : 4;
     };
-    uint32_t unused_last_bytes = 0;
+    uint32_t unused_last_bytes = 0; // byte 12 - 16
 };
 
 class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface {

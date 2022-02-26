@@ -41,16 +41,13 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
     uint8_t PRG_banks_count = (header.PRG_ROM_size_msb << 4) + header.PRG_ROM_banks_lsb;
     uint16_t PRG_ROM_size = PRG_ROM_BANK_SIZE * PRG_banks_count;
     PRG_ROM.resize(PRG_ROM_size);
-    for (uint16_t i = 0; i < PRG_ROM_size; i++) {
-        PRG_ROM[i] = rom_file.get();
-    }
+    rom_file.read(reinterpret_cast<char *>(&PRG_ROM.front()), PRG_ROM_size);
 
     uint8_t CHR_banks_count = (header.CHR_ROM_size_msb << 4) + header.CHR_ROM_banks_lsb;
     uint16_t CHR_ROM_size = CHR_ROM_BANK_SIZE * CHR_banks_count;
     CHR_ROM.resize(CHR_ROM_size);
-    for (uint16_t i = 0; i < CHR_ROM_size; i++) {
-        CHR_ROM[i] = rom_file.get();
-    }
+    rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_size);
+
 }
 
 uint8_t Cartridge::CPU_read(uint16_t address) const {
