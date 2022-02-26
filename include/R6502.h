@@ -20,6 +20,8 @@ namespace NES {
     class CPU {
     public:
         CPU();
+        void clock();
+        void reset();
     private:
         union {
             struct {
@@ -28,15 +30,16 @@ namespace NES {
                 bool ID: 1;
                 bool DM: 1;
                 bool BC: 1;
+                bool ODD : 1;
                 bool OF: 1;
                 bool NF: 1;
             };
-            char flags;
+            uint8_t flags;
         };
 
 //Regs:
 
-        uint8_t A, X, Y, S;
+        uint8_t A, X, Y, SP;
         uint16_t PC;
         uint8_t P;
 //Bus
@@ -76,8 +79,8 @@ namespace NES {
         void connect_bus(std::shared_ptr<Bus> bus_);
         void add_relative();
         void cmp_with(uint8_t T);
-        void clock();
-        void reset();
+        void push_on_stack(uint8_t T);
+        void get_from_stack();
     };
 
 }

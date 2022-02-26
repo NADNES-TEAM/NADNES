@@ -2,7 +2,10 @@
 
 #include <utility>
 namespace NES {
-
+    void CPU::push_on_stack(uint8_t T){
+        (*bus).mem_write(SP+0x0100,T);
+        SP--;
+    }
 
     CPU::CPU() : map_opcodes{I{&CPU::BRK, &CPU::implicit},
                              I{&CPU::ORA, &CPU::indexed_indirect},
@@ -554,7 +557,10 @@ namespace NES {
     }
 
     void CPU::JSR() {
-        //WTF
+        PC--;
+        push_on_stack(PC>>8);
+        push_on_stack(PC & 0xFF);
+        PC = last_absolute_address;
     }
 
     void CPU::LDA() {
@@ -598,19 +604,21 @@ namespace NES {
     }
 
     void CPU::PHA() {
-        //WTF
+        push_on_stack(A);
     }
 
     void CPU::PHP() {
-        //WTF
+        push_on_stack(flags);
     }
 
     void CPU::PLA() {
-        //WTF
+        A = (*bus).mem_read(++SP+0x0100);
+        ZF = !A;
+        NF = A&0x80;
     }
 
     void CPU::PLP() {
-        //WTF
+        flags = (*bus).mem_read(++SP+0x0100);
     }
 
     void CPU::ROL() {
@@ -652,7 +660,12 @@ namespace NES {
     }
 
     void CPU::RTS() {
-        //WTF
+        SP++;
+        uint16_t temp = (*bus).mem_read(SP+0x0100);
+        PC = temp;
+        SP++;
+        temp = (*bus).mem_read(SP+0x0100);
+        PC |= temp<<8;
     }
 
     void CPU::SBC() {
@@ -702,7 +715,7 @@ namespace NES {
     }
 
     void CPU::TSX() {
-        X=S;
+        X=SP;
         ZF = !X;
         NF = X&0x80;
     }
@@ -714,7 +727,7 @@ namespace NES {
     }
 
     void CPU::TXS() {
-        S=X;
+        SP=X;
     }
 
     void CPU::TYA() {
@@ -738,6 +751,8 @@ namespace NES {
     void CPU::reset() {
 
     }
+
+
 
 }
 
