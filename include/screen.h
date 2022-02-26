@@ -1,11 +1,10 @@
-#ifndef NADNES_SCREEN_H
-#define NADNES_SCREEN_H
+#pragma once
 
 #include <cstdint>
 #include <QApplication>
 #include <QLabel>
 
-namespace NADNES {
+namespace NES {
 class ScreenInterface {
     virtual void set_pixel(uint8_t row,
                            uint8_t columns,
@@ -15,7 +14,7 @@ class ScreenInterface {
 
 class Screen : ScreenInterface {
 public:
-    explicit Screen();
+    Screen();
 
     // 0 <= row < 240
     // 0 <= columns < 256
@@ -32,6 +31,5 @@ private:
     QLabel label;
 };
 
-}  // namespace NADNES
+}  // namespace NES
 
-#endif  // NADNES_SCREEN_H

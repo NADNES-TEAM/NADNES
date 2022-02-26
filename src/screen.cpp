@@ -1,7 +1,7 @@
 #include "screen.h"
 #include "screen_options.h"
 
-namespace NADNES {
+namespace NES {
 
 void Screen::set_pixel(uint8_t row, uint8_t column, int8_t color) {
     int R = (color >> 4) & 0b11;
@@ -17,6 +17,7 @@ void Screen::set_pixel(uint8_t row, uint8_t column, int8_t color) {
 
 void Screen::refresh_screen() {
     QSize qSize(WIDTH * WINDOW_SCALE, HEIGHT * WINDOW_SCALE);
+    // TODO
     label.setPixmap(QPixmap::fromImage(image.scaled(
         qSize,
         Qt::AspectRatioMode::KeepAspectRatio
@@ -28,4 +29,4 @@ Screen::Screen() : image{WIDTH, HEIGHT, QImage::Format_RGB32} {
     image.fill(Qt::GlobalColor::gray);
 }
 
-}  // namespace NADNES
+}  // namespace NES
