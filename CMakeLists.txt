@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
 add_executable(NADNES
         src/main.cpp
         src/R6502.cpp
-        src/screen.cpp include/screen_options.h)
+        src/screen.cpp include/screen_options.h src/Emulator.cpp)
 
 target_link_libraries(NADNES
         Qt::Core
