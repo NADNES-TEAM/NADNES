@@ -12,6 +12,8 @@ int main(int argc, char *argv[]) {
     QObject::connect(timer, &QTimer::timeout,
                      &emulator, &NES::Emulator::clock);
 
+    timer->start(std::chrono::milliseconds(10));
+
     return QApplication::exec();
 }
 
