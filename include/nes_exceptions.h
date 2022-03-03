@@ -33,7 +33,6 @@ namespace NES {
                 : std::runtime_error("Address '" + std::to_string(address) + "' can't be mapped to " + type + "_ROM") {
         }
     };
-
 }
 
 #endif //NADNES_CARTRIDGE_EXCEPTIONS_H

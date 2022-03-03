@@ -1,5 +1,4 @@
-#ifndef R6502_H
-#define R6502_H
+#pragma once
 #include <cstdint>
 #include <array>
 #include <variant>
@@ -7,60 +6,61 @@
 #include "bus.h"
 #include <memory>
 namespace NES {
-    class CPU;
-    using no_param =void(CPU::*)();
-    struct IncorrectOpcode: std::runtime_error{
-        IncorrectOpcode();
-    };
-    struct I {
-        no_param func;
-        no_param addr_mod;
-    };
+class CPU;
+using no_param = void (CPU::*)();
+struct IncorrectOpcode : std::runtime_error {
+    IncorrectOpcode();
+};
+struct I {
+    no_param func;
+    no_param addr_mod;
+};
 
-    class CPU {
-    public:
-        CPU();
-        void clock();
-//interrupts:
+class CPU {
+public:
+    CPU();
+    void clock();
+    // interrupts:
 
-        void reset();
-        void NMI();
-        void IRQ();
+    void reset();
+    void NMI();
+    void IRQ();
 
-    private:
-        union {
-            struct {
-                bool CF: 1;
-                bool ZF: 1;
-                bool ID: 1;
-                bool DM: 1;
-                bool BC: 1;
-                bool ODD : 1;
-                bool OF: 1;
-                bool NF: 1;
-            };
-            uint8_t flags;
+private:
+    union {
+        struct {
+            bool CF : 1;
+            bool ZF : 1;
+            bool ID : 1;
+            bool DM : 1;
+            bool BC : 1;
+            bool UNUSED : 1;
+            bool OF : 1;
+            bool NF : 1;
         };
+        uint8_t flags;
+    };
 
-//Regs:
+    // Regs:
 
-        uint8_t A, X, Y, SP;
-        uint16_t PC;
-//Bus
+    uint8_t A, X, Y, SP;
+    uint16_t PC;
+    // Bus
 
-        std::shared_ptr<Bus> bus;
+    std::shared_ptr<Bus> bus;
 
-//Additional variables:
+    // Additional variables:
 
-        bool accumulator_mod: 1;
-        uint16_t last_absolute_address;
-        uint16_t last_relative_address;
-        uint8_t cycles;
-//Methods for filling the array:
+    bool accumulator_mod{false};
+    uint16_t last_absolute_address;
+    uint16_t last_relative_address;
+    uint8_t cycles;
+    // Methods for filling the array:
 
-        void throw_exception();
+    void throw_exception();
 
-//Addressing Modes:
+
+    //Addressing Modes:
 
         void implicit();  void immediate(); void zero_page_y(); void absolute_x(); void accumulator();
         void zero_page(); void relative(); void absolute_y(); void indirect_indexed();
@@ -76,16 +76,15 @@ namespace NES {
     void ROR(); void DEX(); void INX(); void JSR(); void PHP(); void BRK(); void TXA();
     void LDY(); void DEY(); void INY(); void NOP(); void PLA(); void SEI(); void STX();
     void ROL(); void SED(); void RTI(); void PLP(); void RTS(); void STA(); void TAY();
-    std::array<I,1<<8> map_opcodes;
-    std::array<uint8_t,1<<8> map_cycles;
-//Others
+    std::array<I, 1 << 8> map_opcodes;
+    std::array<uint8_t, 1 << 8> map_cycles;
+    // Others
 
-        void connect_bus(std::shared_ptr<Bus> bus_);
-        void add_relative();
-        void cmp_with(uint8_t T);
-        void push_on_stack(uint8_t T);
-        void interrupt();
-    };
+    void connect_bus(std::shared_ptr<Bus> bus_);
+    void add_relative();
+    void cmp_with(uint8_t T);
+    void push_on_stack(uint8_t T);
+    void interrupt();
+};
 
 }
-#endif //R6502_H

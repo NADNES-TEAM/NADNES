@@ -45,7 +45,7 @@ uint8_t Bus::mem_read(uint16_t addr) {
             return ppu->VRAM_read();
         }
     }
-    if (addr >= 0x4000 && addr < 0x4020) { // Controllers + APU
+    if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
     }
     if ((addr >= 0x4020 && addr < 0x6000) || addr >= 0x8000) {  // ROM
 

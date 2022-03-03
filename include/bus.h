@@ -1,5 +1,4 @@
-#ifndef BUS_H
-#define BUS_H
+#pragma once
 #include <cstdint>
 #include <array>
 #include "cartridge.h"
@@ -18,4 +17,3 @@ struct Bus {
     void connect(Ppu *ppu_, ConnectToken) noexcept;
 };
 }
-#endif //BUS_H
