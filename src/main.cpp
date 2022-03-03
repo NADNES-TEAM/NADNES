@@ -3,8 +3,17 @@
 #include "mapper.h"
 #include "PPU.h"
 #include "screen.h"
-#include "cartridge.h"
-int main(){
-    NES::Bus bus;
+
+#include <QApplication>
+#include <QPushButton>
+
+
+int main(int argc, char *argv[]) {
+    QApplication application(argc, argv);
+
+    NES::Screen screen;
+    screen.refresh_screen();
+
+    return QApplication::exec();
 }
 
