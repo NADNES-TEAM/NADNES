@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <array>
 #include <variant>
-#include<stdexcept>
+#include <stdexcept>
 #include "bus.h"
 #include <memory>
 namespace NES {
@@ -29,14 +29,14 @@ public:
 private:
     union {
         struct {
-            bool CF : 1;
-            bool ZF : 1;
-            bool ID : 1;
-            bool DM : 1;
-            bool BC : 1;
+            bool CF     : 1;
+            bool ZF     : 1;
+            bool ID     : 1;
+            bool DM     : 1;
+            bool BC     : 1;
             bool UNUSED : 1;
-            bool OF : 1;
-            bool NF : 1;
+            bool OF     : 1;
+            bool NF     : 1;
         };
         uint8_t flags;
     };
@@ -58,7 +58,6 @@ private:
     // Methods for filling the array:
 
     void throw_exception();
-
 
     //Addressing Modes:
 
