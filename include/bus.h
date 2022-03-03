@@ -1,6 +1,7 @@
 #ifndef BUS_H
 #define BUS_H
 #include <cstdint>
+#include <array>
 namespace NES {
     struct Bus {
         std::array<uint8_t, 1<<13> RAM{};

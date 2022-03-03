@@ -21,7 +21,12 @@ namespace NES {
     public:
         CPU();
         void clock();
+//interrupts:
+
         void reset();
+        void NMI();
+        void IRQ();
+
     private:
         union {
             struct {
@@ -41,7 +46,6 @@ namespace NES {
 
         uint8_t A, X, Y, SP;
         uint16_t PC;
-        uint8_t P;
 //Bus
 
         std::shared_ptr<Bus> bus;
@@ -80,7 +84,7 @@ namespace NES {
         void add_relative();
         void cmp_with(uint8_t T);
         void push_on_stack(uint8_t T);
-        void get_from_stack();
+        void interrupt();
     };
 
 }

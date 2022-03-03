@@ -2,8 +2,9 @@
 
 #include <utility>
 namespace NES {
-    void CPU::push_on_stack(uint8_t T){
-        (*bus).mem_write(SP+0x0100,T);
+
+    void CPU::push_on_stack(uint8_t T) {
+        (*bus).mem_write(SP + 0x0100, T);
         SP--;
     }
 
@@ -263,15 +264,22 @@ namespace NES {
                              I{&CPU::SBC, &CPU::absolute_x},
                              I{&CPU::INC, &CPU::absolute_x},
                              I{&CPU::throw_exception, &CPU::throw_exception}},
-                 map_cycles{7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0, 2, 2, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-                        6, 6, 0, 0, 3, 3, 5, 0, 4, 2, 2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-                        6, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 3, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-                        6, 6, 0, 0, 0, 3, 5, 0, 4, 2, 2, 0, 5, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-                        0, 6, 0, 0, 3, 3, 3, 0, 2, 0, 2, 0, 4, 4, 4, 0, 2, 6, 0, 0, 4, 4, 4, 0, 2, 5, 2, 0, 0, 5, 0, 0,
-                        2, 6, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 4, 4, 4, 0, 2, 5, 0, 0, 4, 4, 4, 0, 2, 4, 2, 0, 4, 4, 4, 0,
-                        2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0, 0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,
-                        2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
-                        0} {}
+                 map_cycles{7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0, 2, 2, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0,
+                            6, 6, 0, 0, 3, 3, 5, 0, 4, 2, 2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0,
+                            6, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 3, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0,
+                            6, 6, 0, 0, 0, 3, 5, 0, 4, 2, 2, 0, 5, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0,
+                            0, 6, 0, 0, 3, 3, 3, 0, 2, 0, 2, 0, 4, 4, 4, 0, 2, 6, 0, 0, 4, 4, 4, 0, 2, 5, 2, 0, 0, 5, 0,
+                            0,
+                            2, 6, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 4, 4, 4, 0, 2, 5, 0, 0, 4, 4, 4, 0, 2, 4, 2, 0, 4, 4, 4,
+                            0,
+                            2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0, 0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0,
+                            2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7,
+                            0} {}
 
     IncorrectOpcode::IncorrectOpcode() : std::runtime_error("Incorrect opcode!") {}
 
@@ -314,14 +322,14 @@ namespace NES {
     void CPU::absolute_x() {
         absolute();
         last_absolute_address += X;
-        if((last_absolute_address>>8) !=((last_absolute_address-X)>>8))
+        if ((last_absolute_address >> 8) != ((last_absolute_address - X) >> 8))
             cycles++;
     }
 
     void CPU::absolute_y() {
         absolute();
         last_absolute_address += Y;
-        if((last_absolute_address>>8) !=((last_absolute_address-Y)>>8))
+        if ((last_absolute_address >> 8) != ((last_absolute_address - Y) >> 8))
             cycles++;
     }
 
@@ -333,7 +341,7 @@ namespace NES {
         temp_address += LSB_temp;
         uint8_t LSB = (*bus).mem_read(temp_address);
         if ((LSB_temp & 0x00FF) == 0x00FF) {
-            last_absolute_address = ((*bus).mem_read(temp_address & 0xFF00));
+            last_absolute_address = ((*bus).mem_read(temp_address & 0xFF00));  // bug
         } else {
             last_absolute_address = ((*bus).mem_read(++temp_address));
         }
@@ -367,7 +375,8 @@ namespace NES {
     void CPU::ADC() {
         uint16_t temp = (*bus).mem_read(last_absolute_address);
         CF = (temp + A + CF) >> 8;
-        OF = (temp & A & 0x80 & (~((temp + A + CF) & 0x80)) || (~(temp & 0x80)) & (~(A & 0x80)) & ((temp + A+CF) & 0x80));
+        OF = (temp & A & 0x80 & (~((temp + A + CF) & 0x80)) ||
+              (~(temp & 0x80)) & (~(A & 0x80)) & ((temp + A + CF) & 0x80));
         bool CF_temp = (temp + A + CF) >> 8;
         A = (temp + A + CF) & 0x00FF;
         CF = CF_temp;
@@ -377,99 +386,106 @@ namespace NES {
 
     void CPU::AND() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        A&=temp;
-        ZF=(!A);
-        NF=(A>>7);
+        A &= temp;
+        ZF = (!A);
+        NF = (A >> 7);
     }
 
     void CPU::ASL() {
         uint16_t temp = A;
-        if(!accumulator_mod)
+        if (!accumulator_mod)
             temp = (*bus).mem_read(last_absolute_address);
-        temp<<=1;
-        CF = (temp>>8);
-        ZF = !(temp&0x00FF);
-        NF = (temp&128);
-        if(!accumulator_mod){
-            (*bus).mem_write(last_absolute_address,temp&0x00FF);
-        }
-        else{
-            A = temp&0x00FF;
+        temp <<= 1;
+        CF = (temp >> 8);
+        ZF = !(temp & 0x00FF);
+        NF = (temp & 128);
+        if (!accumulator_mod) {
+            (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        } else {
+            A = temp & 0x00FF;
         }
     }
 
-    void CPU::add_relative(){
-        uint16_t temp = PC+last_relative_address;
+    void CPU::add_relative() {
+        uint16_t temp = PC + last_relative_address;
         cycles++;
-        if((temp>>8)!=(PC>>8)){
+        if ((temp >> 8) != (PC >> 8)) {
             cycles++;
         }
         PC = temp;
     }
 
     void CPU::BCC() {
-        if(!CF){
+        if (!CF) {
             add_relative();
         }
     }
 
     void CPU::BCS() {
-        if(CF){
+        if (CF) {
             add_relative();
         }
     }
 
     void CPU::BEQ() {
-        if(ZF){
+        if (ZF) {
             add_relative();
         }
     }
 
     void CPU::BIT() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        temp&=A;
+        temp &= A;
         ZF = !temp;
-        NF = temp&0x80;
-        OF = temp&0x80;
+        NF = temp & 0x80;
+        OF = temp & 0x80;
     }
 
     void CPU::BMI() {
-        if(NF){
+        if (NF) {
             add_relative();
         }
     }
 
     void CPU::BNE() {
-        if(!ZF){
+        if (!ZF) {
             add_relative();
         }
     }
 
     void CPU::BPL() {
-        if(!NF){
+        if (!NF) {
             add_relative();
         }
     }
 
     void CPU::BRK() {
         BC = true;
-        //something with interrupts
+        push_on_stack(PC >> 8);
+        push_on_stack(PC & 0xFF);
+        push_on_stack(flags);
+        BC = false;
+        ID = true;
+        uint16_t temp = (*bus).mem_read(0xFFFE);
+        PC = temp;
+        temp = (*bus).mem_read(0xFFFF);
+        PC |= temp << 8;
     }
 
     void CPU::BVC() {
-        if(!OF){
+        if (!OF) {
             add_relative();
         }
     }
 
     void CPU::BVS() {
-        if(OF){
+        if (OF) {
             add_relative();
         }
     }
 
     void CPU::CLC() {
-        CF =false;
+        CF = false;
     }
 
     void CPU::CLD() {
@@ -484,12 +500,12 @@ namespace NES {
         OF = false;
     }
 
-    void CPU::cmp_with(uint8_t T){
+    void CPU::cmp_with(uint8_t T) {
         uint16_t read = (*bus).mem_read(last_absolute_address);
         uint16_t temp = T - read;
         ZF = !temp;
-        NF = temp&0x80;
-        CF = T>=read;
+        NF = temp & 0x80;
+        CF = T >= read;
     }
 
     void CPU::CMP() {
@@ -508,47 +524,47 @@ namespace NES {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
         temp--;
         ZF = !temp;
-        NF = temp&0x80;
-        (*bus).mem_write(last_absolute_address,temp&0x00FF);
+        NF = temp & 0x80;
+        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
     }
 
     void CPU::DEX() {
         X--;
         ZF = !X;
-        NF = X&0x80;
+        NF = X & 0x80;
     }
 
     void CPU::DEY() {
         Y--;
         ZF = !Y;
-        NF = Y&0x80;
+        NF = Y & 0x80;
     }
 
     void CPU::EOR() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        A^=temp;
-        ZF=!A;
-        NF = A&0x80;
+        A ^= temp;
+        ZF = !A;
+        NF = A & 0x80;
     }
 
     void CPU::INC() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
         temp++;
         ZF = !temp;
-        NF = temp&0x80;
-        (*bus).mem_write(last_absolute_address,temp&0x00FF);
+        NF = temp & 0x80;
+        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
     }
 
     void CPU::INX() {
         X++;
         ZF = !X;
-        NF = X&0x80;
+        NF = X & 0x80;
     }
 
     void CPU::INY() {
         Y--;
         ZF = !Y;
-        NF = Y&0x80;
+        NF = Y & 0x80;
     }
 
     void CPU::JMP() {
@@ -558,39 +574,38 @@ namespace NES {
 
     void CPU::JSR() {
         PC--;
-        push_on_stack(PC>>8);
+        push_on_stack(PC >> 8);
         push_on_stack(PC & 0xFF);
         PC = last_absolute_address;
     }
 
     void CPU::LDA() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        A=temp;
+        A = temp;
     }
 
     void CPU::LDX() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        X=temp;
+        X = temp;
     }
 
     void CPU::LDY() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        Y=temp;
+        Y = temp;
     }
 
     void CPU::LSR() {
         uint16_t temp = A;
-        if(!accumulator_mod)
+        if (!accumulator_mod)
             temp = (*bus).mem_read(last_absolute_address);
-        CF = temp&1;
-        temp>>=1;
-        ZF = !(temp&0x00FF);
-        NF = (temp&128);
-        if(!accumulator_mod){
-            (*bus).mem_write(last_absolute_address,temp&0x00FF);
-        }
-        else{
-            A = temp&0x00FF;
+        CF = temp & 1;
+        temp >>= 1;
+        ZF = !(temp & 0x00FF);
+        NF = (temp & 128);
+        if (!accumulator_mod) {
+            (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        } else {
+            A = temp & 0x00FF;
         }
     }
 
@@ -598,9 +613,9 @@ namespace NES {
 
     void CPU::ORA() {
         uint8_t temp = (*bus).mem_read(last_absolute_address);
-        A|=temp;
+        A |= temp;
         ZF = !A;
-        NF = A&0x80;
+        NF = A & 0x80;
     }
 
     void CPU::PHA() {
@@ -612,60 +627,66 @@ namespace NES {
     }
 
     void CPU::PLA() {
-        A = (*bus).mem_read(++SP+0x0100);
+        A = (*bus).mem_read(++SP + 0x0100);
         ZF = !A;
-        NF = A&0x80;
+        NF = A & 0x80;
     }
 
     void CPU::PLP() {
-        flags = (*bus).mem_read(++SP+0x0100);
+        flags = (*bus).mem_read(++SP + 0x0100);
     }
 
     void CPU::ROL() {
         uint16_t temp = A;
-        if(!accumulator_mod)
+        if (!accumulator_mod)
             temp = (*bus).mem_read(last_absolute_address);
-        temp<<=1;
-        temp+=CF;
-        CF = temp&0x100;
-        NF = temp&0x80;
-        if(!accumulator_mod){
-            (*bus).mem_write(last_absolute_address,temp&0x00FF);
-        }
-        else{
-            A = temp&0x00FF;
+        temp <<= 1;
+        temp += CF;
+        CF = temp & 0x100;
+        NF = temp & 0x80;
+        if (!accumulator_mod) {
+            (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        } else {
+            A = temp & 0x00FF;
             ZF = !A;
         }
     }
 
     void CPU::ROR() {
         uint16_t temp = A;
-        if(!accumulator_mod)
+        if (!accumulator_mod)
             temp = (*bus).mem_read(last_absolute_address);
-        temp+=0x100*static_cast<uint16_t>(CF);
-        CF = temp&1;
-        temp>>=1;
-        NF = temp&0x80;
-        if(!accumulator_mod){
-            (*bus).mem_write(last_absolute_address,temp&0x00FF);
-        }
-        else{
-            A = temp&0x00FF;
+        temp += 0x100 * static_cast<uint16_t>(CF);
+        CF = temp & 1;
+        temp >>= 1;
+        NF = temp & 0x80;
+        if (!accumulator_mod) {
+            (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        } else {
+            A = temp & 0x00FF;
             ZF = !A;
         }
     }
 
     void CPU::RTI() {
-        //WTF
+        SP++;
+        flags = (*bus).mem_read(SP + 0x0100);
+        SP++;
+        uint16_t temp = (*bus).mem_read(SP + 0x0100);
+        PC = temp;
+        SP++;
+        temp = (*bus).mem_read(SP + 0x0100);
+        PC |= temp << 8;
+
     }
 
     void CPU::RTS() {
         SP++;
-        uint16_t temp = (*bus).mem_read(SP+0x0100);
+        uint16_t temp = (*bus).mem_read(SP + 0x0100);
         PC = temp;
         SP++;
-        temp = (*bus).mem_read(SP+0x0100);
-        PC |= temp<<8;
+        temp = (*bus).mem_read(SP + 0x0100);
+        PC |= temp << 8;
     }
 
     void CPU::SBC() {
@@ -679,7 +700,7 @@ namespace NES {
     }
 
     void CPU::SEC() {
-        CF=true;
+        CF = true;
     }
 
     void CPU::SED() {
@@ -691,49 +712,49 @@ namespace NES {
     }
 
     void CPU::STA() {
-        (*bus).mem_write(last_absolute_address,A);
+        (*bus).mem_write(last_absolute_address, A);
     }
 
     void CPU::STX() {
-        (*bus).mem_write(last_absolute_address,X);
+        (*bus).mem_write(last_absolute_address, X);
     }
 
     void CPU::STY() {
-        (*bus).mem_write(last_absolute_address,Y);
+        (*bus).mem_write(last_absolute_address, Y);
     }
 
     void CPU::TAX() {
-        X=A;
+        X = A;
         ZF = !X;
-        NF = X&0x80;
+        NF = X & 0x80;
     }
 
     void CPU::TAY() {
-        Y=A;
+        Y = A;
         ZF = !Y;
-        NF = Y&0x80;
+        NF = Y & 0x80;
     }
 
     void CPU::TSX() {
-        X=SP;
+        X = SP;
         ZF = !X;
-        NF = X&0x80;
+        NF = X & 0x80;
     }
 
     void CPU::TXA() {
-        A=X;
+        A = X;
         ZF = !A;
-        NF = A&0x80;
+        NF = A & 0x80;
     }
 
     void CPU::TXS() {
-        SP=X;
+        SP = X;
     }
 
     void CPU::TYA() {
-        A=Y;
+        A = Y;
         ZF = !A;
-        NF = A&0x80;
+        NF = A & 0x80;
     }
 
     void CPU::throw_exception() {
@@ -745,13 +766,55 @@ namespace NES {
     }
 
     void CPU::clock() {
+        if(cycles){
+            cycles--;
+            return;
+        }
+        uint8_t current_opcode = (*bus).mem_read(PC++);
+        I current_instruction = map_opcodes[current_opcode];
+        cycles = map_cycles[current_opcode];
+        (this->*current_instruction.addr_mod)();
+        (this->*current_instruction.func)();
+    }
 
+    void CPU::interrupt() {
+        push_on_stack(PC >> 8);
+        push_on_stack(PC & 0xFF);
+        BC = false;
+        ID = true;
+        push_on_stack(flags);
+        uint16_t temp = (*bus).mem_read(0xFFFA);
+        PC = temp;
+        temp = (*bus).mem_read(0xFFFB);
+        PC |= temp << 8;
+        cycles = 7;
     }
 
     void CPU::reset() {
-
+        A=0;
+        X=0;
+        Y=0;
+        flags = 0;
+        SP= 0xFD; //The Stack is set at $FD, with two values already stacked ($00, $00).
+        last_absolute_address = 0;
+        last_relative_address = 0;
+        accumulator_mod = false;
+        uint16_t temp = (*bus).mem_read(0xFFFC);
+        PC = temp;
+        temp = (*bus).mem_read(0xFFFD);
+        PC |= temp << 8;
+        cycles = 8;
     }
 
+    void CPU::NMI() {
+        interrupt();
+    }
+
+    void CPU::IRQ() {
+        if(!ID){
+            interrupt();
+        }
+    }
 
 
 }
