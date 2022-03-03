@@ -5,23 +5,29 @@
 #include <QLabel>
 
 namespace NES {
-class ScreenInterface {
-    virtual void set_pixel(uint8_t row,
-                           uint8_t columns,
-                           int8_t colour) = 0;
+
+struct Color {
+    uint8_t r = 0;
+    uint8_t g = 0;
+    uint8_t b = 0;
+};
+
+
+struct ScreenInterface {
+    virtual void set_pixel(int row, int columns,
+                           Color color) = 0;
     virtual void refresh_screen() = 0;
 };
 
-class Screen : ScreenInterface {
+class Screen : public ScreenInterface {
 public:
     Screen();
 
     // 0 <= row < 240
     // 0 <= columns < 256
     // 0 <= colour < 2^6
-    void set_pixel(uint8_t row,
-                   uint8_t column,
-                   int8_t color) override;
+    void set_pixel(int row, int column,
+                   Color color) override;
 
     void refresh_screen() override;
 

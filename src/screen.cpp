@@ -3,25 +3,18 @@
 
 namespace NES {
 
-void Screen::set_pixel(uint8_t row, uint8_t column, int8_t color) {
-    int R = (color >> 4) & 0b11;
-    int G = (color >> 2) & 0b11;
-    int B = color & 0b11;
-    // TODO: tune colors
-    R *= 64;
-    G *= 64;
-    B *= 64;
-    image.setPixelColor(static_cast<int>(row), static_cast<int>(column),
-                        QColor(R, G, B));
+void Screen::set_pixel(int row, int column, Color color) {
+    if (0 <= row && row < 240 && column >= 0 && column < 256) {
+        image.setPixelColor(static_cast<int>(column),
+                            static_cast<int>(row),
+                            QColor(color.r, color.g, color.b));
+    }
 }
 
 void Screen::refresh_screen() {
     QSize qSize(WIDTH * WINDOW_SCALE, HEIGHT * WINDOW_SCALE);
     // TODO
-    label.setPixmap(QPixmap::fromImage(image.scaled(
-        qSize,
-        Qt::AspectRatioMode::KeepAspectRatio
-        )));
+    label.setPixmap(QPixmap::fromImage(image.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));
     label.show();
 }
 

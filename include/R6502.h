@@ -4,6 +4,7 @@
 #include <variant>
 #include <stdexcept>
 #include "bus.h"
+#include "connect_token.h"
 #include <memory>
 namespace NES {
 class CPU;
@@ -19,6 +20,7 @@ struct I {
 class CPU {
 public:
     CPU();
+    void connect(Bus *bus_, ConnectToken) noexcept;
     void clock();
     // interrupts:
 
@@ -47,7 +49,7 @@ private:
     uint16_t PC;
     // Bus
 
-    std::shared_ptr<Bus> bus;
+    Bus* bus;
 
     // Additional variables:
 
@@ -79,7 +81,6 @@ private:
     std::array<uint8_t, 1 << 8> map_cycles;
     // Others
 
-    void connect_bus(std::shared_ptr<Bus> bus_);
     void add_relative();
     void cmp_with(uint8_t T);
     void push_on_stack(uint8_t T);

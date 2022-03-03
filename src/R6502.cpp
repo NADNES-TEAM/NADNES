@@ -1,5 +1,4 @@
 #include "R6502.h"
-
 #include <utility>
 namespace NES {
 
@@ -277,6 +276,10 @@ CPU::CPU()
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
 
 IncorrectOpcode::IncorrectOpcode() : std::runtime_error("Incorrect opcode!") {}
+
+void CPU::connect(Bus *bus_, ConnectToken) noexcept {
+    bus = bus_;
+}
 
 void CPU::implicit() {}  // just do nothing
 
@@ -754,10 +757,6 @@ void CPU::throw_exception() {
     throw IncorrectOpcode();
 }
 
-void CPU::connect_bus(std::shared_ptr<Bus> bus_) {
-    bus = std::move(bus_);
-}
-
 void CPU::clock() {
     if (cycles) {
         cycles--;
@@ -809,5 +808,4 @@ void CPU::IRQ() {
     }
 }
 
-}
-
+}  // namespace NES

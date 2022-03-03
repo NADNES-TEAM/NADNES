@@ -254,4 +254,12 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
 
 Ppu::Ppu() : OAM(256), palette_mem(32) {}
 
+void Ppu::set_OAM_address(uint8_t address) {}
+
+void Ppu::OAM_write(uint8_t data) {}
+
+uint8_t Ppu::OAM_read() const {
+    return 0;
+}
+
 }  // namespace NES
