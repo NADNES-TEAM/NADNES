@@ -1,50 +1,89 @@
-#ifndef R6502_H
-#define R6502_H
+#pragma once
 #include <cstdint>
-
+#include <array>
+#include <variant>
+#include <stdexcept>
+#include "bus.h"
+#include <memory>
 namespace NES {
-    class CPU {
-        union {
-            struct {
-                bool CF: 1;
-                bool ZF: 1;
-                bool ID: 1;
-                bool DM: 1;
-                bool BP: 1;
-                bool OF: 1;
-                bool NF: 1;
-            };
-            char flags{0};
+class CPU;
+using no_param = void (CPU::*)();
+struct IncorrectOpcode : std::runtime_error {
+    IncorrectOpcode();
+};
+struct I {
+    no_param func;
+    no_param addr_mod;
+};
+
+class CPU {
+public:
+    CPU();
+    void clock();
+    // interrupts:
+
+    void reset();
+    void NMI();
+    void IRQ();
+
+private:
+    union {
+        struct {
+            bool CF     : 1;
+            bool ZF     : 1;
+            bool ID     : 1;
+            bool DM     : 1;
+            bool BC     : 1;
+            bool UNUSED : 1;
+            bool OF     : 1;
+            bool NF     : 1;
         };
-//Regs:
-        uint8_t A{0}, X{0}, Y{0}, S{0};
-        uint16_t PC{0};
-        uint8_t P{0};
-        uint8_t RAM[1 << 13];
-//Addressing Modes:
-
-        uint8_t immediate();
-
-        uint8_t zero_page();
-
-        uint8_t zero_page_x();
-
-        uint8_t zero_page_y();
-
-        uint8_t relative();
-
-        uint8_t absolute();
-
-        uint8_t absolute_x();
-
-        uint8_t absolute_y();
-
-        uint8_t indirect();
-
-        uint8_t indexed_indirect();
-
-        uint8_t inderect_indexed();
-
+        uint8_t flags;
     };
+
+    // Regs:
+
+    uint8_t A, X, Y, SP;
+    uint16_t PC;
+    // Bus
+
+    std::shared_ptr<Bus> bus;
+
+    // Additional variables:
+
+    bool accumulator_mod{false};
+    uint16_t last_absolute_address;
+    uint16_t last_relative_address;
+    uint8_t cycles;
+    // Methods for filling the array:
+
+    void throw_exception();
+
+    //Addressing Modes:
+
+        void implicit();  void immediate(); void zero_page_y(); void absolute_x(); void accumulator();
+        void zero_page(); void relative(); void absolute_y(); void indirect_indexed();
+        void zero_page_x(); void absolute(); void indirect(); void indexed_indirect();
+
+//Instructions:
+
+    void ADC(); void BCS(); void BNE(); void BVS(); void SEC(); void LDA(); void ORA();
+    void AND(); void BEQ(); void BPL(); void CMP(); void CLC(); void EOR(); void TSX();
+    void ASL(); void BIT(); void SBC(); void CPX(); void CLD(); void TXS(); void TYA();
+    void BCC(); void BMI(); void BVC(); void CPY(); void CLI(); void STY(); void TAX();
+    void LSR(); void CLV(); void DEC(); void INC(); void JMP(); void PHA(); void LDX();
+    void ROR(); void DEX(); void INX(); void JSR(); void PHP(); void BRK(); void TXA();
+    void LDY(); void DEY(); void INY(); void NOP(); void PLA(); void SEI(); void STX();
+    void ROL(); void SED(); void RTI(); void PLP(); void RTS(); void STA(); void TAY();
+    std::array<I, 1 << 8> map_opcodes;
+    std::array<uint8_t, 1 << 8> map_cycles;
+    // Others
+
+    void connect_bus(std::shared_ptr<Bus> bus_);
+    void add_relative();
+    void cmp_with(uint8_t T);
+    void push_on_stack(uint8_t T);
+    void interrupt();
+};
+
 }
-#endif //R6502_H
