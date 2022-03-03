@@ -10,21 +10,6 @@
 
 namespace NES {
 
-// struct PpuError : std::runtime_error {
-//     [[nodiscard]] explicit PpuError(const std::string &msg) :
-//     std::runtime_error(msg) {}
-// };
-//
-// struct InvalidPpuReadError : PpuError {
-//     [[nodiscard]] explicit InvalidPpuReadError(uint16_t address)
-//         : PpuError("Can't read from address '" + std::to_string(address) +
-//                    "' as it is out of PPU address space"){}
-// };
-
-class PpuConnectToken {
-    friend struct Nes;
-};
-
 class AddressReg {
     friend class Ppu;
 
@@ -51,7 +36,7 @@ class AddressReg {
             uint16_t z_bit             : 1;
             uint16_t unused_addr_bit   : 1;
         };
-        uint16_t reg;
+        uint16_t reg = 0;
     };
 };
 
@@ -95,8 +80,8 @@ class Ppu {
         uint8_t reg = 0;
     } status_reg;
 
-    AddressReg VRAM_addr_reg;
-    AddressReg VRAM_tmp_addr_reg;
+    AddressReg VRAM_addr_reg{};
+    AddressReg VRAM_tmp_addr_reg{};
     uint8_t fine_x_scroll = 0;
     bool double_write_toggle = false;
     uint8_t VRAM_read_buff = 0;
@@ -128,12 +113,14 @@ class Ppu {
     std::vector<uint8_t> palette_mem;
 
     //  connected devices
-    ScreenInterface *screen;
-    PpuToCartridgeInterface *cartridge;
+    ScreenInterface *screen = nullptr;
+    PpuToCartridgeInterface *cartridge = nullptr;
 
     [[nodiscard]] uint8_t PPU_read(uint16_t address) const;
 
     [[nodiscard]] Color get_color_from_palette(uint8_t palette, uint8_t color) const;
+
+    void test_utility();
 
     void PPU_write(uint16_t address, uint8_t data);
 
@@ -141,6 +128,8 @@ public:
     void connect(PpuToCartridgeInterface *cartridge_, ConnectToken) noexcept;
 
     void connect(ScreenInterface *screen_, ConnectToken) noexcept;
+
+    [[nodiscard]] explicit Ppu();
 
     void write_ctrl_reg(uint8_t data);
 
@@ -154,13 +143,15 @@ public:
 
     void OAM_write(uint8_t data);
 
+    uint8_t OAM_read() const;
+
     void set_VRAM_address(uint8_t address);
 
     void VRAM_write(uint8_t data);
 
     uint8_t VRAM_read();
 
-    void tick();
+    bool tick();
 };
 
 }  // namespace NES

@@ -53,7 +53,7 @@ std::vector<Color> colors = {
     {228, 196, 144}, {204, 210, 120}, {180, 222, 120}, {168, 226, 144}, {152, 226, 180},
     {160, 214, 228}, {160, 162, 160}, {0, 0, 0},       {0, 0, 0}};
 
-void Ppu::tick() {
+bool Ppu::tick() {
     is_rendering = false;
     if (mask_reg.bg_enable || mask_reg.sp_enable) {
         if (y_pos == 0 && x_pos == 0)
@@ -135,13 +135,18 @@ void Ppu::tick() {
     }
 
     screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
-
     if (++x_pos >= 341) {
         x_pos = 0;
+
         if (++y_pos >= 261) {
+            screen->refresh_screen();
+            //            test_utility();
+
             y_pos = -1;
+            return true;
         }
     }
+    return false;
 }
 
 void Ppu::write_ctrl_reg(uint8_t data) {
@@ -246,5 +251,7 @@ Color Ppu::get_color_from_palette(uint8_t palette, uint8_t color) const {
 void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
 }
+
+Ppu::Ppu() : OAM(256), palette_mem(32) {}
 
 }  // namespace NES
