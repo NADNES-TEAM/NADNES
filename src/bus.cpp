@@ -24,12 +24,13 @@ void Bus::mem_write(uint16_t addr, uint8_t data) {
     }
     if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
     }
-    if ((addr >= 0x4020 && addr < 0x6000) || addr >= 0x8000) {  // ROM
-        cartridge->CPU_write(addr, data);
+    if (addr >= 0x4020 && addr < 0x6000){
     }
     if (addr >= 0x6000 && addr < 0x8000) {  // SRAM - just do nothing
-
         return;
+    }
+    if (addr >= 0x8000) {  // ROM
+        cartridge->CPU_write(addr, data);
     }
 }
 uint8_t Bus::mem_read(uint16_t addr) {
@@ -47,12 +48,13 @@ uint8_t Bus::mem_read(uint16_t addr) {
     }
     if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
     }
-    if ((addr >= 0x4020 && addr < 0x6000) || addr >= 0x8000) {  // ROM
-
-        return cartridge->CPU_read(addr);
+    if (addr >= 0x4020 && addr < 0x6000){
     }
     if (addr >= 0x6000 && addr < 0x8000) {  // SRAM - just do nothing
         return 0;
+    }
+    if (addr >= 0x8000) {  // ROM
+        return cartridge->CPU_read(addr);
     }
 }
 void Bus::connect(CpuToCartridgeInterface *cartridge_, ConnectToken) noexcept {

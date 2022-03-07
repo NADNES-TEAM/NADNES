@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     QApplication application(argc, argv);
 
     NES::Screen screen;
-    NES::Nes nes("../SMB.nes", &screen);
+    NES::Nes nes("../nestest.nes", &screen);
     auto *timer = new QTimer(&application);
     QObject::connect(timer, &QTimer::timeout, &nes, &NES::Nes::tick, Qt::DirectConnection);
     timer->start(std::chrono::milliseconds(1000 / 60));

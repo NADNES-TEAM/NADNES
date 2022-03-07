@@ -3,11 +3,19 @@
 
 #include <stdexcept>
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace NES {
 
 struct CartridgeError : std::runtime_error {
     [[nodiscard]] explicit CartridgeError(const std::string &msg) : std::runtime_error(msg) {}
+
+    static std::string to_hex(uint16_t v){
+        std::stringstream ss;
+        ss << std::hex <<  std::setfill('0') << std::setw(2) << v;
+        return ss.str();
+    }
 };
 
 struct InvalidMapperConfigurationError : CartridgeError {
@@ -32,7 +40,7 @@ struct UnknownMapperTypeError : CartridgeError {
 
 struct AddressOutOfBoundsError : CartridgeError {
     [[nodiscard]] explicit AddressOutOfBoundsError(uint16_t address, const std::string &type)
-        : CartridgeError("Address '" + std::to_string(address) + "' can't be mapped to " + type +
+        : CartridgeError("Address '" + to_hex(address) + "' can't be mapped to " + type +
                          " address space") {}
 };
 
