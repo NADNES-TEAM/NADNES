@@ -13,41 +13,19 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(NADNES
-        src/main.cpp)
-
-target_link_libraries(NADNES
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets)
-
 add_executable(PPU_test
         include/nes.h
         src/nes.cpp
         tests/ppu_screen_test.cpp
         src/cartridge.cpp src/PPU.cpp
         src/mappers/NROM.cpp
-        src/MainWindow.cpp
-        src/bus.cpp
-        src/R6502.cpp)
+        src/screen.cpp
+        correct_cpu_for_testing/mos6502.cpp
+        src/bus.cpp)
 
 target_link_libraries(PPU_test
         Qt::Core
         Qt::Gui
         Qt::Widgets)
 
-add_executable(Controller_test
-        src/main.cpp
-        include/Controller.h
-        src/Controller.cpp
-        include/ControllerExceptions.h
-        src/ControllerExceptions.cpp
-        tests/Test.h
-        tests/Test.cpp
-        include/MainWindow.h
-        src/MainWindow.cpp include/Color.h include/ScreenInterface.h include/KeyboardInterface.h)
-
-target_link_libraries(Controller_test
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets)
+add_executable(rom_dump test.cpp src/mappers/NROM.cpp src/cartridge.cpp)

@@ -276,7 +276,8 @@ CPU::CPU()
                  0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2,
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
 
-IncorrectOpcode::IncorrectOpcode() : std::runtime_error("Incorrect opcode!") {}
+IncorrectOpcode::IncorrectOpcode(int code)
+    : std::runtime_error("Incorrect opcode: " + std::to_string(code)) {}
 
 void CPU::connect(Bus *bus_, ConnectToken) noexcept {
     bus = bus_;
@@ -763,7 +764,8 @@ void CPU::TYA() {
 }
 
 void CPU::throw_exception() {
-    throw IncorrectOpcode();
+    uint8_t opcode = (*bus).mem_read(PC - 1);
+    throw IncorrectOpcode(opcode);
 }
 
 void CPU::tick() {
