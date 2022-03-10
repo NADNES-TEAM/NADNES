@@ -291,24 +291,24 @@ void CPU::immediate() {
 
 void CPU::zero_page() {
     last_absolute_address = (*bus).mem_read(PC++);
-    last_absolute_address &= 0x00FF;
+    last_absolute_address &= 0xFF;
 }
 
 void CPU::zero_page_x() {
     last_absolute_address = (*bus).mem_read(PC++);
     last_absolute_address += X;
-    last_absolute_address &= 0x00FF;
+    last_absolute_address &= 0xFF;
 }
 
 void CPU::zero_page_y() {
     last_absolute_address = (*bus).mem_read(PC++);
     last_absolute_address += Y;
-    last_absolute_address &= 0x00FF;
+    last_absolute_address &= 0xFF;
 }
 
 void CPU::relative() {
     last_relative_address = (*bus).mem_read(PC++);
-    if (last_relative_address >>7) {
+    if (last_relative_address & 0x80) {
         last_relative_address |= 0xFF00;
     }
 }
@@ -339,15 +339,15 @@ void CPU::indirect() {
     uint8_t MSB_temp = (*bus).mem_read(PC++);
     uint16_t temp_address = MSB_temp;
     temp_address <<= 8;
-    temp_address += LSB_temp;
-    uint8_t LSB = (*bus).mem_read(temp_address);
-    if ((LSB_temp & 0x00FF) == 0x00FF) {
+    temp_address |= LSB_temp;
+    LSB_temp = (*bus).mem_read(temp_address);
+    if ((LSB_temp & 0xFF) == 0xFF) {
         last_absolute_address = ((*bus).mem_read(temp_address & 0xFF00));  // bug
     } else {
-        last_absolute_address = ((*bus).mem_read(++temp_address));
+        last_absolute_address = ((*bus).mem_read(temp_address+1));
     }
-    last_absolute_address <<= 8;
-    last_absolute_address += LSB;
+    last_absolute_address<<8;
+    last_absolute_address|=LSB_temp;
 }
 
 void CPU::indexed_indirect() {
@@ -355,7 +355,7 @@ void CPU::indexed_indirect() {
     uint8_t LSB = (*bus).mem_read((temp_address + X) & 0xFF);
     last_absolute_address = (*bus).mem_read((temp_address + X + 1) & 0xFF);
     last_absolute_address <<= 8;
-    last_absolute_address += LSB;
+    last_absolute_address |= LSB;
 }
 
 void CPU::indirect_indexed() {
@@ -363,7 +363,7 @@ void CPU::indirect_indexed() {
     uint8_t LSB = (*bus).mem_read((temp_address)&0xFF);
     last_absolute_address = (*bus).mem_read((temp_address + 1) & 0xFF);
     last_absolute_address <<= 8;
-    last_absolute_address += LSB;
+    last_absolute_address |= LSB;
     last_absolute_address += Y;
     if ((last_absolute_address >> 8) != ((last_absolute_address - Y) >> 8))
         cycles++;
@@ -387,7 +387,7 @@ void CPU::AND() {
     uint8_t temp = (*bus).mem_read(last_absolute_address);
     A &= temp;
     ZF = (!A);
-    NF = (A >> 7);
+    NF = A & 0x80;
 }
 
 void CPU::ASL() {
@@ -561,7 +561,7 @@ void CPU::INX() {
 }
 
 void CPU::INY() {
-    Y--;
+    Y++;
     ZF = !Y;
     NF = Y & 0x80;
 }
@@ -572,7 +572,7 @@ void CPU::JMP() {
 
 void CPU::JSR() {
     PC--;
-    push_on_stack(PC >> 8);
+    push_on_stack((PC >> 8) &0xFF);
     push_on_stack(PC & 0xFF);
     PC = last_absolute_address;
 }
@@ -605,7 +605,7 @@ void CPU::LSR() {
     CF = temp & 1;
     temp >>= 1;
     ZF = !(temp & 0xFF);
-    NF = (temp & 128);
+    NF = (temp & 0x80);
     if (!accumulator_mod) {
         (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
@@ -649,11 +649,11 @@ void CPU::ROL() {
     temp |= CF;
     CF = (temp>>8);
     NF = temp & 0x80;
+    ZF = !(temp&0xFF);
     if (!accumulator_mod) {
         (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
-        ZF = !A;
     }
 }
 
@@ -665,11 +665,11 @@ void CPU::ROR() {
     CF = temp & 1;
     temp >>= 1;
     NF = temp & 0x80;
+    ZF = !(temp&0xFF);
     if (!accumulator_mod) {
         (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
-        ZF = !A;
     }
 }
 
@@ -774,7 +774,7 @@ void CPU::tick() {
         return;
     }
     uint8_t current_opcode = (*bus).mem_read(PC++);
-    std::cout<<std::fixed<<std::hex<<(int)current_opcode<<'\t'<<(int)A<<'\t'<<(int)X<<'\t'<<(int)Y<<'\t'<<(int)flags<<'\n';
+    std::cout<<std::fixed<<std::hex<<(int)(PC-1)<<"  "<<(int)current_opcode<<"\tA:"<<(int)A<<" X:"<<(int)X<<" Y:"<<(int)Y<<" P:"<<(int)flags<<'\n';
     I current_instruction = map_opcodes[current_opcode];
     cycles = map_cycles[current_opcode];
     (this->*current_instruction.addr_mod)();
