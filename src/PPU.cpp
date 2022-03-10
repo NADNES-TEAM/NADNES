@@ -252,7 +252,9 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
 }
 
-Ppu::Ppu() : OAM(256), palette_mem(32) {}
+Ppu::Ppu() : OAM(256), palette_mem(32) {
+    mask_reg.bg_enable = 1;
+}
 
 void Ppu::set_OAM_address(uint8_t address) {}
 

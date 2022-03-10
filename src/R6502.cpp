@@ -1,5 +1,6 @@
 #include "R6502.h"
 #include <utility>
+#include <iostream>
 namespace NES {
 
 void CPU::push_on_stack(uint8_t T) {
@@ -306,15 +307,16 @@ void CPU::zero_page_y() {
 
 void CPU::relative() {
     last_relative_address = (*bus).mem_read(PC++);
-    if (last_relative_address >> 8) {
-        last_relative_address += 0xFF00;
+    if (last_relative_address >>7) {
+        last_relative_address |= 0xFF00;
     }
 }
 
 void CPU::absolute() {
+    uint16_t temp = (*bus).mem_read(PC++);
     last_absolute_address = (*bus).mem_read(PC++);
     last_absolute_address <<= 8;
-    last_absolute_address |= (*bus).mem_read(PC++);
+    last_absolute_address |= temp;
 }
 
 void CPU::absolute_x() {
@@ -349,16 +351,16 @@ void CPU::indirect() {
 
 void CPU::indexed_indirect() {
     uint16_t temp_address = (*bus).mem_read(PC++);
-    uint8_t LSB = (*bus).mem_read((temp_address + X) & 0x00FF);
-    last_absolute_address = (*bus).mem_read((temp_address + X + 1) & 0x00FF);
+    uint8_t LSB = (*bus).mem_read((temp_address + X) & 0xFF);
+    last_absolute_address = (*bus).mem_read((temp_address + X + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address += LSB;
 }
 
 void CPU::indirect_indexed() {
     uint16_t temp_address = (*bus).mem_read(PC++);
-    uint8_t LSB = (*bus).mem_read((temp_address)&0x00FF);
-    last_absolute_address = (*bus).mem_read((temp_address + 1) & 0x00FF);
+    uint8_t LSB = (*bus).mem_read((temp_address)&0xFF);
+    last_absolute_address = (*bus).mem_read((temp_address + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address += LSB;
     last_absolute_address += Y;
@@ -372,12 +374,11 @@ void CPU::accumulator() {
 
 void CPU::ADC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
-    CF = (temp + A + CF) >> 8;
-    OF = (temp & A & 0x80 & (~((temp + A + CF) & 0x80)) ||
-          (~(temp & 0x80)) & (~(A & 0x80)) & ((temp + A + CF) & 0x80));
-    bool CF_temp = (temp + A + CF) >> 8;
-    A = (temp + A + CF) & 0x00FF;
-    CF = CF_temp;
+    uint16_t temp_A = temp + A + CF;
+    CF = (temp_A) >> 8;
+    OF = (temp & A & 0x80 & (~((temp_A) & 0x80)) ||
+          ((~(temp & 0x80)) & (~(A & 0x80)) & ((temp_A) & 0x80)));
+    A = (temp_A) & 0xFF;
     ZF = !A;
 }
 
@@ -394,12 +395,12 @@ void CPU::ASL() {
         temp = (*bus).mem_read(last_absolute_address);
     temp <<= 1;
     CF = (temp >> 8);
-    ZF = !(temp & 0x00FF);
+    ZF = !(temp & 0xFF);
     NF = (temp & 128);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
-        A = temp & 0x00FF;
+        A = temp & 0xFF;
     }
 }
 
@@ -435,7 +436,7 @@ void CPU::BIT() {
     temp &= A;
     ZF = !temp;
     NF = temp & 0x80;
-    OF = temp & 0x80;
+    OF = temp & 0x40;
 }
 
 void CPU::BMI() {
@@ -502,7 +503,7 @@ void CPU::cmp_with(uint8_t T) {
     uint16_t temp = T - read;
     ZF = !temp;
     NF = temp & 0x80;
-    CF = T >= read;
+    CF = (T >= read);
 }
 
 void CPU::CMP() {
@@ -565,8 +566,7 @@ void CPU::INY() {
 }
 
 void CPU::JMP() {
-    uint16_t temp = (*bus).mem_read(last_absolute_address);
-    PC = temp;
+    PC = last_absolute_address;
 }
 
 void CPU::JSR() {
@@ -579,16 +579,22 @@ void CPU::JSR() {
 void CPU::LDA() {
     uint8_t temp = (*bus).mem_read(last_absolute_address);
     A = temp;
+    ZF = !A;
+    NF = A & 0x80;
 }
 
 void CPU::LDX() {
     uint8_t temp = (*bus).mem_read(last_absolute_address);
     X = temp;
+    ZF = !X;
+    NF = X & 0x80;
 }
 
 void CPU::LDY() {
     uint8_t temp = (*bus).mem_read(last_absolute_address);
     Y = temp;
+    ZF = !Y;
+    NF = Y & 0x80;
 }
 
 void CPU::LSR() {
@@ -597,12 +603,12 @@ void CPU::LSR() {
         temp = (*bus).mem_read(last_absolute_address);
     CF = temp & 1;
     temp >>= 1;
-    ZF = !(temp & 0x00FF);
+    ZF = !(temp & 0xFF);
     NF = (temp & 128);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
-        A = temp & 0x00FF;
+        A = temp & 0xFF;
     }
 }
 
@@ -621,6 +627,7 @@ void CPU::PHA() {
 
 void CPU::PHP() {
     push_on_stack(flags);
+    BC = false;
 }
 
 void CPU::PLA() {
@@ -638,13 +645,13 @@ void CPU::ROL() {
     if (!accumulator_mod)
         temp = (*bus).mem_read(last_absolute_address);
     temp <<= 1;
-    temp += CF;
-    CF = temp & 0x100;
+    temp |= CF;
+    CF = (temp>>8);
     NF = temp & 0x80;
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
-        A = temp & 0x00FF;
+        A = temp & 0xFF;
         ZF = !A;
     }
 }
@@ -658,9 +665,9 @@ void CPU::ROR() {
     temp >>= 1;
     NF = temp & 0x80;
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+        (*bus).mem_write(last_absolute_address, temp & 0xFF);
     } else {
-        A = temp & 0x00FF;
+        A = temp & 0xFF;
         ZF = !A;
     }
 }
@@ -668,6 +675,7 @@ void CPU::ROR() {
 void CPU::RTI() {
     SP++;
     flags = (*bus).mem_read(SP + 0x0100);
+    BC = !BC;
     SP++;
     uint16_t temp = (*bus).mem_read(SP + 0x0100);
     PC = temp;
@@ -683,15 +691,16 @@ void CPU::RTS() {
     SP++;
     temp = (*bus).mem_read(SP + 0x0100);
     PC |= temp << 8;
+    PC++;
 }
 
 void CPU::SBC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
-    OF = (temp & A & 0x80 & (~((A - temp - (1 - CF)) & 0x80)) ||
-          (~(temp & 0x80)) & (~(A & 0x80)) & ((A - temp - (1 - CF)) & 0x80));
-    bool CF_temp = (A - temp - (1 - CF)) >> 8;
-    A = (A - temp - (1 - CF)) & 0x00FF;
-    CF = CF_temp;
+    uint16_t temp_A = A - temp - (1 - CF);
+    CF = temp_A>>8;
+    OF = ((temp & A & (~temp_A) & 0x80) ||
+          (~(temp & 0x80)) & (~(A & 0x80)) & (temp_A & 0x80));
+    A = (temp_A) & 0xFF;
     ZF = !A;
 }
 
@@ -757,12 +766,13 @@ void CPU::throw_exception() {
     throw IncorrectOpcode();
 }
 
-void CPU::clock() {
+void CPU::tick() {
     if (cycles) {
         cycles--;
         return;
     }
     uint8_t current_opcode = (*bus).mem_read(PC++);
+    std::cout<<std::fixed<<std::hex<<(int)current_opcode<<'\t'<<(int)A<<'\t'<<(int)X<<'\t'<<(int)Y<<'\t'<<(int)flags<<'\n';
     I current_instruction = map_opcodes[current_opcode];
     cycles = map_cycles[current_opcode];
     (this->*current_instruction.addr_mod)();
@@ -786,7 +796,7 @@ void CPU::reset() {
     A = 0;
     X = 0;
     Y = 0;
-    flags = 0;
+    flags = 24;
     SP = 0xFD;  // The Stack is set at $FD, with two values already stacked ($00, $00).
     last_absolute_address = 0;
     last_relative_address = 0;
@@ -795,6 +805,7 @@ void CPU::reset() {
     PC = temp;
     temp = (*bus).mem_read(0xFFFD);
     PC |= temp << 8;
+    PC = 0xC000; //for tests
     cycles = 8;
 }
 

@@ -21,6 +21,7 @@ public:
         cpu.connect(&bus, ConnectToken());
         bus.connect(&ppu, ConnectToken());
         bus.connect(&cartridge, ConnectToken());
+        cpu.reset();
     }
     ~Nes() override = default;
 

@@ -21,7 +21,7 @@ class CPU {
 public:
     CPU();
     void connect(Bus *bus_, ConnectToken) noexcept;
-    void clock();
+    void tick();
     // interrupts:
 
     void reset();
@@ -80,7 +80,6 @@ private:
     std::array<I, 1 << 8> map_opcodes;
     std::array<uint8_t, 1 << 8> map_cycles;
     // Others
-
     void add_relative();
     void cmp_with(uint8_t T);
     void push_on_stack(uint8_t T);
