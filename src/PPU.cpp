@@ -66,11 +66,13 @@ bool Ppu::tick() {
             is_rendering = true;
             if (HOR_VISIBLE_BEGIN <= x_pos && x_pos < HOR_VISIBLE_END ||
                 HOR_PRERENDER_BEGIN <= x_pos && x_pos < HOR_PRERENDER_END) {
+                bg_shifter_low <<= 1;
+                bg_shifter_high <<= 1;
                 int cur_step = x_pos % 8;
                 if (cur_step == 0) {
                     VRAM_addr_reg.increase_x_scroll();  // inc hori(x)
 
-                } else if (cur_step == 1) {  // update shifters & NT byte
+                } else if (cur_step == 1) {  // load shifters & NT byte
                     bg_shifter_low = (bg_shifter_low & 0xFF00) + bg_next_tile_low;
                     bg_shifter_high = (bg_shifter_high & 0xFF00) + bg_next_tile_high;
                     bg_cur_palette = bg_next_palette;
@@ -115,15 +117,16 @@ bool Ppu::tick() {
                 bg_next_tile_num = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
             }
 
-            if (y_pos == -1 || x_pos >= 280 || x_pos <= 304) {
+            if (y_pos == -1 && x_pos >= 280 && x_pos <= 304) {
                 VRAM_addr_reg.set_y_scroll_from(VRAM_tmp_addr_reg);  // vert(v) = vert(t)
             }
+        }
+    }
 
-        } else if (y_pos == 241 && x_pos == 1) {  // set VBlank flag
-            status_reg.vertical_blank = 1;
-            if (ctrl_reg.NMI_enable) {
-                // TODO: actually call NMI
-            }
+    if (y_pos == 241 && x_pos == 1) {  // set VBlank flag
+        status_reg.vertical_blank = 1;
+        if (ctrl_reg.NMI_enable) {
+            // TODO: actually call NMI
         }
     }
 
@@ -252,9 +255,7 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
 }
 
-Ppu::Ppu() : OAM(256), palette_mem(32) {
-    mask_reg.bg_enable = 1;
-}
+Ppu::Ppu() : OAM(256), palette_mem(32) {}
 
 void Ppu::set_OAM_address(uint8_t address) {}
 
