@@ -377,8 +377,7 @@ void CPU::ADC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
     uint16_t temp_A = temp + A + CF;
     CF = (temp_A) >> 8;
-    OF = (temp & A & 0x80 & (~((temp_A) & 0x80)) ||
-          ((~(temp & 0x80)) & (~(A & 0x80)) & ((temp_A) & 0x80)));
+    OF = ((A&0x80 && temp&0x80 && !(temp_A&0x80)) || (!(A&0x80) && !(temp&0x80) && temp_A&0x80));
     A = (temp_A) & 0xFF;
     ZF = !A;
 }
@@ -434,8 +433,7 @@ void CPU::BEQ() {
 
 void CPU::BIT() {
     uint8_t temp = (*bus).mem_read(last_absolute_address);
-    temp &= A;
-    ZF = !temp;
+    ZF = !(temp&A);
     NF = temp & 0x80;
     OF = temp & 0x40;
 }
@@ -676,7 +674,7 @@ void CPU::ROR() {
 void CPU::RTI() {
     SP++;
     flags = (*bus).mem_read(SP + 0x0100);
-    BC = !BC;
+    BC = 0;
     SP++;
     uint16_t temp = (*bus).mem_read(SP + 0x0100);
     PC = temp;
@@ -699,8 +697,8 @@ void CPU::SBC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
     uint16_t temp_A = A - temp - (1 - CF);
     CF = temp_A>>8;
-    OF = ((temp & A & (~temp_A) & 0x80) ||
-          (~(temp & 0x80)) & (~(A & 0x80)) & (temp_A & 0x80));
+
+    OF = ((A&0x80 && (-temp)&0x80 && !(temp_A&0x80)) || (!(A&0x80) && !((-temp)&0x80) && temp_A&0x80));
     A = (temp_A) & 0xFF;
     ZF = !A;
 }
@@ -781,18 +779,6 @@ void CPU::tick() {
     (this->*current_instruction.func)();
 }
 
-void CPU::interrupt() {
-    push_on_stack(PC >> 8);
-    push_on_stack(PC & 0xFF);
-    BC = false;
-    ID = true;
-    push_on_stack(flags);
-    uint16_t temp = (*bus).mem_read(0xFFFA);
-    PC = temp;
-    temp = (*bus).mem_read(0xFFFB);
-    PC |= temp << 8;
-    cycles = 7;
-}
 
 void CPU::reset() {
     A = 0;
@@ -812,12 +798,30 @@ void CPU::reset() {
 }
 
 void CPU::NMI() {
-    interrupt();
+    push_on_stack(PC >> 8);
+    push_on_stack(PC & 0xFF);
+    BC = false;
+    ID = true;
+    push_on_stack(flags);
+    uint16_t temp = (*bus).mem_read(0xFFFA);
+    PC = temp;
+    temp = (*bus).mem_read(0xFFFB);
+    PC |= temp << 8;
+    cycles = 7;
 }
 
 void CPU::IRQ() {
     if (!ID) {
-        interrupt();
+        push_on_stack(PC >> 8);
+        push_on_stack(PC & 0xFF);
+        BC = false;
+        ID = true;
+        push_on_stack(flags);
+        uint16_t temp = (*bus).mem_read(0xFFFE);
+        PC = temp;
+        temp = (*bus).mem_read(0xFFFF);
+        PC |= temp << 8;
+        cycles = 7;
     }
 }
 
