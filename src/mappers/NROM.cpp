@@ -24,6 +24,7 @@ uint16_t NROMMapper::map_PPU_address(uint16_t address) const {
     if (address < 0x2000) {
         return address;
     } else {
+        address -= 0x2000;
         if (mirror_type == Mirroring::Horizontal) {
             return (address % 0x0400 + 0x0800 * (address >= 0x2800) + 0x2000);
         } else {

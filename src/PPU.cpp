@@ -1,5 +1,7 @@
 #include "PPU.h"
-#include "ScreenInterface.h"
+#include <iomanip>
+#include <iostream>
+#include "screen.h"
 
 namespace NES {
 void AddressReg::increase_x_scroll() {
@@ -22,7 +24,7 @@ void AddressReg::increase_y_scroll() {
         } else if (coarse_y_scroll == 31) {
             coarse_y_scroll = 0;
         } else {
-            coarse_y_scroll += 1;
+            coarse_y_scroll++;
         }
     }
 }
@@ -55,29 +57,34 @@ std::vector<Color> colors = {
 
 bool Ppu::tick() {
     is_rendering = false;
+
+    if (y_pos == 0 && x_pos == 0)
+        x_pos = 1;  // skip odd
+
+    if (y_pos == -1 && x_pos == 1)
+        status_reg.vertical_blank = 0;  // clear VBlank
+
     if (mask_reg.bg_enable || mask_reg.sp_enable) {
-        if (y_pos == 0 && x_pos == 0)
-            x_pos = 1;  // skip odd
-
-        if (y_pos == -1 && x_pos == 1)
-            status_reg.vertical_blank = 0;  // clear VBlank
-
         if (VERT_VISIBLE_BEGIN <= y_pos && y_pos < VERT_VISIBLE_END) {
             is_rendering = true;
             if (HOR_VISIBLE_BEGIN <= x_pos && x_pos < HOR_VISIBLE_END ||
                 HOR_PRERENDER_BEGIN <= x_pos && x_pos < HOR_PRERENDER_END) {
+                // actual shifting
                 bg_shifter_low <<= 1;
                 bg_shifter_high <<= 1;
+
                 int cur_step = x_pos % 8;
-                if (cur_step == 0) {
+
+                if (cur_step == 0 && x_pos != 0) {
                     VRAM_addr_reg.increase_x_scroll();  // inc hori(x)
 
                 } else if (cur_step == 1) {  // load shifters & NT byte
                     bg_shifter_low = (bg_shifter_low & 0xFF00) + bg_next_tile_low;
                     bg_shifter_high = (bg_shifter_high & 0xFF00) + bg_next_tile_high;
-                    bg_cur_palette = bg_next_palette;
+                    bg_cur_palette = bg_next_palette;  // TODO: 2-stage holder
 
-                    bg_next_tile_num = PPU_read(0x2000 + VRAM_addr_reg.reg & 0x0FFF);
+                    bg_next_tile_num = PPU_read(0x2000 + (VRAM_addr_reg.reg & 0x0FFF));
+                    std::cout << std::setw(3) << std::setfill('0') << (int)bg_next_tile_num << ' ';
 
                 } else if (cur_step == 3) {  // AT byte
                     uint16_t address = (0x23C0 | (VRAM_addr_reg.nametable_y << 11) |
@@ -98,7 +105,7 @@ bool Ppu::tick() {
                                         VRAM_addr_reg.fine_y_scroll);
                     bg_next_tile_low = PPU_read(address);
 
-                } else if (cur_step == 7) {  // HIgh BG tile byte
+                } else if (cur_step == 7) {  // High BG tile byte
                     uint16_t address = ((ctrl_reg.bg_ptr_table << 12) + bg_next_tile_num * 16 +
                                         VRAM_addr_reg.fine_y_scroll + 8);
                     bg_next_tile_high = PPU_read(address);
@@ -137,13 +144,16 @@ bool Ppu::tick() {
         bg_color = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
     }
 
-    screen->setPixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
+    screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
+
+    //    std::cout << "x: " << std::dec <<  x_pos << " y: " << y_pos << " addr: " << std::hex
+    //              << VRAM_addr_reg.reg << " loopy_t: " << VRAM_tmp_addr_reg.reg << '\n';
     if (++x_pos >= 341) {
         x_pos = 0;
-
+        std::cout << '\n';
         if (++y_pos >= 261) {
-            screen->refreshScreen();
-            //            test_utility();
+            screen->refresh_screen();
+            std::cout << '\n';
 
             y_pos = -1;
             return true;
