@@ -340,14 +340,15 @@ void CPU::indirect() {
     uint16_t temp_address = MSB_temp;
     temp_address <<= 8;
     temp_address |= LSB_temp;
-    LSB_temp = (*bus).mem_read(temp_address);
+    uint16_t LSB_final = (*bus).mem_read(temp_address);
     if ((LSB_temp & 0xFF) == 0xFF) {
+
         last_absolute_address = ((*bus).mem_read(temp_address & 0xFF00));  // bug
     } else {
         last_absolute_address = ((*bus).mem_read(temp_address+1));
     }
-    last_absolute_address<<8;
-    last_absolute_address|=LSB_temp;
+    last_absolute_address<<=8;
+    last_absolute_address|=LSB_final;
 }
 
 void CPU::indexed_indirect() {
@@ -674,7 +675,7 @@ void CPU::ROR() {
 void CPU::RTI() {
     SP++;
     flags = (*bus).mem_read(SP + 0x0100);
-    BC = 0;
+    BC = false;
     SP++;
     uint16_t temp = (*bus).mem_read(SP + 0x0100);
     PC = temp;
@@ -709,6 +710,7 @@ void CPU::SEC() {
 
 void CPU::SED() {
     DM = true;
+
 }
 
 void CPU::SEI() {
@@ -784,7 +786,7 @@ void CPU::reset() {
     A = 0;
     X = 0;
     Y = 0;
-    flags = 24;
+    flags = 0;
     SP = 0xFD;  // The Stack is set at $FD, with two values already stacked ($00, $00).
     last_absolute_address = 0;
     last_relative_address = 0;
