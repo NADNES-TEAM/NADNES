@@ -5,7 +5,9 @@
 // Copyright   :
 // Description : A MOS 6502 CPU emulator written in C++
 //============================================================================
+#pragma once
 
+#include "all_nes_fwd.h"
 #include <iostream>
 #include <cstdint>
 #include "bus.h"
