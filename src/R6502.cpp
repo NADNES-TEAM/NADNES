@@ -550,7 +550,7 @@ void CPU::INC() {
     temp++;
     ZF = !temp;
     NF = temp & 0x80;
-    (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+    (*bus).mem_write(last_absolute_address, temp);
 }
 
 void CPU::INX() {
@@ -626,8 +626,9 @@ void CPU::PHA() {
 }
 
 void CPU::PHP() {
-    push_on_stack(flags);
+    push_on_stack(flags | 0x10 | 0x20);
     BC = false;
+    UNUSED = false;
 }
 
 void CPU::PLA() {
@@ -638,6 +639,7 @@ void CPU::PLA() {
 
 void CPU::PLP() {
     flags = (*bus).mem_read(++SP + 0x0100);
+    UNUSED = true; //for tests
 }
 
 void CPU::ROL() {
@@ -676,6 +678,7 @@ void CPU::RTI() {
     SP++;
     flags = (*bus).mem_read(SP + 0x0100);
     BC = false;
+    UNUSED = false; //for tests
     SP++;
     uint16_t temp = (*bus).mem_read(SP + 0x0100);
     PC = temp;
@@ -696,10 +699,10 @@ void CPU::RTS() {
 
 void CPU::SBC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
-    uint16_t temp_A = A - temp - (1 - CF);
+    uint16_t temp_A = A - temp - 1 + CF;
     CF = temp_A>>8;
 
-    OF = ((A&0x80 && (-temp)&0x80 && !(temp_A&0x80)) || (!(A&0x80) && !((-temp)&0x80) && temp_A&0x80));
+    OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
     A = (temp_A) & 0xFF;
     ZF = !A;
 }
@@ -773,12 +776,15 @@ void CPU::tick() {
         cycles--;
         return;
     }
+    UNUSED = true; //for tests
     uint8_t current_opcode = (*bus).mem_read(PC++);
     std::cout<<std::fixed<<std::hex<<(int)(PC-1)<<"  "<<(int)current_opcode<<"\tA:"<<(int)A<<" X:"<<(int)X<<" Y:"<<(int)Y<<" P:"<<(int)flags<<'\n';
     I current_instruction = map_opcodes[current_opcode];
     cycles = map_cycles[current_opcode];
     (this->*current_instruction.addr_mod)();
     (this->*current_instruction.func)();
+    accumulator_mod = false;
+    UNUSED = true; //for tests
 }
 
 
@@ -786,7 +792,7 @@ void CPU::reset() {
     A = 0;
     X = 0;
     Y = 0;
-    flags = 0;
+    flags = 0x20; //for tests set UNUSED flag
     SP = 0xFD;  // The Stack is set at $FD, with two values already stacked ($00, $00).
     last_absolute_address = 0;
     last_relative_address = 0;
@@ -803,6 +809,7 @@ void CPU::NMI() {
     push_on_stack(PC >> 8);
     push_on_stack(PC & 0xFF);
     BC = false;
+    UNUSED = true; // for tests
     ID = true;
     push_on_stack(flags);
     uint16_t temp = (*bus).mem_read(0xFFFA);
@@ -817,6 +824,7 @@ void CPU::IRQ() {
         push_on_stack(PC >> 8);
         push_on_stack(PC & 0xFF);
         BC = false;
+        UNUSED = true; //for tests
         ID = true;
         push_on_stack(flags);
         uint16_t temp = (*bus).mem_read(0xFFFE);
