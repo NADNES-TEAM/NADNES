@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"
 #include "ScreenInterface.h"
@@ -85,7 +86,7 @@ class Ppu {
     uint8_t fine_x_scroll = 0;
     bool double_write_toggle = false;
     uint8_t VRAM_read_buff = 0;
-    //        uint8_t OAM_addr_reg = 0;
+    uint8_t OAM_addr_reg = 0;
 
     // rendering state
     bool is_rendering = false;
@@ -115,12 +116,11 @@ class Ppu {
     //  connected devices
     ScreenInterface *screen = nullptr;
     PpuToCartridgeInterface *cartridge = nullptr;
+    mos6502 *cpu = nullptr;
 
     [[nodiscard]] uint8_t PPU_read(uint16_t address) const;
 
     [[nodiscard]] Color get_color_from_palette(uint8_t palette, uint8_t color) const;
-
-    void test_utility();
 
     void PPU_write(uint16_t address, uint8_t data);
 
@@ -128,6 +128,8 @@ public:
     void connect(PpuToCartridgeInterface *cartridge_, ConnectToken) noexcept;
 
     void connect(ScreenInterface *screen_, ConnectToken) noexcept;
+
+    void connect(mos6502 *cpu_, ConnectToken) noexcept;
 
     [[nodiscard]] explicit Ppu();
 

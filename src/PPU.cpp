@@ -1,6 +1,7 @@
 #include "PPU.h"
 #include <iomanip>
 #include <iostream>
+#include "mos6502.h"
 #include "screen.h"
 
 namespace NES {
@@ -84,7 +85,8 @@ bool Ppu::tick() {
                     bg_cur_palette = bg_next_palette;  // TODO: 2-stage holder
 
                     bg_next_tile_num = PPU_read(0x2000 + (VRAM_addr_reg.reg & 0x0FFF));
-                    std::cout << std::setw(3) << std::setfill('0') << (int)bg_next_tile_num << ' ';
+                    //                    std::cout << std::setw(3) << std::setfill('0') <<
+                    //                    (int)bg_next_tile_num << ' ';
 
                 } else if (cur_step == 3) {  // AT byte
                     uint16_t address = (0x23C0 | (VRAM_addr_reg.nametable_y << 11) |
@@ -133,7 +135,7 @@ bool Ppu::tick() {
     if (y_pos == 241 && x_pos == 1) {  // set VBlank flag
         status_reg.vertical_blank = 1;
         if (ctrl_reg.NMI_enable) {
-            // TODO: actually call NMI
+            cpu->NMI();
         }
     }
 
@@ -150,10 +152,10 @@ bool Ppu::tick() {
     //              << VRAM_addr_reg.reg << " loopy_t: " << VRAM_tmp_addr_reg.reg << '\n';
     if (++x_pos >= 341) {
         x_pos = 0;
-        std::cout << '\n';
+        //        std::cout << '\n';
         if (++y_pos >= 261) {
             screen->refresh_screen();
-            std::cout << '\n';
+            //            std::cout << '\n';
 
             y_pos = -1;
             return true;
@@ -167,9 +169,9 @@ void Ppu::write_ctrl_reg(uint8_t data) {
     ctrl_reg.reg = data;
     VRAM_tmp_addr_reg.nametable_x = ctrl_reg.base_nametable_x;
     VRAM_tmp_addr_reg.nametable_y = ctrl_reg.base_nametable_y;
-    if (!prev_NMI_enable_state && ctrl_reg.NMI_enable && status_reg.vertical_blank) {
-        // TODO: call NMI
-    }
+    //    if (!prev_NMI_enable_state && ctrl_reg.NMI_enable && status_reg.vertical_blank) {
+    //        cpu->NMI();
+    //    }
 }
 
 void Ppu::write_mask_reg(uint8_t data) {
@@ -185,10 +187,10 @@ uint8_t Ppu::read_status_reg() {
 
 void Ppu::write_scroll_reg(uint8_t data) {
     if (!double_write_toggle) {
-        VRAM_tmp_addr_reg.coarse_x_scroll = (data >> 2);
+        VRAM_tmp_addr_reg.coarse_x_scroll = (data >> 3);
         fine_x_scroll = (data & 0x07);
     } else {
-        VRAM_tmp_addr_reg.coarse_y_scroll = (data >> 2);
+        VRAM_tmp_addr_reg.coarse_y_scroll = (data >> 3);
         VRAM_tmp_addr_reg.fine_y_scroll = (data & 0x07);
     }
     double_write_toggle ^= 1;
@@ -196,10 +198,10 @@ void Ppu::write_scroll_reg(uint8_t data) {
 
 void Ppu::set_VRAM_address(uint8_t address) {
     if (!double_write_toggle) {
-        VRAM_tmp_addr_reg.address_high_byte = ((address << 2) >> 2);
+        VRAM_tmp_addr_reg.address_high_byte = (address & 0x3f);
         VRAM_tmp_addr_reg.z_bit = 0;
     } else {
-        VRAM_addr_reg.address_low_byte = address;
+        VRAM_tmp_addr_reg.address_low_byte = address;
         VRAM_addr_reg = VRAM_tmp_addr_reg;
     }
     double_write_toggle ^= 1;
@@ -267,12 +269,20 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
 
 Ppu::Ppu() : OAM(256), palette_mem(32) {}
 
-void Ppu::set_OAM_address(uint8_t address) {}
+void Ppu::set_OAM_address(uint8_t address) {
+    OAM_addr_reg = address;
+}
 
-void Ppu::OAM_write(uint8_t data) {}
+void Ppu::OAM_write(uint8_t data) {
+    OAM[OAM_addr_reg] = data;
+}
 
 uint8_t Ppu::OAM_read() const {
     return 0;
+}
+
+void Ppu::connect(mos6502 *cpu_, ConnectToken) noexcept {
+    cpu = cpu_;
 }
 
 }  // namespace NES
