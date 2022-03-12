@@ -5,21 +5,22 @@ namespace NES {
 
 uint8_t Controller::CpuRead(uint16_t addr) {
     uint8_t index = addr - 0x4016;
-    uint8_t ans = m_snapshot[index] & 1;
-    m_snapshot[index] >>= 1;
-    return ans;
+    if (m_readBit[index] >= 8) {
+        return 1;
+    } else {
+        uint8_t ans = (m_snapshot[index] >> m_readBit[index]) & 1;
+        m_readBit[index] = (m_readBit[index] >= 8 ? 8 : m_readBit[index]++);
+        return ans;
+    }
 }
 
 void Controller::CpuWrite(uint16_t addr, uint8_t value) {
     if (addr != 0x4016 || (value & 1) != 1) {
         throw InvalidControllerWrite(addr, value);
     }
-    m_snapshot[0] = m_keyboardInterface->getPressedKeys();
+    m_snapshot[0] = keyBoardProcessor0.getSnapshot();
     m_snapshot[1] = 0;  // Something
-}
-
-void Controller::connect(KeyboardInterface *keyboardInterface, ConnectToken) {
-    m_keyboardInterface = keyboardInterface;
+    m_readBit[0] = m_readBit[1] = 0;
 }
 
 }  // namespace NES

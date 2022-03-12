@@ -3,21 +3,19 @@
 #include <QLabel>
 #include <QWidget>
 #include <QtGui>
-#include "KeyboardInterface.h"
-#include "connect_token.h"
+#include "KeyboardProcessor.h"
 
 namespace NES {
 class Controller {
 public:
-    explicit Controller(KeyboardInterface *keyboardInterface = nullptr) : m_keyboardInterface(keyboardInterface) {}
-
-    void connect(KeyboardInterface *keyboardInterface, ConnectToken);
+    Controller() {}
 
     uint8_t CpuRead(uint16_t addr);
     void CpuWrite(uint16_t addr, uint8_t value);
 
 private:
-    KeyboardInterface *m_keyboardInterface;
+    KeyBoardProcessor keyBoardProcessor0;  // For the first controller
     uint8_t m_snapshot[2]{0, 0};
+    uint8_t m_readBit[2]{0, 0};
 };
 }  // namespace NES
