@@ -378,9 +378,10 @@ void CPU::ADC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
     uint16_t temp_A = temp + A + CF;
     CF = (temp_A) >> 8;
-    OF = ((A&0x80 && temp&0x80 && !(temp_A&0x80)) || (!(A&0x80) && !(temp&0x80) && temp_A&0x80));
+    OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
     A = (temp_A) & 0xFF;
     ZF = !A;
+    NF = temp_A &0x80;
 }
 
 void CPU::AND() {
@@ -699,11 +700,12 @@ void CPU::RTS() {
 
 void CPU::SBC() {
     uint16_t temp = (*bus).mem_read(last_absolute_address);
-    uint16_t temp_A = A - temp - 1 + CF;
-    CF = temp_A>>8;
-
+    temp^=0xFF;
+    uint16_t temp_A = A + temp + CF;
     OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
-    A = (temp_A) & 0xFF;
+    A = temp_A&0xFF;
+    CF = temp_A >> 8;
+    NF = A&0x80;
     ZF = !A;
 }
 
@@ -784,6 +786,7 @@ void CPU::tick() {
     (this->*current_instruction.addr_mod)();
     (this->*current_instruction.func)();
     accumulator_mod = false;
+    indirect_addressing_mod = false;
     UNUSED = true; //for tests
 }
 
