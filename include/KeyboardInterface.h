@@ -1,8 +1,8 @@
-//
-// Created by dan on 13.03.2022.
-//
+#pragma once
 
-#ifndef NADNES_KEYBOARDINTERFACE_H
-#define NADNES_KEYBOARDINTERFACE_H
+#include <cstdint>
 
-#endif  // NADNES_KEYBOARDINTERFACE_H
+class KeyboardInterface {
+public:
+    virtual uint8_t getPressedKeys() const = 0;
+};
