@@ -50,8 +50,8 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
     rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_size);
 }
 
-uint8_t Cartridge::Cpu_read(uint16_t address) const {
-    return PRG_ROM[mapper->map_read_from_Cpu(address)];
+uint8_t Cartridge::CPU_read(uint16_t address) const {
+    return PRG_ROM[mapper->map_read_from_CPU(address)];
 }
 
 uint8_t Cartridge::PPU_read(uint16_t address) const {
@@ -63,8 +63,8 @@ uint8_t Cartridge::PPU_read(uint16_t address) const {
     }
 }
 
-void Cartridge::Cpu_write(uint16_t address, uint8_t data) {
-    mapper->map_write_from_Cpu(address, data);
+void Cartridge::CPU_write(uint16_t address, uint8_t data) {
+    mapper->map_write_from_CPU(address, data);
 }
 
 void Cartridge::PPU_write(uint16_t address, uint8_t data) {

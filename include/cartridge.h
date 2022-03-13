@@ -9,9 +9,9 @@
 
 namespace NES {
 struct CpuToCartridgeInterface {
-    [[nodiscard]] virtual uint8_t Cpu_read(uint16_t address) const = 0;
+    [[nodiscard]] virtual uint8_t CPU_read(uint16_t address) const = 0;
 
-    virtual void Cpu_write(uint16_t address, uint8_t data) = 0;
+    virtual void CPU_write(uint16_t address, uint8_t data) = 0;
 
     virtual ~CpuToCartridgeInterface() = default;
 };
@@ -62,9 +62,9 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
     std::vector<uint8_t> CHR_ROM;
     std::vector<uint8_t> CHR_RAM;
 
-    [[nodiscard]] uint8_t Cpu_read(uint16_t address) const override;
+    [[nodiscard]] uint8_t CPU_read(uint16_t address) const override;
 
-    void Cpu_write(uint16_t address, uint8_t data) override;
+    void CPU_write(uint16_t address, uint8_t data) override;
 
     [[nodiscard]] uint8_t PPU_read(uint16_t address) const override;
 
