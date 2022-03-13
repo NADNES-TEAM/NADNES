@@ -786,7 +786,6 @@ void CPU::tick() {
     (this->*current_instruction.addr_mod)();
     (this->*current_instruction.func)();
     accumulator_mod = false;
-    indirect_addressing_mod = false;
     UNUSED = true; //for tests
 }
 
