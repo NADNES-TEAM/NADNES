@@ -1,19 +1,18 @@
 #pragma once
 
-
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
-#include <iomanip>
 
 namespace NES {
 
 struct CartridgeError : std::runtime_error {
     [[nodiscard]] explicit CartridgeError(const std::string &msg) : std::runtime_error(msg) {}
 
-    static std::string to_hex(uint16_t v){
+    static std::string to_hex(uint16_t v) {
         std::stringstream ss;
-        ss << std::hex <<  std::setfill('0') << std::setw(2) << v;
+        ss << std::hex << std::setfill('0') << std::setw(2) << v;
         return ss.str();
     }
 };

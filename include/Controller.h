@@ -9,7 +9,8 @@
 namespace NES {
 class Controller {
 public:
-    explicit Controller(KeyboardInterface *keyboardInterface = nullptr) : m_keyboardInterface(keyboardInterface) {}
+    explicit Controller(KeyboardInterface *keyboardInterface = nullptr)
+        : m_keyboardInterface(keyboardInterface) {}
 
     void connect(KeyboardInterface *keyboardInterface, ConnectToken);
 

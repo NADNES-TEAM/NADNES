@@ -1,6 +1,7 @@
 #include "ControllerExceptions.h"
 //#include <iostream>
 #include <sstream>
+
 namespace NES {
 
 std::string get_hex(std::uint16_t addr, bool dollar = true) {

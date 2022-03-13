@@ -1,8 +1,8 @@
 #include "MainWindow.h"
 #include <QMap>
-#include "ScreenOptions.h"
-#include <iostream>
 #include <bitset>
+#include <iostream>
+#include "ScreenOptions.h"
 
 namespace NES {
 
@@ -38,9 +38,7 @@ void MainWindow::setPixel(int row, int column, Color color) {
 }
 
 MainWindow::MainWindow()
-    : QMainWindow(),
-      m_screenImage(WIDTH, HEIGHT, QImage::Format_RGB888),
-      m_imageLabel(new QLabel) {
+    : QMainWindow(), m_screenImage(WIDTH, HEIGHT, QImage::Format_RGB888), m_imageLabel(new QLabel) {
     m_imageLabel->setPixmap(QPixmap::fromImage(m_screenImage));
     m_imageLabel->setBackgroundRole(QPalette::Window);
     m_imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -52,10 +50,8 @@ MainWindow::MainWindow()
 
 void MainWindow::refreshScreen() {
     QSize qSize(WIDTH * 5, HEIGHT * 5);
-    m_imageLabel->setPixmap(QPixmap::fromImage(m_screenImage.scaled(
-        qSize,
-        Qt::AspectRatioMode::KeepAspectRatio
-        )));
+    m_imageLabel->setPixmap(
+        QPixmap::fromImage(m_screenImage.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));
     m_imageLabel->update();
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cstdint>
 #include <array>
 #include <variant>
@@ -6,6 +7,7 @@
 #include "bus.h"
 #include "connect_token.h"
 #include <memory>
+
 namespace NES {
 class Cpu;
 using no_param = void (Cpu::*)();
@@ -65,10 +67,10 @@ private:
     // Addressing Modes:
 
     void implicit();  void immediate(); void zero_page_y(); void absolute_x(); void accumulator();
-        void zero_page(); void relative(); void absolute_y(); void indirect_indexed();
-        void zero_page_x(); void absolute(); void indirect(); void indexed_indirect();
+    void zero_page(); void relative(); void absolute_y(); void indirect_indexed();
+    void zero_page_x(); void absolute(); void indirect(); void indexed_indirect();
 
-//Instructions:
+    // Instructions:
 
     void ADC(); void BCS(); void BNE(); void BVS(); void SEC(); void LDA(); void ORA();
     void AND(); void BEQ(); void BPL(); void CMP(); void CLC(); void EOR(); void TSX();
@@ -87,4 +89,4 @@ private:
     void push_on_stack(uint8_t T);
 };
 
-}
+}  // namespace NES

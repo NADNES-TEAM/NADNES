@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QLabel>
-#include <QWidget>
-#include <mutex>
-#include <QtGui>
 #include <QGraphicsScene>
+#include <QLabel>
 #include <QMainWindow>
+#include <QWidget>
+#include <QtGui>
+#include <mutex>
 #include "KeyboardInterface.h"
 #include "ScreenInterface.h"
 

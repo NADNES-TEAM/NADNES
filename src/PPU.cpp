@@ -1,8 +1,8 @@
 #include "PPU.h"
-#include "ScreenInterface.h"
 #include <iomanip>
 #include <iostream>
 #include "R6502.h"
+#include "ScreenInterface.h"
 
 namespace NES {
 void AddressReg::increase_x_scroll() {

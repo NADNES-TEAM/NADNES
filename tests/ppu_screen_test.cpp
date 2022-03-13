@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
         mainWindow.show();
         auto *keyboardInterface = mainWindow.getKeyboardInterface();
         auto *screenInterface = mainWindow.getScreenInterface();
-        NES::Nes nes("../DK.nes", screenInterface, keyboardInterface);
+        NES::Nes nes("../nestest.nes", screenInterface, keyboardInterface);
         auto *timer = new QTimer(&application);
         QObject::connect(timer, &QTimer::timeout, &nes, &NES::Nes::tick, Qt::DirectConnection);
         timer->start(std::chrono::milliseconds(1000 / 60));

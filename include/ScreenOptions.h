@@ -1,4 +1,5 @@
 #pragma once
+
 namespace NES {
 
 const int WIDTH = 256;

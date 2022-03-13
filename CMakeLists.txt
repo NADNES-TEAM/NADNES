@@ -40,7 +40,9 @@ add_executable(Controller_test
         tests/Test.h
         tests/Test.cpp
         include/MainWindow.h
-        src/MainWindow.cpp include/Color.h include/ScreenInterface.h include/KeyboardInterface.h)
+        src/MainWindow.cpp
+        include/ScreenInterface.h
+        include/KeyboardInterface.h)
 
 target_link_libraries(Controller_test
         Qt::Core

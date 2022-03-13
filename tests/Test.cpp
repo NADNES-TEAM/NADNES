@@ -2,11 +2,10 @@
 #include <QWidget>
 #include <random>
 #include "ScreenInterface.h"
-#include "Color.h"
 
 namespace NES {
 
-Test::Test(KeyboardInterface *keyboardInterface): QObject(nullptr) {
+Test::Test(KeyboardInterface *keyboardInterface) : QObject(nullptr) {
     screenInterface = dynamic_cast<ScreenInterface *>(keyboardInterface);
     controller = std::make_unique<Controller>(keyboardInterface);
     label = new QLabel();

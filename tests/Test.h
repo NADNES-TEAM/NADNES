@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Controller.h>
+#include <QLabel>
 #include <QObject>
 #include <QWidget>
-#include <QLabel>
-#include <Controller.h>
 #include "KeyboardInterface.h"
 #include "ScreenInterface.h"
 
@@ -23,4 +23,4 @@ private:
     ScreenInterface *screenInterface{};
 };
 
-}
+}  // namespace NES

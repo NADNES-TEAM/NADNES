@@ -1,6 +1,5 @@
 #include "nes.h"
 
-
 namespace NES {
 
 void Nes::tick() {
@@ -15,7 +14,8 @@ void Nes::tick() {
     };
 }
 
-Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_) : cartridge(filename){
+Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_)
+    : cartridge(filename) {
     ppu.connect(screen_, ConnectToken());
     ppu.connect(&cartridge, ConnectToken());
     ppu.connect(&cpu, ConnectToken());
