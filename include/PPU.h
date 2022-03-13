@@ -6,7 +6,7 @@
 #include <vector>
 #include "cartridge.h"
 #include "connect_token.h"
-#include "screen.h"
+#include "ScreenInterface.h"
 
 namespace NES {
 
