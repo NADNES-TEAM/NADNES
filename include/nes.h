@@ -6,8 +6,9 @@
 #include "PPU.h"
 #include "bus.h"
 #include "cartridge.h"
+#include "connect_token.h"
+#include "ScreenInterface.h"
 #include "mos6502.h"
-#include "screen.h"
 
 namespace NES {
 struct Nes : public QObject {

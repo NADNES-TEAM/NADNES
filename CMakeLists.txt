@@ -19,10 +19,10 @@ add_executable(PPU_test
         tests/ppu_screen_test.cpp
         src/cartridge.cpp src/PPU.cpp
         src/mappers/NROM.cpp
-        src/screen.cpp
         src/bus.cpp
         src/Controller.cpp
-        correct_cpu_for_testing/mos6502.cpp)
+        correct_cpu_for_testing/mos6502.cpp
+        src/R6502.cpp)
 
 target_link_libraries(PPU_test
         Qt::Core
@@ -33,12 +33,12 @@ add_executable(Controller_test
         src/main.cpp
         include/Controller.h
         src/Controller.cpp
-        include/KeyboardProcessor.h
-        src/KeyboardProcessor.cpp
         include/ControllerExceptions.h
         src/ControllerExceptions.cpp
         tests/Test.h
-        tests/Test.cpp)
+        tests/Test.cpp
+        include/MainWindow.h
+        src/MainWindow.cpp include/Color.h include/ScreenInterface.h include/KeyboardInterface.h)
 
 target_link_libraries(Controller_test
         Qt::Core

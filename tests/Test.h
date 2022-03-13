@@ -4,20 +4,21 @@
 #include <QWidget>
 #include <QLabel>
 #include <Controller.h>
+#include "KeyboardInterface.h"
 
 namespace NES {
 
-class Test : public QWidget {
+class Test : public QObject {
     Q_OBJECT
 public:
-    explicit Test(QWidget *parent = nullptr);
+    explicit Test(KeyboardInterface *keyboardInterface);
 
 public slots:
     void clock();
 
 private:
     QLabel *label;
-    Controller *controller;
+    std::unique_ptr<Controller> controller;
 };
 
 }

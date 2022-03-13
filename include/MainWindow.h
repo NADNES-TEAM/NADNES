@@ -5,32 +5,27 @@
 #include <mutex>
 #include <QtGui>
 #include <QGraphicsScene>
-#include <QMainWindow>
 #include "KeyboardInterface.h"
 #include "ScreenInterface.h"
 
 namespace NES {
 
-class MainWindow : public QMainWindow, public ScreenInterface, public KeyboardInterface {
+class QtMainWindow : public QWindow, public ScreenInterface, public KeyboardInterface {
     Q_OBJECT
 
 public:
-    MainWindow();
-    ~MainWindow() = default;
+    explicit QtMainWindow(QWindow *parent = nullptr);
 
     // Keyboard methods
-    KeyboardInterface *getKeyboardInterface();
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     [[nodiscard]] uint8_t getPressedKeys() const override;
 
     // Screen methods
-    ScreenInterface *getScreenInterface();
     void setPixel(int row, int column, Color color) override;
-    void refreshScreen() override;
 
 private:
-    QLabel *m_imageLabel;
+    QGraphicsScene *scene;
     QImage m_screenImage;
 
     static QMap<Qt::Key, int> m_indexByKey;

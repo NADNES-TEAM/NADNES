@@ -5,20 +5,19 @@
 #include <iostream>
 #include <thread>
 #include "nes.h"
+#include "ScreenInterface.h"
+#include "MainWindow.h"
 #include "nes_exceptions.h"
-#include "screen.h"
 
 int main(int argc, char *argv[]) {
-    try {
-        QApplication application(argc, argv);
-
-        NES::Screen screen;
-        NES::Nes nes("../nestest.nes", &screen);
-        auto *timer = new QTimer(&application);
-        QObject::connect(timer, &QTimer::timeout, &nes, &NES::Nes::tick, Qt::DirectConnection);
-        timer->start(std::chrono::milliseconds(1000 / 60));
-        return QApplication::exec();
-    } catch (const std::exception &e) {
-        std::cout << e.what();
-    }
+    QApplication application(argc, argv);
+    NES::MainWindow mainWindow;
+    mainWindow.show();
+    auto *keyboardInterface = mainWindow.getKeyboardInterface();
+    auto *screenInterface = mainWindow.getScreenInterface();
+    NES::Nes nes("C:\\Users\\milae\\Trash_Downloads\\nestest.nes", screenInterface);
+    auto *timer = new QTimer(&application);
+    QObject::connect(timer, &QTimer::timeout, &nes, &NES::Nes::tick, Qt::DirectConnection);
+    timer->start(std::chrono::milliseconds(1000 / 60));
+    return QApplication::exec();
 }

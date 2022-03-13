@@ -3,8 +3,8 @@
 
 namespace NES {
 
-Test::Test(QWidget *parent) : QWidget(parent) {
-    controller = new Controller();
+Test::Test(KeyboardInterface *keyboardInterface): QObject(nullptr) {
+    controller = std::make_unique<Controller>(keyboardInterface);
     label = new QLabel();
 }
 void Test::clock() {

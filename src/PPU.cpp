@@ -1,8 +1,8 @@
 #include "PPU.h"
+#include "ScreenInterface.h"
 #include <iomanip>
 #include <iostream>
 #include "mos6502.h"
-#include "screen.h"
 
 namespace NES {
 void AddressReg::increase_x_scroll() {
@@ -146,16 +146,13 @@ bool Ppu::tick() {
         bg_color = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
     }
 
-    screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
-
-    //    std::cout << "x: " << std::dec <<  x_pos << " y: " << y_pos << " addr: " << std::hex
-    //              << VRAM_addr_reg.reg << " loopy_t: " << VRAM_tmp_addr_reg.reg << '\n';
+    screen->setPixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
     if (++x_pos >= 341) {
         x_pos = 0;
         //        std::cout << '\n';
         if (++y_pos >= 261) {
-            screen->refresh_screen();
-            //            std::cout << '\n';
+            screen->refreshScreen();
+            //            test_utility();
 
             y_pos = -1;
             return true;
