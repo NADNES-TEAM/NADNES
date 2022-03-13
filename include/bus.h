@@ -1,11 +1,11 @@
 #pragma once
 
-#include "all_nes_fwd.h"
 #include <array>
 #include <cstdint>
+#include "PPU.h"
+#include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"
-#include "PPU.h"
 
 namespace NES {
 class Bus {
