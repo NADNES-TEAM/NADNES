@@ -82,7 +82,8 @@ bool Ppu::tick() {
                 } else if (cur_step == 1) {  // load shifters & NT byte
                     bg_shifter_low = (bg_shifter_low & 0xFF00) + bg_next_tile_low;
                     bg_shifter_high = (bg_shifter_high & 0xFF00) + bg_next_tile_high;
-                    bg_cur_palette = bg_next_palette;  // TODO: 2-stage holder
+                    bg_cur_palette = bg_next_palette;
+                    bg_next_palette = bg_fetched_palette;
 
                     bg_next_tile_num = PPU_read(0x2000 + (VRAM_addr_reg.reg & 0x0FFF));
                     //                    std::cout << std::setw(3) << std::setfill('0') <<
@@ -93,14 +94,14 @@ bool Ppu::tick() {
                                         (VRAM_addr_reg.nametable_x << 10) |
                                         ((VRAM_addr_reg.coarse_y_scroll / 4) * 8) |
                                         (VRAM_addr_reg.coarse_x_scroll / 4));
-                    bg_next_palette = PPU_read(address);
+                    bg_fetched_palette = PPU_read(address);
                     if ((VRAM_addr_reg.coarse_y_scroll & 0x03) >= 2) {
-                        bg_next_palette >>= 4;
+                        bg_fetched_palette >>= 4;
                     }
                     if ((VRAM_addr_reg.coarse_x_scroll & 0x03) >= 2) {
-                        bg_next_palette >>= 2;
+                        bg_fetched_palette >>= 2;
                     }
-                    bg_next_palette &= 0x03;
+                    bg_fetched_palette &= 0x03;
 
                 } else if (cur_step == 5) {  // Low BG tile byte
                     uint16_t address = ((ctrl_reg.bg_ptr_table << 12) + bg_next_tile_num * 16 +

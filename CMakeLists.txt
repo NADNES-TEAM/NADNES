@@ -13,13 +13,13 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(NADNES
+add_executable( NADNES
         src/ControllerExceptions.cpp
         include/MainWindow.h
         src/MainWindow.cpp
         include/nes.h
         src/nes.cpp
-        tests/ppu_screen_test.cpp
+        src/main.cpp
         src/cartridge.cpp src/PPU.cpp
         src/mappers/NROM.cpp
         src/bus.cpp
@@ -27,24 +27,6 @@ add_executable(NADNES
         src/R6502.cpp)
 
 target_link_libraries(NADNES
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets)
-
-add_executable(Controller_test
-        src/main.cpp
-        include/Controller.h
-        src/Controller.cpp
-        include/ControllerExceptions.h
-        src/ControllerExceptions.cpp
-        tests/Test.h
-        tests/Test.cpp
-        include/MainWindow.h
-        src/MainWindow.cpp
-        include/ScreenInterface.h
-        include/KeyboardInterface.h)
-
-target_link_libraries(Controller_test
         Qt::Core
         Qt::Gui
         Qt::Widgets)

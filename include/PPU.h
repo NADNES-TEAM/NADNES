@@ -94,6 +94,7 @@ class Ppu {
     uint16_t bg_shifter_high = 0;
     uint8_t bg_cur_palette = 0;
     uint8_t bg_next_palette = 0;
+    uint8_t bg_fetched_palette = 0;
     uint16_t bg_next_tile_num = 0;
     uint8_t bg_next_tile_low = 0;
     uint8_t bg_next_tile_high = 0;
