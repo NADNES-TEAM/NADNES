@@ -4,5 +4,5 @@
 
 class KeyboardInterface {
 public:
-    virtual uint8_t getPressedKeys() const = 0;
+    [[nodiscard]] virtual uint8_t getPressedKeys() const = 0;
 };

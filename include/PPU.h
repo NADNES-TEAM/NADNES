@@ -116,7 +116,7 @@ class Ppu {
     //  connected devices
     ScreenInterface *screen = nullptr;
     PpuToCartridgeInterface *cartridge = nullptr;
-    mos6502 *cpu = nullptr;
+    Cpu *cpu = nullptr;
 
     [[nodiscard]] uint8_t PPU_read(uint16_t address) const;
 
@@ -129,7 +129,7 @@ public:
 
     void connect(ScreenInterface *screen_, ConnectToken) noexcept;
 
-    void connect(mos6502 *cpu_, ConnectToken) noexcept;
+    void connect(Cpu *cpu_, ConnectToken) noexcept;
 
     [[nodiscard]] explicit Ppu();
 
@@ -145,7 +145,7 @@ public:
 
     void OAM_write(uint8_t data);
 
-    uint8_t OAM_read() const;
+    [[nodiscard]] uint8_t OAM_read() const;
 
     void set_VRAM_address(uint8_t address);
 

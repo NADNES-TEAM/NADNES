@@ -1,15 +1,14 @@
 #pragma once
 
 #include <QObject>
-#include <chrono>
 #include <string>
+#include "Controller.h"
+#include "KeyboardInterface.h"
 #include "PPU.h"
+#include "R6502.h"
+#include "ScreenInterface.h"
 #include "bus.h"
 #include "cartridge.h"
-#include "connect_token.h"
-#include "ScreenInterface.h"
-#include "mos6502.h"
-#include "Controller.h"
 
 namespace NES {
 struct Nes : public QObject {
@@ -26,10 +25,8 @@ public slots:
 private:
     Cartridge cartridge;
     Ppu ppu;
-    ScreenInterface *screen;
-    mos6502 cpu;
+    Cpu cpu;
     Bus bus;
     Controller controller;
-    uint64_t cpu_cycle_counter = 1;
 };
 }  // namespace NES

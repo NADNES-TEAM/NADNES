@@ -10,7 +10,7 @@ namespace NES {
 class Cpu;
 using no_param = void (Cpu::*)();
 struct IncorrectOpcode : std::runtime_error {
-    explicit IncorrectOpcode(int code);
+    explicit IncorrectOpcode();
 };
 struct Instruction {
     no_param func;

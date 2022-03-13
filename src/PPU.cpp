@@ -2,7 +2,7 @@
 #include "ScreenInterface.h"
 #include <iomanip>
 #include <iostream>
-#include "mos6502.h"
+#include "R6502.h"
 
 namespace NES {
 void AddressReg::increase_x_scroll() {
@@ -239,6 +239,7 @@ uint8_t Ppu::PPU_read(uint16_t address) const {
             address %= 0x10;
         return palette_mem[address];
     }
+    return 0;
 }
 
 void Ppu::PPU_write(uint16_t address, uint8_t data) {
@@ -275,10 +276,10 @@ void Ppu::OAM_write(uint8_t data) {
 }
 
 uint8_t Ppu::OAM_read() const {
-    return 0;
+    return OAM[OAM_addr_reg];
 }
 
-void Ppu::connect(mos6502 *cpu_, ConnectToken) noexcept {
+void Ppu::connect(Cpu *cpu_, ConnectToken) noexcept {
     cpu = cpu_;
 }
 

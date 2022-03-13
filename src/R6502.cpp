@@ -783,9 +783,9 @@ void Cpu::tick() {
     }
     UNUSED = true;  // for tests
     uint8_t current_opcode = Cpu_read(PC++);
-    std::cout << std::fixed << std::hex << (int)(PC - 1) << "  " << (int)current_opcode
-              << "\tA:" << (int)A << " X:" << (int)X << " Y:" << (int)Y << " P:" << (int)flags
-              << '\n';
+//    std::cout << std::fixed << std::hex << (int)(PC - 1) << "  " << (int)current_opcode
+//              << "\tA:" << (int)A << " X:" << (int)X << " Y:" << (int)Y << " P:" << (int)flags
+//              << '\n';
     Instruction current_instruction = map_opcodes[current_opcode];
     cycles = map_cycles[current_opcode];
     (this->*current_instruction.addr_mod)();
@@ -807,7 +807,7 @@ void Cpu::reset() {
     PC = temp;
     temp = Cpu_read(0xFFFD);
     PC |= temp << 8;
-    PC = 0xC000;  // for tests
+//    PC = 0xC000;  // for tests
     cycles = 8;
 }
 

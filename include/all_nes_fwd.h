@@ -1,8 +1,8 @@
 #pragma once
 
-class mos6502;
-
 namespace NES {
+class Cpu;
+
 class Bus;
 
 class Ppu;

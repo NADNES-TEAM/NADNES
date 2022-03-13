@@ -5,7 +5,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
-include_directories(correct_cpu_for_testing)
 include_directories(include/mappers)
 
 find_package(Qt6 COMPONENTS
@@ -14,7 +13,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(PPU_test
+add_executable(NADNES
         src/ControllerExceptions.cpp
         include/MainWindow.h
         src/MainWindow.cpp
@@ -25,10 +24,9 @@ add_executable(PPU_test
         src/mappers/NROM.cpp
         src/bus.cpp
         src/Controller.cpp
-        correct_cpu_for_testing/mos6502.cpp
         src/R6502.cpp)
 
-target_link_libraries(PPU_test
+target_link_libraries(NADNES
         Qt::Core
         Qt::Gui
         Qt::Widgets)
