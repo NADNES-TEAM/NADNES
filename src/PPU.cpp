@@ -1,5 +1,5 @@
 #include "PPU.h"
-#include "screen.h"
+#include "ScreenInterface.h"
 
 namespace NES {
 void AddressReg::increase_x_scroll() {
@@ -134,12 +134,12 @@ bool Ppu::tick() {
         bg_color = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
     }
 
-    screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
+    screen->setPixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
     if (++x_pos >= 341) {
         x_pos = 0;
 
         if (++y_pos >= 261) {
-            screen->refresh_screen();
+            screen->refreshScreen();
             //            test_utility();
 
             y_pos = -1;

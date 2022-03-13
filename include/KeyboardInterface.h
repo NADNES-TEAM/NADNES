@@ -1,0 +1,8 @@
+//
+// Created by dan on 13.03.2022.
+//
+
+#ifndef NADNES_KEYBOARDINTERFACE_H
+#define NADNES_KEYBOARDINTERFACE_H
+
+#endif  // NADNES_KEYBOARDINTERFACE_H
