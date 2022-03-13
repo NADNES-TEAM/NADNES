@@ -3,268 +3,275 @@
 #include <iostream>
 namespace NES {
 
-void CPU::push_on_stack(uint8_t T) {
-    (*bus).mem_write(SP + 0x0100, T);
+uint8_t Cpu::Cpu_read(uint16_t addr){
+    return (*bus).mem_read(addr);
+}
+
+void Cpu::Cpu_write(uint16_t addr,uint8_t data){
+    (*bus).mem_write(addr,data);
+}
+void Cpu::push_on_stack(uint8_t T) {
+    Cpu_write(SP + 0x0100, T);
     SP--;
 }
 
-CPU::CPU()
-    : map_opcodes{I{&CPU::BRK, &CPU::implicit},
-                  I{&CPU::ORA, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ORA, &CPU::zero_page},
-                  I{&CPU::ASL, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::PHP, &CPU::implicit},
-                  I{&CPU::ORA, &CPU::immediate},
-                  I{&CPU::ASL, &CPU::accumulator},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ORA, &CPU::absolute},
-                  I{&CPU::ASL, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BPL, &CPU::relative},
-                  I{&CPU::ORA, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ORA, &CPU::zero_page_x},
-                  I{&CPU::ASL, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CLC, &CPU::implicit},
-                  I{&CPU::ORA, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ORA, &CPU::absolute_x},
-                  I{&CPU::ASL, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::JSR, &CPU::absolute},
-                  I{&CPU::AND, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BIT, &CPU::zero_page},
-                  I{&CPU::AND, &CPU::zero_page},
-                  I{&CPU::ROL, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::PLP, &CPU::implicit},
-                  I{&CPU::AND, &CPU::immediate},
-                  I{&CPU::ROL, &CPU::accumulator},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BIT, &CPU::absolute},
-                  I{&CPU::AND, &CPU::absolute},
-                  I{&CPU::ROL, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BMI, &CPU::relative},
-                  I{&CPU::AND, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::AND, &CPU::zero_page_x},
-                  I{&CPU::ROL, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::SEC, &CPU::implicit},
-                  I{&CPU::AND, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::AND, &CPU::absolute_x},
-                  I{&CPU::ROL, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::RTI, &CPU::implicit},
-                  I{&CPU::EOR, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::EOR, &CPU::zero_page},
-                  I{&CPU::LSR, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::PHA, &CPU::implicit},
-                  I{&CPU::EOR, &CPU::immediate},
-                  I{&CPU::LSR, &CPU::accumulator},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::JMP, &CPU::absolute},
-                  I{&CPU::EOR, &CPU::absolute},
-                  I{&CPU::LSR, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BVC, &CPU::relative},
-                  I{&CPU::EOR, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::EOR, &CPU::zero_page_x},
-                  I{&CPU::LSR, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CLI, &CPU::implicit},
-                  I{&CPU::EOR, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::EOR, &CPU::absolute_x},
-                  I{&CPU::LSR, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::RTS, &CPU::implicit},
-                  I{&CPU::ADC, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ADC, &CPU::zero_page},
-                  I{&CPU::ROR, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::PLA, &CPU::implicit},
-                  I{&CPU::ADC, &CPU::immediate},
-                  I{&CPU::ROR, &CPU::accumulator},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::JMP, &CPU::indirect},
-                  I{&CPU::ADC, &CPU::absolute},
-                  I{&CPU::ROR, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BVS, &CPU::relative},
-                  I{&CPU::ADC, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ADC, &CPU::zero_page_x},
-                  I{&CPU::ROR, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::SEI, &CPU::implicit},
-                  I{&CPU::ADC, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::ADC, &CPU::absolute_x},
-                  I{&CPU::ROR, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::STA, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::STY, &CPU::zero_page},
-                  I{&CPU::STA, &CPU::zero_page},
-                  I{&CPU::STX, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::DEY, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::TXA, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::STY, &CPU::absolute},
-                  I{&CPU::STA, &CPU::absolute},
-                  I{&CPU::STX, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BCC, &CPU::relative},
-                  I{&CPU::STA, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::STY, &CPU::zero_page_x},
-                  I{&CPU::STA, &CPU::zero_page_x},
-                  I{&CPU::STX, &CPU::zero_page_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::TYA, &CPU::implicit},
-                  I{&CPU::STA, &CPU::absolute_y},
-                  I{&CPU::TXS, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::STA, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::LDY, &CPU::immediate},
-                  I{&CPU::LDA, &CPU::indexed_indirect},
-                  I{&CPU::LDX, &CPU::immediate},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::LDY, &CPU::zero_page},
-                  I{&CPU::LDA, &CPU::zero_page},
-                  I{&CPU::LDX, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::TAY, &CPU::implicit},
-                  I{&CPU::LDA, &CPU::immediate},
-                  I{&CPU::TAX, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::LDY, &CPU::absolute},
-                  I{&CPU::LDA, &CPU::absolute},
-                  I{&CPU::LDX, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BCS, &CPU::relative},
-                  I{&CPU::LDA, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::LDY, &CPU::zero_page_x},
-                  I{&CPU::LDA, &CPU::zero_page_x},
-                  I{&CPU::LDX, &CPU::zero_page_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CLV, &CPU::implicit},
-                  I{&CPU::LDA, &CPU::absolute_y},
-                  I{&CPU::TSX, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::LDY, &CPU::absolute_x},
-                  I{&CPU::LDA, &CPU::absolute_x},
-                  I{&CPU::LDX, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPY, &CPU::immediate},
-                  I{&CPU::CMP, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPY, &CPU::zero_page},
-                  I{&CPU::CMP, &CPU::zero_page},
-                  I{&CPU::DEC, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::INY, &CPU::implicit},
-                  I{&CPU::CMP, &CPU::immediate},
-                  I{&CPU::DEX, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPY, &CPU::absolute},
-                  I{&CPU::CMP, &CPU::absolute},
-                  I{&CPU::DEC, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BNE, &CPU::relative},
-                  I{&CPU::CMP, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CMP, &CPU::zero_page_x},
-                  I{&CPU::DEC, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CLD, &CPU::implicit},
-                  I{&CPU::CMP, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CMP, &CPU::absolute_x},
-                  I{&CPU::DEC, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPX, &CPU::immediate},
-                  I{&CPU::SBC, &CPU::indexed_indirect},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPX, &CPU::zero_page},
-                  I{&CPU::SBC, &CPU::zero_page},
-                  I{&CPU::INC, &CPU::zero_page},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::INX, &CPU::implicit},
-                  I{&CPU::SBC, &CPU::immediate},
-                  I{&CPU::NOP, &CPU::implicit},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::CPX, &CPU::absolute},
-                  I{&CPU::SBC, &CPU::absolute},
-                  I{&CPU::INC, &CPU::absolute},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::BEQ, &CPU::relative},
-                  I{&CPU::SBC, &CPU::indirect_indexed},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::SBC, &CPU::zero_page_x},
-                  I{&CPU::INC, &CPU::zero_page_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::SED, &CPU::implicit},
-                  I{&CPU::SBC, &CPU::absolute_y},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::throw_exception, &CPU::throw_exception},
-                  I{&CPU::SBC, &CPU::absolute_x},
-                  I{&CPU::INC, &CPU::absolute_x},
-                  I{&CPU::throw_exception, &CPU::throw_exception}},
+Cpu::Cpu()
+    : map_opcodes{Instruction{&Cpu::BRK, &Cpu::implicit},
+                  Instruction{&Cpu::ORA, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ORA, &Cpu::zero_page},
+                  Instruction{&Cpu::ASL, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::PHP, &Cpu::implicit},
+                  Instruction{&Cpu::ORA, &Cpu::immediate},
+                  Instruction{&Cpu::ASL, &Cpu::accumulator},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ORA, &Cpu::absolute},
+                  Instruction{&Cpu::ASL, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BPL, &Cpu::relative},
+                  Instruction{&Cpu::ORA, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ORA, &Cpu::zero_page_x},
+                  Instruction{&Cpu::ASL, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CLC, &Cpu::implicit},
+                  Instruction{&Cpu::ORA, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ORA, &Cpu::absolute_x},
+                  Instruction{&Cpu::ASL, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::JSR, &Cpu::absolute},
+                  Instruction{&Cpu::AND, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BIT, &Cpu::zero_page},
+                  Instruction{&Cpu::AND, &Cpu::zero_page},
+                  Instruction{&Cpu::ROL, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::PLP, &Cpu::implicit},
+                  Instruction{&Cpu::AND, &Cpu::immediate},
+                  Instruction{&Cpu::ROL, &Cpu::accumulator},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BIT, &Cpu::absolute},
+                  Instruction{&Cpu::AND, &Cpu::absolute},
+                  Instruction{&Cpu::ROL, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BMI, &Cpu::relative},
+                  Instruction{&Cpu::AND, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::AND, &Cpu::zero_page_x},
+                  Instruction{&Cpu::ROL, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::SEC, &Cpu::implicit},
+                  Instruction{&Cpu::AND, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::AND, &Cpu::absolute_x},
+                  Instruction{&Cpu::ROL, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::RTI, &Cpu::implicit},
+                  Instruction{&Cpu::EOR, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::EOR, &Cpu::zero_page},
+                  Instruction{&Cpu::LSR, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::PHA, &Cpu::implicit},
+                  Instruction{&Cpu::EOR, &Cpu::immediate},
+                  Instruction{&Cpu::LSR, &Cpu::accumulator},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::JMP, &Cpu::absolute},
+                  Instruction{&Cpu::EOR, &Cpu::absolute},
+                  Instruction{&Cpu::LSR, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BVC, &Cpu::relative},
+                  Instruction{&Cpu::EOR, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::EOR, &Cpu::zero_page_x},
+                  Instruction{&Cpu::LSR, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CLI, &Cpu::implicit},
+                  Instruction{&Cpu::EOR, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::EOR, &Cpu::absolute_x},
+                  Instruction{&Cpu::LSR, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::RTS, &Cpu::implicit},
+                  Instruction{&Cpu::ADC, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ADC, &Cpu::zero_page},
+                  Instruction{&Cpu::ROR, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::PLA, &Cpu::implicit},
+                  Instruction{&Cpu::ADC, &Cpu::immediate},
+                  Instruction{&Cpu::ROR, &Cpu::accumulator},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::JMP, &Cpu::indirect},
+                  Instruction{&Cpu::ADC, &Cpu::absolute},
+                  Instruction{&Cpu::ROR, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BVS, &Cpu::relative},
+                  Instruction{&Cpu::ADC, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ADC, &Cpu::zero_page_x},
+                  Instruction{&Cpu::ROR, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::SEI, &Cpu::implicit},
+                  Instruction{&Cpu::ADC, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::ADC, &Cpu::absolute_x},
+                  Instruction{&Cpu::ROR, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::STA, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::STY, &Cpu::zero_page},
+                  Instruction{&Cpu::STA, &Cpu::zero_page},
+                  Instruction{&Cpu::STX, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::DEY, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::TXA, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::STY, &Cpu::absolute},
+                  Instruction{&Cpu::STA, &Cpu::absolute},
+                  Instruction{&Cpu::STX, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BCC, &Cpu::relative},
+                  Instruction{&Cpu::STA, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::STY, &Cpu::zero_page_x},
+                  Instruction{&Cpu::STA, &Cpu::zero_page_x},
+                  Instruction{&Cpu::STX, &Cpu::zero_page_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::TYA, &Cpu::implicit},
+                  Instruction{&Cpu::STA, &Cpu::absolute_y},
+                  Instruction{&Cpu::TXS, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::STA, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::LDY, &Cpu::immediate},
+                  Instruction{&Cpu::LDA, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::LDX, &Cpu::immediate},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::LDY, &Cpu::zero_page},
+                  Instruction{&Cpu::LDA, &Cpu::zero_page},
+                  Instruction{&Cpu::LDX, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::TAY, &Cpu::implicit},
+                  Instruction{&Cpu::LDA, &Cpu::immediate},
+                  Instruction{&Cpu::TAX, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::LDY, &Cpu::absolute},
+                  Instruction{&Cpu::LDA, &Cpu::absolute},
+                  Instruction{&Cpu::LDX, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BCS, &Cpu::relative},
+                  Instruction{&Cpu::LDA, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::LDY, &Cpu::zero_page_x},
+                  Instruction{&Cpu::LDA, &Cpu::zero_page_x},
+                  Instruction{&Cpu::LDX, &Cpu::zero_page_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CLV, &Cpu::implicit},
+                  Instruction{&Cpu::LDA, &Cpu::absolute_y},
+                  Instruction{&Cpu::TSX, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::LDY, &Cpu::absolute_x},
+                  Instruction{&Cpu::LDA, &Cpu::absolute_x},
+                  Instruction{&Cpu::LDX, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPY, &Cpu::immediate},
+                  Instruction{&Cpu::CMP, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPY, &Cpu::zero_page},
+                  Instruction{&Cpu::CMP, &Cpu::zero_page},
+                  Instruction{&Cpu::DEC, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::INY, &Cpu::implicit},
+                  Instruction{&Cpu::CMP, &Cpu::immediate},
+                  Instruction{&Cpu::DEX, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPY, &Cpu::absolute},
+                  Instruction{&Cpu::CMP, &Cpu::absolute},
+                  Instruction{&Cpu::DEC, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BNE, &Cpu::relative},
+                  Instruction{&Cpu::CMP, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CMP, &Cpu::zero_page_x},
+                  Instruction{&Cpu::DEC, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CLD, &Cpu::implicit},
+                  Instruction{&Cpu::CMP, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CMP, &Cpu::absolute_x},
+                  Instruction{&Cpu::DEC, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPX, &Cpu::immediate},
+                  Instruction{&Cpu::SBC, &Cpu::indexed_indirect},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPX, &Cpu::zero_page},
+                  Instruction{&Cpu::SBC, &Cpu::zero_page},
+                  Instruction{&Cpu::INC, &Cpu::zero_page},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::INX, &Cpu::implicit},
+                  Instruction{&Cpu::SBC, &Cpu::immediate},
+                  Instruction{&Cpu::NOP, &Cpu::implicit},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::CPX, &Cpu::absolute},
+                  Instruction{&Cpu::SBC, &Cpu::absolute},
+                  Instruction{&Cpu::INC, &Cpu::absolute},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::BEQ, &Cpu::relative},
+                  Instruction{&Cpu::SBC, &Cpu::indirect_indexed},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::SBC, &Cpu::zero_page_x},
+                  Instruction{&Cpu::INC, &Cpu::zero_page_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::SED, &Cpu::implicit},
+                  Instruction{&Cpu::SBC, &Cpu::absolute_y},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception},
+                  Instruction{&Cpu::SBC, &Cpu::absolute_x},
+                  Instruction{&Cpu::INC, &Cpu::absolute_x},
+                  Instruction{&Cpu::throw_exception, &Cpu::throw_exception}},
       map_cycles{7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0, 2, 2, 0, 0, 0, 4, 6, 0, 2, 4,
                  0, 0, 0, 4, 7, 0, 6, 6, 0, 0, 3, 3, 5, 0, 4, 2, 2, 0, 4, 4, 6, 0, 2, 5, 0, 0,
                  0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 6, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 3, 4,
@@ -276,93 +283,91 @@ CPU::CPU()
                  0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2,
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
 
-IncorrectOpcode::IncorrectOpcode(int code)
-    : std::runtime_error("Incorrect opcode: " + std::to_string(code)) {}
+IncorrectOpcode::IncorrectOpcode() : std::runtime_error("Incorrect opcode!") {}
 
-void CPU::connect(Bus *bus_, ConnectToken) noexcept {
+void Cpu::connect(Bus *bus_, ConnectToken) noexcept {
     bus = bus_;
 }
 
-void CPU::implicit() {}  // just do nothing
+void Cpu::implicit() {}  // just do nothing
 
-void CPU::immediate() {
+void Cpu::immediate() {
     last_absolute_address = PC++;
 }
 
-void CPU::zero_page() {
-    last_absolute_address = (*bus).mem_read(PC++);
+void Cpu::zero_page() {
+    last_absolute_address = Cpu_read(PC++);
     last_absolute_address &= 0xFF;
 }
 
-void CPU::zero_page_x() {
-    last_absolute_address = (*bus).mem_read(PC++);
+void Cpu::zero_page_x() {
+    last_absolute_address = Cpu_read(PC++);
     last_absolute_address += X;
     last_absolute_address &= 0xFF;
 }
 
-void CPU::zero_page_y() {
-    last_absolute_address = (*bus).mem_read(PC++);
+void Cpu::zero_page_y() {
+    last_absolute_address = Cpu_read(PC++);
     last_absolute_address += Y;
     last_absolute_address &= 0xFF;
 }
 
-void CPU::relative() {
-    last_relative_address = (*bus).mem_read(PC++);
+void Cpu::relative() {
+    last_relative_address = Cpu_read(PC++);
     if (last_relative_address & 0x80) {
         last_relative_address |= 0xFF00;
     }
 }
 
-void CPU::absolute() {
-    uint16_t temp = (*bus).mem_read(PC++);
-    last_absolute_address = (*bus).mem_read(PC++);
+void Cpu::absolute() {
+    uint16_t temp = Cpu_read(PC++);
+    last_absolute_address = Cpu_read(PC++);
     last_absolute_address <<= 8;
     last_absolute_address |= temp;
 }
 
-void CPU::absolute_x() {
+void Cpu::absolute_x() {
     absolute();
     last_absolute_address += X;
     if ((last_absolute_address >> 8) != ((last_absolute_address - X) >> 8))
         cycles++;
 }
 
-void CPU::absolute_y() {
+void Cpu::absolute_y() {
     absolute();
     last_absolute_address += Y;
     if ((last_absolute_address >> 8) != ((last_absolute_address - Y) >> 8))
         cycles++;
 }
 
-void CPU::indirect() {
-    uint8_t LSB_temp = (*bus).mem_read(PC++);
-    uint8_t MSB_temp = (*bus).mem_read(PC++);
+void Cpu::indirect() {
+    uint8_t LSB_temp = Cpu_read(PC++);
+    uint8_t MSB_temp = Cpu_read(PC++);
     uint16_t temp_address = MSB_temp;
     temp_address <<= 8;
     temp_address |= LSB_temp;
-    uint16_t LSB_final = (*bus).mem_read(temp_address);
+    uint16_t LSB_final = Cpu_read(temp_address);
     if ((LSB_temp & 0xFF) == 0xFF) {
-
-        last_absolute_address = ((*bus).mem_read(temp_address & 0xFF00));  // bug
+        last_absolute_address = (Cpu_read(temp_address & 0xFF00));  // bug
     } else {
-        last_absolute_address = ((*bus).mem_read(temp_address+1));
+        last_absolute_address = (Cpu_read(temp_address + 1));
     }
-    last_absolute_address<<=8;
-    last_absolute_address|=LSB_final;
+    last_absolute_address <<= 8;
+    last_absolute_address |= LSB_final;
 }
 
-void CPU::indexed_indirect() {
-    uint16_t temp_address = (*bus).mem_read(PC++);
-    uint8_t LSB = (*bus).mem_read((temp_address + X) & 0xFF);
-    last_absolute_address = (*bus).mem_read((temp_address + X + 1) & 0xFF);
+void Cpu::indexed_indirect() {
+    uint16_t temp_address = Cpu_read(PC++);
+    uint8_t LSB = Cpu_read((temp_address + X) & 0xFF);
+    last_absolute_address = Cpu_read((temp_address + X + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address |= LSB;
 }
 
-void CPU::indirect_indexed() {
-    uint16_t temp_address = (*bus).mem_read(PC++);
-    uint8_t LSB = (*bus).mem_read((temp_address)&0xFF);
-    last_absolute_address = (*bus).mem_read((temp_address + 1) & 0xFF);
+void Cpu::indirect_indexed() {
+    uint16_t temp_address = Cpu_read(PC++);
+    uint8_t LSB = Cpu_read((temp_address)&0xFF);
+    last_absolute_address = Cpu_read((temp_address + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address |= LSB;
     last_absolute_address += Y;
@@ -370,43 +375,43 @@ void CPU::indirect_indexed() {
         cycles++;
 }
 
-void CPU::accumulator() {
+void Cpu::accumulator() {
     accumulator_mod = true;
 }
 
-void CPU::ADC() {
-    uint16_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::ADC() {
+    uint16_t temp = Cpu_read(last_absolute_address);
     uint16_t temp_A = temp + A + CF;
     CF = (temp_A) >> 8;
     OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
-    A = (temp_A) & 0xFF;
+    A = (temp_A)&0xFF;
     ZF = !A;
-    NF = temp_A &0x80;
+    NF = temp_A & 0x80;
 }
 
-void CPU::AND() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::AND() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     A &= temp;
     ZF = (!A);
     NF = A & 0x80;
 }
 
-void CPU::ASL() {
+void Cpu::ASL() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = (*bus).mem_read(last_absolute_address);
+        temp = Cpu_read(last_absolute_address);
     temp <<= 1;
     CF = (temp >> 8);
     ZF = !(temp & 0xFF);
     NF = (temp & 128);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0xFF);
+        Cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
 }
 
-void CPU::add_relative() {
+void Cpu::add_relative() {
     uint16_t temp = PC + last_relative_address;
     cycles++;
     if ((temp >> 8) != (PC >> 8)) {
@@ -415,423 +420,422 @@ void CPU::add_relative() {
     PC = temp;
 }
 
-void CPU::BCC() {
+void Cpu::BCC() {
     if (!CF) {
         add_relative();
     }
 }
 
-void CPU::BCS() {
+void Cpu::BCS() {
     if (CF) {
         add_relative();
     }
 }
 
-void CPU::BEQ() {
+void Cpu::BEQ() {
     if (ZF) {
         add_relative();
     }
 }
 
-void CPU::BIT() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
-    ZF = !(temp&A);
+void Cpu::BIT() {
+    uint8_t temp = Cpu_read(last_absolute_address);
+    ZF = !(temp & A);
     NF = temp & 0x80;
     OF = temp & 0x40;
 }
 
-void CPU::BMI() {
+void Cpu::BMI() {
     if (NF) {
         add_relative();
     }
 }
 
-void CPU::BNE() {
+void Cpu::BNE() {
     if (!ZF) {
         add_relative();
     }
 }
 
-void CPU::BPL() {
+void Cpu::BPL() {
     if (!NF) {
         add_relative();
     }
 }
 
-void CPU::BRK() {
+void Cpu::BRK() {
     BC = true;
     push_on_stack(PC >> 8);
     push_on_stack(PC & 0xFF);
     push_on_stack(flags);
     BC = false;
     ID = true;
-    uint16_t temp = (*bus).mem_read(0xFFFE);
+    uint16_t temp = Cpu_read(0xFFFE);
     PC = temp;
-    temp = (*bus).mem_read(0xFFFF);
+    temp = Cpu_read(0xFFFF);
     PC |= temp << 8;
 }
 
-void CPU::BVC() {
+void Cpu::BVC() {
     if (!OF) {
         add_relative();
     }
 }
 
-void CPU::BVS() {
+void Cpu::BVS() {
     if (OF) {
         add_relative();
     }
 }
 
-void CPU::CLC() {
+void Cpu::CLC() {
     CF = false;
 }
 
-void CPU::CLD() {
+void Cpu::CLD() {
     DM = false;
 }
 
-void CPU::CLI() {
+void Cpu::CLI() {
     ID = false;
 }
 
-void CPU::CLV() {
+void Cpu::CLV() {
     OF = false;
 }
 
-void CPU::cmp_with(uint8_t T) {
-    uint16_t read = (*bus).mem_read(last_absolute_address);
+void Cpu::cmp_with(uint8_t T) {
+    uint16_t read = Cpu_read(last_absolute_address);
     uint16_t temp = T - read;
     ZF = !temp;
     NF = temp & 0x80;
     CF = (T >= read);
 }
 
-void CPU::CMP() {
+void Cpu::CMP() {
     cmp_with(A);
 }
 
-void CPU::CPX() {
+void Cpu::CPX() {
     cmp_with(X);
 }
 
-void CPU::CPY() {
+void Cpu::CPY() {
     cmp_with(Y);
 }
 
-void CPU::DEC() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::DEC() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     temp--;
     ZF = !temp;
     NF = temp & 0x80;
-    (*bus).mem_write(last_absolute_address, temp & 0x00FF);
+    Cpu_write(last_absolute_address, temp & 0x00FF);
 }
 
-void CPU::DEX() {
+void Cpu::DEX() {
     X--;
     ZF = !X;
     NF = X & 0x80;
 }
 
-void CPU::DEY() {
+void Cpu::DEY() {
     Y--;
     ZF = !Y;
     NF = Y & 0x80;
 }
 
-void CPU::EOR() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::EOR() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     A ^= temp;
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::INC() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::INC() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     temp++;
     ZF = !temp;
     NF = temp & 0x80;
-    (*bus).mem_write(last_absolute_address, temp);
+    Cpu_write(last_absolute_address, temp);
 }
 
-void CPU::INX() {
+void Cpu::INX() {
     X++;
     ZF = !X;
     NF = X & 0x80;
 }
 
-void CPU::INY() {
+void Cpu::INY() {
     Y++;
     ZF = !Y;
     NF = Y & 0x80;
 }
 
-void CPU::JMP() {
+void Cpu::JMP() {
     PC = last_absolute_address;
 }
 
-void CPU::JSR() {
+void Cpu::JSR() {
     PC--;
-    push_on_stack((PC >> 8) &0xFF);
+    push_on_stack((PC >> 8) & 0xFF);
     push_on_stack(PC & 0xFF);
     PC = last_absolute_address;
 }
 
-void CPU::LDA() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::LDA() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     A = temp;
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::LDX() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::LDX() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     X = temp;
     ZF = !X;
     NF = X & 0x80;
 }
 
-void CPU::LDY() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::LDY() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     Y = temp;
     ZF = !Y;
     NF = Y & 0x80;
 }
 
-void CPU::LSR() {
+void Cpu::LSR() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = (*bus).mem_read(last_absolute_address);
+        temp = Cpu_read(last_absolute_address);
     CF = temp & 1;
     temp >>= 1;
     ZF = !(temp & 0xFF);
     NF = (temp & 0x80);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0xFF);
+        Cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
 }
 
-void CPU::NOP() {}
+void Cpu::NOP() {}
 
-void CPU::ORA() {
-    uint8_t temp = (*bus).mem_read(last_absolute_address);
+void Cpu::ORA() {
+    uint8_t temp = Cpu_read(last_absolute_address);
     A |= temp;
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::PHA() {
+void Cpu::PHA() {
     push_on_stack(A);
 }
 
-void CPU::PHP() {
+void Cpu::PHP() {
     push_on_stack(flags | 0x10 | 0x20);
     BC = false;
     UNUSED = false;
 }
 
-void CPU::PLA() {
-    A = (*bus).mem_read(++SP + 0x0100);
+void Cpu::PLA() {
+    A = Cpu_read(++SP + 0x0100);
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::PLP() {
-    flags = (*bus).mem_read(++SP + 0x0100);
-    UNUSED = true; //for tests
+void Cpu::PLP() {
+    flags = Cpu_read(++SP + 0x0100);
+    UNUSED = true;  // for tests
 }
 
-void CPU::ROL() {
+void Cpu::ROL() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = (*bus).mem_read(last_absolute_address);
+        temp = Cpu_read(last_absolute_address);
     temp <<= 1;
     temp |= CF;
-    CF = (temp>>8);
+    CF = (temp >> 8);
     NF = temp & 0x80;
-    ZF = !(temp&0xFF);
+    ZF = !(temp & 0xFF);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0xFF);
+        Cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
 }
 
-void CPU::ROR() {
+void Cpu::ROR() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = (*bus).mem_read(last_absolute_address);
+        temp = Cpu_read(last_absolute_address);
     temp += 0x100 * static_cast<uint16_t>(CF);
     CF = temp & 1;
     temp >>= 1;
     NF = temp & 0x80;
-    ZF = !(temp&0xFF);
+    ZF = !(temp & 0xFF);
     if (!accumulator_mod) {
-        (*bus).mem_write(last_absolute_address, temp & 0xFF);
+        Cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
 }
 
-void CPU::RTI() {
+void Cpu::RTI() {
     SP++;
-    flags = (*bus).mem_read(SP + 0x0100);
+    flags = Cpu_read(SP + 0x0100);
     BC = false;
-    UNUSED = false; //for tests
+    UNUSED = false;  // for tests
     SP++;
-    uint16_t temp = (*bus).mem_read(SP + 0x0100);
+    uint16_t temp = Cpu_read(SP + 0x0100);
     PC = temp;
     SP++;
-    temp = (*bus).mem_read(SP + 0x0100);
+    temp = Cpu_read(SP + 0x0100);
     PC |= temp << 8;
 }
 
-void CPU::RTS() {
+void Cpu::RTS() {
     SP++;
-    uint16_t temp = (*bus).mem_read(SP + 0x0100);
+    uint16_t temp = Cpu_read(SP + 0x0100);
     PC = temp;
     SP++;
-    temp = (*bus).mem_read(SP + 0x0100);
+    temp = Cpu_read(SP + 0x0100);
     PC |= temp << 8;
     PC++;
 }
 
-void CPU::SBC() {
-    uint16_t temp = (*bus).mem_read(last_absolute_address);
-    temp^=0xFF;
+void Cpu::SBC() {
+    uint16_t temp = Cpu_read(last_absolute_address);
+    temp ^= 0xFF;
     uint16_t temp_A = A + temp + CF;
     OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
-    A = temp_A&0xFF;
+    A = temp_A & 0xFF;
     CF = temp_A >> 8;
-    NF = A&0x80;
+    NF = A & 0x80;
     ZF = !A;
 }
 
-void CPU::SEC() {
+void Cpu::SEC() {
     CF = true;
 }
 
-void CPU::SED() {
+void Cpu::SED() {
     DM = true;
-
 }
 
-void CPU::SEI() {
+void Cpu::SEI() {
     ID = true;
 }
 
-void CPU::STA() {
-    (*bus).mem_write(last_absolute_address, A);
+void Cpu::STA() {
+    Cpu_write(last_absolute_address, A);
 }
 
-void CPU::STX() {
-    (*bus).mem_write(last_absolute_address, X);
+void Cpu::STX() {
+    Cpu_write(last_absolute_address, X);
 }
 
-void CPU::STY() {
-    (*bus).mem_write(last_absolute_address, Y);
+void Cpu::STY() {
+    Cpu_write(last_absolute_address, Y);
 }
 
-void CPU::TAX() {
+void Cpu::TAX() {
     X = A;
     ZF = !X;
     NF = X & 0x80;
 }
 
-void CPU::TAY() {
+void Cpu::TAY() {
     Y = A;
     ZF = !Y;
     NF = Y & 0x80;
 }
 
-void CPU::TSX() {
+void Cpu::TSX() {
     X = SP;
     ZF = !X;
     NF = X & 0x80;
 }
 
-void CPU::TXA() {
+void Cpu::TXA() {
     A = X;
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::TXS() {
+void Cpu::TXS() {
     SP = X;
 }
 
-void CPU::TYA() {
+void Cpu::TYA() {
     A = Y;
     ZF = !A;
     NF = A & 0x80;
 }
 
-void CPU::throw_exception() {
-    uint8_t opcode = (*bus).mem_read(PC - 1);
-    throw IncorrectOpcode(opcode);
+void Cpu::throw_exception() {
+    throw IncorrectOpcode();
 }
 
-void CPU::tick() {
+void Cpu::tick() {
     if (cycles) {
         cycles--;
         return;
     }
-    UNUSED = true; //for tests
-    uint8_t current_opcode = (*bus).mem_read(PC++);
-    std::cout<<std::fixed<<std::hex<<(int)(PC-1)<<"  "<<(int)current_opcode<<"\tA:"<<(int)A<<" X:"<<(int)X<<" Y:"<<(int)Y<<" P:"<<(int)flags<<'\n';
-    I current_instruction = map_opcodes[current_opcode];
+    UNUSED = true;  // for tests
+    uint8_t current_opcode = Cpu_read(PC++);
+    std::cout << std::fixed << std::hex << (int)(PC - 1) << "  " << (int)current_opcode
+              << "\tA:" << (int)A << " X:" << (int)X << " Y:" << (int)Y << " P:" << (int)flags
+              << '\n';
+    Instruction current_instruction = map_opcodes[current_opcode];
     cycles = map_cycles[current_opcode];
     (this->*current_instruction.addr_mod)();
     (this->*current_instruction.func)();
     accumulator_mod = false;
-    UNUSED = true; //for tests
+    UNUSED = true;  // for tests
 }
 
-
-void CPU::reset() {
+void Cpu::reset() {
     A = 0;
     X = 0;
     Y = 0;
-    flags = 0x20; //for tests set UNUSED flag
-    SP = 0xFD;  // The Stack is set at $FD, with two values already stacked ($00, $00).
+    flags = 0x20;  // for tests set UNUSED flag
+    SP = 0xFD;     // The Stack is set at $FD, with two values already stacked ($00, $00).
     last_absolute_address = 0;
     last_relative_address = 0;
     accumulator_mod = false;
-    uint16_t temp = (*bus).mem_read(0xFFFC);
+    uint16_t temp = Cpu_read(0xFFFC);
     PC = temp;
-    temp = (*bus).mem_read(0xFFFD);
+    temp = Cpu_read(0xFFFD);
     PC |= temp << 8;
-    PC = 0xC000; //for tests
+    PC = 0xC000;  // for tests
     cycles = 8;
 }
 
-void CPU::NMI() {
+void Cpu::NMI() {
     push_on_stack(PC >> 8);
     push_on_stack(PC & 0xFF);
     BC = false;
-    UNUSED = true; // for tests
+    UNUSED = true;  // for tests
     ID = true;
     push_on_stack(flags);
-    uint16_t temp = (*bus).mem_read(0xFFFA);
+    uint16_t temp = Cpu_read(0xFFFA);
     PC = temp;
-    temp = (*bus).mem_read(0xFFFB);
+    temp = Cpu_read(0xFFFB);
     PC |= temp << 8;
     cycles = 7;
 }
 
-void CPU::IRQ() {
+void Cpu::IRQ() {
     if (!ID) {
         push_on_stack(PC >> 8);
         push_on_stack(PC & 0xFF);
         BC = false;
-        UNUSED = true; //for tests
+        UNUSED = true;  // for tests
         ID = true;
         push_on_stack(flags);
-        uint16_t temp = (*bus).mem_read(0xFFFE);
+        uint16_t temp = Cpu_read(0xFFFE);
         PC = temp;
-        temp = (*bus).mem_read(0xFFFF);
+        temp = Cpu_read(0xFFFF);
         PC |= temp << 8;
         cycles = 7;
     }

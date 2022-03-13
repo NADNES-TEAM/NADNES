@@ -7,23 +7,24 @@
 #include "connect_token.h"
 #include <memory>
 namespace NES {
-class CPU;
-using no_param = void (CPU::*)();
+class Cpu;
+using no_param = void (Cpu::*)();
 struct IncorrectOpcode : std::runtime_error {
     explicit IncorrectOpcode(int code);
 };
-struct I {
+struct Instruction {
     no_param func;
     no_param addr_mod;
 };
 
-class CPU {
+class Cpu {
 public:
-    CPU();
+    Cpu();
     void connect(Bus *bus_, ConnectToken) noexcept;
     void tick();
+    uint8_t Cpu_read(uint16_t addr);
+    void Cpu_write(uint16_t addr, uint8_t data);
     // interrupts:
-
     void reset();
     void NMI();
     void IRQ();
@@ -49,7 +50,7 @@ private:
     uint16_t PC;
     // Bus
 
-    Bus* bus;
+    Bus *bus;
 
     // Additional variables:
 
@@ -61,9 +62,9 @@ private:
 
     void throw_exception();
 
-    //Addressing Modes:
+    // Addressing Modes:
 
-        void implicit();  void immediate(); void zero_page_y(); void absolute_x(); void accumulator();
+    void implicit();  void immediate(); void zero_page_y(); void absolute_x(); void accumulator();
         void zero_page(); void relative(); void absolute_y(); void indirect_indexed();
         void zero_page_x(); void absolute(); void indirect(); void indexed_indirect();
 
@@ -77,13 +78,13 @@ private:
     void ROR(); void DEX(); void INX(); void JSR(); void PHP(); void BRK(); void TXA();
     void LDY(); void DEY(); void INY(); void NOP(); void PLA(); void SEI(); void STX();
     void ROL(); void SED(); void RTI(); void PLP(); void RTS(); void STA(); void TAY();
-    std::array<I, 1 << 8> map_opcodes;
+    std::array<Instruction, 1 << 8> map_opcodes;
     std::array<uint8_t, 1 << 8> map_cycles;
     // Others
+
     void add_relative();
     void cmp_with(uint8_t T);
     void push_on_stack(uint8_t T);
-    void interrupt();
 };
 
 }

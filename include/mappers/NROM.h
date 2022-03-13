@@ -11,7 +11,7 @@ struct NROMMapper : AbstractMapper {
 
     NROMMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr);
 
-    [[nodiscard]] uint16_t map_read_from_CPU(uint16_t address) const override;
+    [[nodiscard]] uint16_t map_read_from_Cpu(uint16_t address) const override;
 
     [[nodiscard]] uint16_t map_PPU_address(uint16_t address) const override;
 };
