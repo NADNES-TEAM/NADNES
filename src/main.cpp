@@ -29,5 +29,5 @@ int main(int argc, char *argv[]) {
 //    NES::MainWindow mainWindow;
 //    mainWindow.show();
 //
-//    return QApplication::exec();
+    return QApplication::exec();
 }
