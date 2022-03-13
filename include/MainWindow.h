@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow, public ScreenInterface, public KeyboardIn
 
 public:
     MainWindow();
+    ~MainWindow() override = default;
 
     // Keyboard methods
     KeyboardInterface *getKeyboardInterface();

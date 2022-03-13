@@ -11,11 +11,17 @@ uint8_t Controller::CpuRead(uint16_t addr) {
 }
 
 void Controller::CpuWrite(uint16_t addr, uint8_t value) {
-    if (addr != 0x4016 || (value & 1) != 1) {
+    if (addr != 0x4016) {
         throw InvalidControllerWrite(addr, value);
     }
-    m_snapshot[0] = m_keyboardInterface->getPressedKeys();
-    m_snapshot[1] = 0;  // Something
+    if (bool(value & 1) == m_active) {  // nothing to do
+        return;
+    }
+    m_active = (value & 1);
+    if (!m_active) {
+        m_snapshot[0] = m_keyboardInterface->getPressedKeys();
+        m_snapshot[1] = 0;  // Something
+    }
 }
 
 void Controller::connect(KeyboardInterface *keyboardInterface, ConnectToken) {

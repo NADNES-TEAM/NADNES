@@ -14,7 +14,7 @@ void Nes::tick() {
     };
 }
 
-Nes::Nes(const string &filename, ScreenInterface *screen_) : cartridge(filename), cpu(nullptr) {
+Nes::Nes(const string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_) : cartridge(filename), cpu(nullptr) {
     screen = screen_;
     ppu.connect(screen, ConnectToken());
     ppu.connect(&cartridge, ConnectToken());
@@ -23,6 +23,8 @@ Nes::Nes(const string &filename, ScreenInterface *screen_) : cartridge(filename)
     cpu = mos6502(&bus);
     ppu.connect(&cpu, ConnectToken());
     cpu.Reset();
+    controller.connect(keyboard_, ConnectToken());
+    bus.connect(&controller, ConnectToken());
 }
 
 }  // namespace NES

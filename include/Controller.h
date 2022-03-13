@@ -19,5 +19,6 @@ public:
 private:
     KeyboardInterface *m_keyboardInterface;
     uint8_t m_snapshot[2]{0, 0};
+    bool m_active{false};
 };
 }  // namespace NES

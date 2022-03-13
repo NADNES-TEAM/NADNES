@@ -6,7 +6,7 @@ void Bus::mem_write(uint16_t addr, uint8_t data) {
     if (addr >= 0 && addr < 0x2000) {  // RAM
         RAM[addr % 0x800] = data;
     } else if (addr >= 0x2000 && addr < 0x4000) {  // PPU Ctrl regs
-        addr%=8;
+        addr %= 8;
         if (addr == 0) {
             ppu->write_ctrl_reg(data);
         } else if (addr == 1) {
@@ -23,7 +23,10 @@ void Bus::mem_write(uint16_t addr, uint8_t data) {
             ppu->VRAM_write(data);
         }
     }
-    if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
+    if (addr >= 0x4000 && addr < 0x4020) {
+        if (addr == 0x4016) {
+            controller->CpuWrite(addr, data);
+        }
     }
     if (addr >= 0x4020 && addr < 0x6000) {}
     if (addr >= 0x6000 && addr < 0x8000) {  // SRAM - just do nothing
@@ -38,7 +41,7 @@ uint8_t Bus::mem_read(uint16_t addr) {
         return RAM[addr % 0x800];
     }
     if (addr >= 0x2000 && addr < 0x4000) {  // PPU Ctrl regs
-        addr%=8;
+        addr %= 8;
         if (addr == 2) {
             return ppu->read_status_reg();
         } else if (addr == 4) {
@@ -48,6 +51,9 @@ uint8_t Bus::mem_read(uint16_t addr) {
         }
     }
     if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
+        if (addr == 0x4016 || addr == 0x4017) {
+            return controller->CpuRead(addr);
+        }
     }
     if (addr >= 0x4020 && addr < 0x6000) {}
     if (addr >= 0x6000 && addr < 0x8000) {  // SRAM - just do nothing
@@ -63,5 +69,8 @@ void Bus::connect(CpuToCartridgeInterface *cartridge_, ConnectToken) noexcept {
 }
 void Bus::connect(Ppu *ppu_, ConnectToken) noexcept {
     ppu = ppu_;
+}
+void Bus::connect(Controller *controller_, ConnectToken) noexcept {
+    controller = controller_;
 }
 }  // namespace NES

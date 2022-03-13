@@ -6,6 +6,7 @@
 #include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"
+#include "Controller.h"
 
 namespace NES {
 class Bus {
@@ -13,11 +14,13 @@ class Bus {
     // Connected devices
     Ppu *ppu = nullptr;
     CpuToCartridgeInterface *cartridge = nullptr;
+    Controller *controller = nullptr;
 
 public:
     uint8_t mem_read(uint16_t addr);
     void mem_write(uint16_t addr, uint8_t data);
     void connect(CpuToCartridgeInterface *cartridge_, ConnectToken) noexcept;
     void connect(Ppu *ppu_, ConnectToken) noexcept;
+    void connect(Controller *controller, ConnectToken) noexcept;
 };
 }  // namespace NES

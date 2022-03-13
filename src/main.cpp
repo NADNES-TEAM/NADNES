@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     // Right: Arrow right
     QApplication application(argc, argv);
 
+
     NES::MainWindow mainWindow;
     mainWindow.show();
     auto test = new NES::Test(dynamic_cast<KeyboardInterface *>(&mainWindow));

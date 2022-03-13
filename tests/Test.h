@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <Controller.h>
 #include "KeyboardInterface.h"
+#include "ScreenInterface.h"
 
 namespace NES {
 
@@ -19,6 +20,7 @@ public slots:
 private:
     QLabel *label;
     std::unique_ptr<Controller> controller;
+    ScreenInterface *screenInterface{};
 };
 
 }

@@ -5,6 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
+include_directories(correct_cpu_for_testing)
 include_directories(include/mappers)
 
 find_package(Qt6 COMPONENTS
@@ -14,6 +15,9 @@ find_package(Qt6 COMPONENTS
         REQUIRED)
 
 add_executable(PPU_test
+        src/ControllerExceptions.cpp
+        include/MainWindow.h
+        src/MainWindow.cpp
         include/nes.h
         src/nes.cpp
         tests/ppu_screen_test.cpp
