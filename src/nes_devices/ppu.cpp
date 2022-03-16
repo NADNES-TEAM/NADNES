@@ -5,6 +5,15 @@
 #include "interfaces/screen_interface.h"
 
 namespace NES {
+
+const std::vector<uint8_t> reverse = []() {
+    std::vector<uint8_t> d(256);
+    for (int i = 1; i < 256; i++) {
+        d[i] = (d[i >> 1] >> 1) + ((i & 1) << 7);
+    }
+    return d;
+}();
+
 void AddressReg::increase_x_scroll() {
     if (coarse_x_scroll == 31) {
         coarse_x_scroll = 0;
@@ -41,6 +50,18 @@ void AddressReg::set_y_scroll_from(const AddressReg &other) {
     fine_y_scroll = other.fine_y_scroll;
 }
 
+uint8_t SpriteData::get_color() {
+    if (counter == 0) {
+        int color = (shifter_high & 0x80) * 2 + (shifter_low & 0x80);
+        shifter_high <<= 1;
+        shifter_low <<= 1;
+        return color;
+    } else {
+        counter--;
+    }
+    return 0;
+}
+
 std::vector<Color> colors = {
     {84, 84, 84},    {0, 30, 116},    {8, 16, 144},    {48, 0, 136},    {68, 0, 100},
     {92, 0, 48},     {84, 4, 0},      {60, 24, 0},     {32, 42, 0},     {8, 58, 0},
@@ -59,20 +80,25 @@ std::vector<Color> colors = {
 bool Ppu::tick() {
     is_rendering = false;
 
-    if (y_pos == 0 && x_pos == 0)
-        x_pos = 1;  // skip odd
-
-    if (y_pos == -1 && x_pos == 1)
+    if (y_pos == -1 && x_pos == 1) {
         status_reg.vertical_blank = 0;  // clear VBlank
+        status_reg.sprite_overflow = false;
+        status_reg.sprite_zero_hit = false;
+    }
 
-    if (mask_reg.bg_enable || mask_reg.sp_enable) {
-        if (VERT_VISIBLE_BEGIN <= y_pos && y_pos < VERT_VISIBLE_END) {
+    if (VERT_VISIBLE_BEGIN <= y_pos && y_pos < VERT_VISIBLE_END) {
+        if (mask_reg.bg_enable || mask_reg.sp_enable) {
+            if (y_pos == 0 && x_pos == 0 && odd_frame) {
+                x_pos = 1;  // skip odd
+            }
             is_rendering = true;
             if (HOR_VISIBLE_BEGIN <= x_pos && x_pos < HOR_VISIBLE_END ||
                 HOR_PRERENDER_BEGIN <= x_pos && x_pos < HOR_PRERENDER_END) {
                 // actual shifting
-                bg_shifter_low <<= 1;
-                bg_shifter_high <<= 1;
+                if (mask_reg.bg_enable) {
+                    bg_shifter_low <<= 1;
+                    bg_shifter_high <<= 1;
+                }
 
                 int cur_step = x_pos % 8;
 
@@ -130,6 +156,66 @@ bool Ppu::tick() {
             if (y_pos == -1 && x_pos >= 280 && x_pos <= 304) {
                 VRAM_addr_reg.set_y_scroll_from(VRAM_tmp_addr_reg);  // vert(v) = vert(t)
             }
+
+            // background
+            OAM_is_busy = false;
+            if (y_pos != -1 && OAM_CLEAR_BEGIN <= x_pos && x_pos < OAM_CLEAR_END &&
+                x_pos % 8 == 0) {
+                OAM_is_busy = true;
+                secondary_OAM[OAM_clearing_counter++] = {};
+            }
+
+            sprite_zero_next_line = false;
+            if (y_pos != -1 && SP_DETECT_BEGIN <= x_pos && x_pos < SP_DETECT_END && x_pos % 2 &&
+                detected_sprites <= 8 && !sprite_detection_complete) {
+                int dy = y_pos - OAM[OAM_addr_reg];
+                if (0 <= dy && dy >= (8 + 8 * ctrl_reg.sprite_size)) {
+                    if (detected_sprites < 8) {
+                        sprite_zero_next_line |= sprite_eval_n == 0;
+                        secondary_OAM[detected_sprites] = {OAM[OAM_addr_reg],
+                                                           OAM[OAM_addr_reg + 1],
+                                                           OAM[OAM_addr_reg + 2],
+                                                           OAM[OAM_addr_reg + 3]};
+                    }
+                    sprite_eval_n++;
+                } else {
+                    status_reg.sprite_overflow = true;
+                    OAM_addr_reg += 3;
+                    if (sprite_eval_m == 3) {  // TODO:
+                        sprite_eval_n += 1;
+                    }
+                }
+                detected_sprites++;
+            } else {
+                if (detected_sprites == 8) {
+                    sprite_eval_m++;
+                }
+                sprite_eval_n++;
+            }
+            sprite_detection_complete = sprite_eval_n == 0;
+        }
+
+        if (SP_FETCH_BEGIN <= x_pos && x_pos < SP_FETCH_END && (x_pos % 4 == 0)) {
+            SpriteData cur_sp;
+            if (sp_fetch_count < detected_sprites) {
+                cur_sp.attribute = secondary_OAM[sp_fetch_count].attribute;
+                cur_sp.counter = secondary_OAM[sp_fetch_count].x_coord;
+                uint8_t tile_index = secondary_OAM[sp_fetch_count].tile_index;
+                uint16_t addr = 0;
+                int dy = y_pos - secondary_OAM[sp_fetch_count].y_coord;
+                if (ctrl_reg.sprite_size == 0) {  // 8x8
+                    addr = 0x1000 * ctrl_reg.sprite_ptr_table + tile_index * 4 + dy ^
+                           (7 * cur_sp.flip_vertical);
+                } else {  // 8x16
+                    addr = 0x1000 * (tile_index & 1) + ((tile_index >> 1) + (dy > 8)) * 4 + dy ^
+                           (7 * cur_sp.flip_vertical);
+                }
+                uint8_t fetched_high = PPU_read(addr);
+                uint8_t fetched_low = PPU_read(addr + 8);
+                cur_sp.shifter_high = cur_sp.flip_horizontal ? reverse[fetched_high] : fetched_high;
+                cur_sp.shifter_low = cur_sp.flip_horizontal ? reverse[fetched_low] : fetched_low;
+            }
+            loaded_sprites[sp_fetch_count++] = cur_sp;
         }
     }
 
@@ -146,11 +232,46 @@ bool Ppu::tick() {
         uint8_t cur_pixel_high_bit = ((bg_shifter_high << fine_x_scroll) & 0x8000) == 0x8000;
         bg_color = cur_pixel_high_bit * 2 + cur_pixel_low_bit;
     }
+    uint8_t sp_color = 0x00;
+    uint8_t sp_palette = 0x00;
+    bool sp_priority = false;
+    bool sprite_zero_chosen = false;
+    if (mask_reg.sp_enable) {
+        for (int i = 0; i < 8; i++) {
+            uint8_t color = loaded_sprites[i].get_color();
+            if (color && (sp_color == 0x00)) {
+                sp_color = color;
+                sp_palette = loaded_sprites[i].palette;
+                sp_priority = loaded_sprites[i].priority;
+                if (i == 0) {
+                    sprite_zero_chosen = true;
+                }
+            }
+        }
+    }
+    uint8_t cur_palette = 0;
+    uint8_t cur_color = 0;
+    if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
+        cur_palette = bg_cur_palette;
+        cur_color = bg_color;
+    } else {
+        cur_palette = sp_palette;
+        cur_color = sp_color;
+    }
+    bool left_8_enable = mask_reg.bg_left8_enable && mask_reg.sp_left8_enable;
+    if (sprite_zero_cur_line && sprite_zero_chosen && bg_color != 0 && sp_color != 0) {
+        status_reg.sprite_zero_hit |=
+            (x_pos >= (1 + 8 * !left_8_enable)) && ((x_pos <= HOR_VISIBLE_END));
+    }
 
     screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
     if (++x_pos >= 341) {
         x_pos = 0;
-        //        std::cout << '\n';
+        OAM_clearing_counter = 0;
+        OAM_addr_reg = 0;
+        sprite_detection_complete = false;
+        sp_fetch_count = 0;
+        sprite_zero_cur_line = sprite_zero_next_line;
         if (++y_pos >= 261) {
             screen->refresh_screen();
             //            test_utility();
@@ -169,7 +290,7 @@ void Ppu::write_ctrl_reg(uint8_t data) {
     VRAM_tmp_addr_reg.nametable_y = ctrl_reg.base_nametable_y;
     //    if (!prev_NMI_enable_state && ctrl_reg.NMI_enable && status_reg.vertical_blank) {
     //        cpu->NMI();
-    //    }
+    //    }  // TODO: check this feature
 }
 
 void Ppu::write_mask_reg(uint8_t data) {
@@ -266,7 +387,7 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
 }
 
-Ppu::Ppu() : OAM(256), palette_mem(32) {}
+Ppu::Ppu() : OAM(256), secondary_OAM(32), palette_mem(32) {}
 
 void Ppu::set_OAM_address(uint8_t address) {
     OAM_addr_reg = address;
@@ -277,7 +398,7 @@ void Ppu::OAM_write(uint8_t data) {
 }
 
 uint8_t Ppu::OAM_read() const {
-    return OAM[OAM_addr_reg];
+    return OAM_is_busy ? 0xFF : OAM[OAM_addr_reg];
 }
 
 void Ppu::connect(Cpu *cpu_, ConnectToken) noexcept {

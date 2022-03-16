@@ -41,6 +41,31 @@ class AddressReg {
     };
 };
 
+struct SpriteInfo {
+    uint8_t y_coord = 0xFF;
+    uint8_t tile_index = 0xFF;
+    uint8_t attribute = 0xFF;
+    uint8_t x_coord = 0xFF;
+};
+
+struct SpriteData {
+    uint8_t shifter_high = 0;
+    uint8_t shifter_low = 0;
+    uint8_t counter = 0;
+    union {
+        struct {
+            uint8_t palette         : 2;
+            uint8_t unused          : 3;
+            uint8_t priority        : 1;
+            uint8_t flip_horizontal : 1;
+            uint8_t flip_vertical   : 1;
+        };
+        uint8_t attribute = 0;
+    };
+
+    uint8_t get_color();
+};
+
 class Ppu {
     // registers
     union {
@@ -86,9 +111,8 @@ class Ppu {
     uint8_t fine_x_scroll = 0;
     bool double_write_toggle = false;
     uint8_t VRAM_read_buff = 0;
-    uint8_t OAM_addr_reg = 0;
 
-    // rendering state
+    // background rendering state
     bool is_rendering = false;
     uint16_t bg_shifter_low = 0;
     uint16_t bg_shifter_high = 0;
@@ -100,15 +124,41 @@ class Ppu {
     uint8_t bg_next_tile_high = 0;
     int y_pos = 0;
     int x_pos = 0;
+    bool odd_frame = false;
 
-    //      rendering constants [ )
+    // sprites rendering state
+    union {
+        struct {
+            uint8_t sprite_eval_m: 2;
+            uint8_t sprite_eval_n: 6;
+        };
+        uint8_t OAM_addr_reg = 0;
+    };
+    std::vector<SpriteInfo> secondary_OAM;
+    std::vector<SpriteData> loaded_sprites;
+    int OAM_clearing_counter = 0;
+    bool OAM_is_busy = false;
+    int detected_sprites = 0;
+    bool sprite_detection_complete = false;
+    int sp_fetch_count = 0;
+    bool sprite_zero_next_line = false;
+    bool sprite_zero_cur_line = false;
+
+    // background rendering constants [ )
     const int VERT_VISIBLE_BEGIN = -1;
     const int VERT_VISIBLE_END = 240;
-
     const int HOR_VISIBLE_BEGIN = 1;
     const int HOR_VISIBLE_END = 257;
     const int HOR_PRERENDER_BEGIN = 321;
     const int HOR_PRERENDER_END = 337;
+
+    // sprite evaluation constants [ )
+    const int OAM_CLEAR_BEGIN = 1;
+    const int OAM_CLEAR_END = 65;
+    const int SP_DETECT_BEGIN = 65;
+    const int SP_DETECT_END = 257;
+    const int SP_FETCH_BEGIN = 257;
+    const int SP_FETCH_END = 321;
 
     // memory
     std::vector<uint8_t> OAM;
