@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "nes_devices/controller.h"
 #include "nes_exceptions.h"
 
 namespace NES {
@@ -26,6 +26,11 @@ void Controller::write(uint16_t addr, uint8_t value) {
 
 void Controller::connect(KeyboardInterface *keyboard_interface, ConnectToken) {
     m_keyboard_interface = keyboard_interface;
+}
+void Controller::init() const {
+    if (m_keyboard_interface == nullptr) {
+        throw UninitializedController1InterfaceError();
+    }
 }
 
 }  // namespace NES

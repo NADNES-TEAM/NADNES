@@ -6,8 +6,8 @@
 #include <QWidget>
 #include <QtGui>
 #include <mutex>
-#include "KeyboardInterface.h"
-#include "ScreenInterface.h"
+#include "interfaces/keyboard_interface.h"
+#include "interfaces/screen_interface.h"
 
 namespace NES {
 

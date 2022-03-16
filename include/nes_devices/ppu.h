@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "ScreenInterface.h"
+#include "interfaces/screen_interface.h"
 #include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"

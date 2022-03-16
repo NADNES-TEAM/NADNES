@@ -1,6 +1,6 @@
-#include "MainWindow.h"
+#include "environment/main_window.h"
 #include <QMap>
-#include "ScreenOptions.h"
+#include "nes_properties.h"
 #include <iostream>
 #include <bitset>
 
@@ -32,14 +32,14 @@ uint8_t MainWindow::get_pressed_keys() const {
 }
 
 void MainWindow::set_pixel(int row, int column, Color color) {
-    if (0 <= row && row < HEIGHT && 0 <= column && column < WIDTH) {
+    if (0 <= row && row < SCREEN_HEIGHT && 0 <= column && column < SCREEN_WIDTH) {
         m_screen_image.setPixelColor(column, row, QColor(color.r, color.g, color.b));
     }
 }
 
 MainWindow::MainWindow()
     : QMainWindow(),
-      m_screen_image(WIDTH, HEIGHT, QImage::Format_RGB888),
+      m_screen_image(SCREEN_WIDTH, SCREEN_HEIGHT, QImage::Format_RGB888),
       m_image_label(new QLabel) {
     m_image_label->setPixmap(QPixmap::fromImage(m_screen_image));
     m_image_label->setBackgroundRole(QPalette::Window);
@@ -51,7 +51,7 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::refresh_screen() {
-    QSize qSize(WIDTH * 5, HEIGHT * 5);
+    QSize qSize(SCREEN_WIDTH * 5, SCREEN_HEIGHT * 5);
     m_image_label->setPixmap(QPixmap::fromImage(m_screen_image.scaled(
         qSize,
         Qt::AspectRatioMode::KeepAspectRatio

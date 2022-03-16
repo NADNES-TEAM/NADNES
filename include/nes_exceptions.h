@@ -1,10 +1,9 @@
 #pragma once
 
-
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
-#include <iomanip>
 
 namespace NES {
 
@@ -59,7 +58,17 @@ struct WritingToRomError : CartridgeError {
 struct ControllerWriteError : NesError {
     [[nodiscard]] ControllerWriteError(uint16_t addr, uint8_t value)
         : NesError(std::string("Invalid Controller write: address: ") + to_hex_addr(addr) +
-                             ", value: " + to_hex8(value)) {}
+                   ", value: " + to_hex8(value)) {}
+};
+
+struct IncorrectOpcodeError : NesError {
+    [[nodiscard]] explicit IncorrectOpcodeError(uint8_t opcode)
+        : NesError("Incorrect opcode! Number: " + to_hex8(opcode)) {}
+};
+
+struct UninitializedController1InterfaceError : NesError {
+    [[nodiscard]] UninitializedController1InterfaceError()
+        : NesError("Uninitialized Controller1 interface!") {}
 };
 
 }  // namespace NES

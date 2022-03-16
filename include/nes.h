@@ -2,13 +2,13 @@
 
 #include <QObject>
 #include <string>
-#include "Controller.h"
-#include "KeyboardInterface.h"
-#include "PPU.h"
-#include "R6502.h"
-#include "ScreenInterface.h"
-#include "bus.h"
-#include "cartridge.h"
+#include "nes_devices/controller.h"
+#include "interfaces/keyboard_interface.h"
+#include "nes_devices/ppu.h"
+#include "nes_devices/R6502.h"
+#include "interfaces/screen_interface.h"
+#include "nes_devices/bus.h"
+#include "nes_devices/cartridge.h"
 
 namespace NES {
 struct Nes {

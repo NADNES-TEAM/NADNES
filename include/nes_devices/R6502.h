@@ -3,17 +3,14 @@
 #include <cstdint>
 #include <array>
 #include <variant>
-#include <stdexcept>
 #include "bus.h"
 #include "connect_token.h"
 #include <memory>
+#include "nes_exceptions.h"
 
 namespace NES {
 class Cpu;
 using no_param = void (Cpu::*)();
-struct IncorrectOpcode : std::runtime_error {
-    explicit IncorrectOpcode();
-};
 struct Instruction {
     no_param func;
     no_param addr_mod;

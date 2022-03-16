@@ -1,15 +1,14 @@
 #pragma once
 
-#include <QLabel>
-#include <QWidget>
-#include <QtGui>
-#include "KeyboardInterface.h"
+#include "interfaces/keyboard_interface.h"
 #include "connect_token.h"
 
 namespace NES {
 class Controller {
 public:
     explicit Controller(KeyboardInterface *keyboardInterface = nullptr) : m_keyboard_interface(keyboardInterface) {}
+
+    void init() const;
 
     void connect(KeyboardInterface *keyboard_interface, ConnectToken);
 

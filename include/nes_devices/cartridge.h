@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "mapper.h"
+#include "interfaces/mapper.h"
 
 namespace NES {
 struct CpuToCartridgeInterface {

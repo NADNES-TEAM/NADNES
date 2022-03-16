@@ -1,4 +1,4 @@
-#include "bus.h"
+#include "nes_devices/bus.h"
 
 namespace NES {
 

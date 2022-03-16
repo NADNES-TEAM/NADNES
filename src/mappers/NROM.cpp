@@ -1,5 +1,5 @@
 #include "mappers/NROM.h"
-#include "mapper.h"
+#include "interfaces/mapper.h"
 
 namespace NES {
 NROMMapper::NROMMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)

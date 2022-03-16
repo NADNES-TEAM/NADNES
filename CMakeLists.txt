@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.14)
 project(NADNES)
 
 set(CMAKE_AUTOMOC ON)
@@ -14,17 +14,16 @@ find_package(Qt6 COMPONENTS
         REQUIRED)
 
 add_executable( NADNES
-        src/ControllerExceptions.cpp
-        include/MainWindow.h
-        src/MainWindow.cpp
+        include/environment/main_window.h
+        src/environment/main_window.cpp
         include/nes.h
         src/nes.cpp
         src/main.cpp
-        src/cartridge.cpp src/PPU.cpp
+        src/nes_devices/cartridge.cpp src/nes_devices/ppu.cpp
         src/mappers/NROM.cpp
-        src/bus.cpp
-        src/Controller.cpp
-        src/R6502.cpp)
+        src/nes_devices/bus.cpp
+        src/nes_devices/controller.cpp
+        src/nes_devices/R6502.cpp)
 
 target_link_libraries(NADNES
         Qt::Core

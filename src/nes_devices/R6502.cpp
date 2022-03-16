@@ -1,4 +1,4 @@
-#include "R6502.h"
+#include "nes_devices/R6502.h"
 #include <iostream>
 #include <utility>
 
@@ -283,8 +283,6 @@ Cpu::Cpu()
                  4, 0, 2, 4, 2, 0, 4, 4, 4, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0,
                  0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2,
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
-
-IncorrectOpcode::IncorrectOpcode() : std::runtime_error("Incorrect opcode!") {}
 
 void Cpu::connect(Bus *bus_, ConnectToken) noexcept {
     bus = bus_;
@@ -774,7 +772,8 @@ void Cpu::TYA() {
 }
 
 void Cpu::throw_exception() {
-    throw IncorrectOpcode();
+    uint8_t opcode = Cpu_read(PC - 1);
+    throw IncorrectOpcodeError(opcode);
 }
 
 void Cpu::tick() {
