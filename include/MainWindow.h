@@ -19,22 +19,22 @@ public:
     ~MainWindow() override = default;
 
     // Keyboard methods
-    KeyboardInterface *getKeyboardInterface();
+    KeyboardInterface *get_keyboard_interface();
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
-    [[nodiscard]] uint8_t getPressedKeys() const override;
+    [[nodiscard]] uint8_t get_pressed_keys() const override;
 
     // Screen methods
-    ScreenInterface *getScreenInterface();
-    void setPixel(int row, int column, Color color) override;
-    void refreshScreen() override;
+    ScreenInterface *get_screen_interface();
+    void set_pixel(int row, int column, Color color) override;
+    void refresh_screen() override;
 
 private:
-    QLabel *m_imageLabel;
-    QImage m_screenImage;
+    QLabel *m_image_label;
+    QImage m_screen_image;
 
-    static QMap<Qt::Key, int> m_indexByKey;
-    std::atomic<uint8_t> m_pressedKeysBitset{};
+    static QMap<Qt::Key, int> m_index_by_key;
+    std::atomic<uint8_t> m_pressed_keys_bitset{};
 };
 
 }  // namespace NES

@@ -25,7 +25,7 @@ void Bus::mem_write(uint16_t addr, uint8_t data) {
     }
     if (addr >= 0x4000 && addr < 0x4020) {
         if (addr == 0x4016) {
-            controller->CpuWrite(addr, data);
+            controller->write(addr, data);
         }
     }
     if (addr >= 0x4020 && addr < 0x6000) {}
@@ -52,7 +52,7 @@ uint8_t Bus::mem_read(uint16_t addr) {
     }
     if (addr >= 0x4000 && addr < 0x4020) {  // Controllers + APU
         if (addr == 0x4016 || addr == 0x4017) {
-            return controller->CpuRead(addr);
+            return controller->read(addr);
         }
     }
     if (addr >= 0x4020 && addr < 0x6000) {}

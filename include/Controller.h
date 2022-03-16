@@ -9,16 +9,15 @@
 namespace NES {
 class Controller {
 public:
-    explicit Controller(KeyboardInterface *keyboardInterface = nullptr)
-        : m_keyboardInterface(keyboardInterface) {}
+    explicit Controller(KeyboardInterface *keyboardInterface = nullptr) : m_keyboard_interface(keyboardInterface) {}
 
-    void connect(KeyboardInterface *keyboardInterface, ConnectToken);
+    void connect(KeyboardInterface *keyboard_interface, ConnectToken);
 
-    uint8_t CpuRead(uint16_t addr);
-    void CpuWrite(uint16_t addr, uint8_t value);
+    uint8_t read(uint16_t addr);
+    void write(uint16_t addr, uint8_t value);
 
 private:
-    KeyboardInterface *m_keyboardInterface;
+    KeyboardInterface *m_keyboard_interface;
     uint8_t m_snapshot[2]{0, 0};
     bool m_active{false};
 };

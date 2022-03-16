@@ -11,15 +11,10 @@
 #include "cartridge.h"
 
 namespace NES {
-struct Nes : public QObject {
-    Q_OBJECT
+struct Nes {
 public:
     Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_);
-    ~Nes() override = default;
 
-signals:
-
-public slots:
     void tick();
 
 private:
