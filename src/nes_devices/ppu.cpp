@@ -268,12 +268,14 @@ bool Ppu::tick() {
     }
     uint8_t cur_palette = 0;
     uint8_t cur_color = 0;
-    if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
-        cur_palette = bg_cur_palette * 4;
-        cur_color = bg_color;
-    } else {
-        cur_palette = sp_palette * 4 + 0x10;
-        cur_color = sp_color;
+    if (sp_color || bg_color){
+        if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
+            cur_palette = bg_cur_palette * 4;
+            cur_color = bg_color;
+        } else {
+            cur_palette = sp_palette * 4 + 0x10;
+            cur_color = sp_color;
+        }
     }
     bool left_8_enable = mask_reg.bg_left8_enable && mask_reg.sp_left8_enable;
     if (sprite_zero_cur_line && sprite_zero_chosen && bg_color != 0 && sp_color != 0) {
