@@ -224,8 +224,8 @@ bool Ppu::tick() {
                             0x1000 * (tile_index & 1) + ((tile_index >> 1) + (dy > 8)) * 16 + dy ^
                             (7 * cur_sp.flip_vertical);
                     }
-                    uint8_t fetched_high = PPU_read(addr);
-                    uint8_t fetched_low = PPU_read(addr + 8);
+                    uint8_t fetched_high = PPU_read(addr + 8);
+                    uint8_t fetched_low = PPU_read(addr);
                     cur_sp.shifter_high =
                         cur_sp.flip_horizontal ? reverse[fetched_high] : fetched_high;
                     cur_sp.shifter_low =
