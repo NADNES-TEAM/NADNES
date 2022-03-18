@@ -178,7 +178,7 @@ bool Ppu::tick() {
             if (y_pos != -1 && SP_DETECT_BEGIN <= x_pos && x_pos < SP_DETECT_END && x_pos % 2 &&
                 detected_sprites <= 8 && !sprite_detection_complete) {
                 int dy = y_pos - OAM[OAM_addr_reg];
-                if (0 <= dy && dy <= (8 + 8 * ctrl_reg.sprite_size)) {
+                if (0 <= dy && dy < (8 + 8 * ctrl_reg.sprite_size)) {
                     if (detected_sprites < 8) {
                         sprite_zero_next_line |= sprite_eval_n == 0;
                         secondary_OAM[detected_sprites] = {OAM[OAM_addr_reg],
