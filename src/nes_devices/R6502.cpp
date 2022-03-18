@@ -4,15 +4,19 @@
 
 namespace NES {
 
-uint8_t Cpu::Cpu_read(uint16_t addr) {
+uint8_t Cpu::cpu_read(uint16_t addr) {
     return (*bus).mem_read(addr);
 }
 
-void Cpu::Cpu_write(uint16_t addr, uint8_t data) {
+void Cpu::cpu_write(uint16_t addr, uint8_t data) {
+    if(addr == 0x4014) {
+        dma.activate(data);
+        return;
+    }
     (*bus).mem_write(addr, data);
 }
 void Cpu::push_on_stack(uint8_t T) {
-    Cpu_write(SP + 0x0100, T);
+    cpu_write(SP + 0x0100, T);
     SP--;
 }
 
@@ -284,8 +288,11 @@ Cpu::Cpu()
                  0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2,
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
 
-void Cpu::connect(Bus *bus_, ConnectToken) noexcept {
+
+
+void Cpu::connect(Bus *bus_, ConnectToken token) noexcept {
     bus = bus_;
+    dma.connect(bus, token);
 }
 
 void Cpu::implicit() {}  // just do nothing
@@ -295,32 +302,32 @@ void Cpu::immediate() {
 }
 
 void Cpu::zero_page() {
-    last_absolute_address = Cpu_read(PC++);
+    last_absolute_address = cpu_read(PC++);
     last_absolute_address &= 0xFF;
 }
 
 void Cpu::zero_page_x() {
-    last_absolute_address = Cpu_read(PC++);
+    last_absolute_address = cpu_read(PC++);
     last_absolute_address += X;
     last_absolute_address &= 0xFF;
 }
 
 void Cpu::zero_page_y() {
-    last_absolute_address = Cpu_read(PC++);
+    last_absolute_address = cpu_read(PC++);
     last_absolute_address += Y;
     last_absolute_address &= 0xFF;
 }
 
 void Cpu::relative() {
-    last_relative_address = Cpu_read(PC++);
+    last_relative_address = cpu_read(PC++);
     if (last_relative_address & 0x80) {
         last_relative_address |= 0xFF00;
     }
 }
 
 void Cpu::absolute() {
-    uint16_t temp = Cpu_read(PC++);
-    last_absolute_address = Cpu_read(PC++);
+    uint16_t temp = cpu_read(PC++);
+    last_absolute_address = cpu_read(PC++);
     last_absolute_address <<= 8;
     last_absolute_address |= temp;
 }
@@ -340,33 +347,33 @@ void Cpu::absolute_y() {
 }
 
 void Cpu::indirect() {
-    uint8_t LSB_temp = Cpu_read(PC++);
-    uint8_t MSB_temp = Cpu_read(PC++);
+    uint8_t LSB_temp = cpu_read(PC++);
+    uint8_t MSB_temp = cpu_read(PC++);
     uint16_t temp_address = MSB_temp;
     temp_address <<= 8;
     temp_address |= LSB_temp;
-    uint16_t LSB_final = Cpu_read(temp_address);
+    uint16_t LSB_final = cpu_read(temp_address);
     if ((LSB_temp & 0xFF) == 0xFF) {
-        last_absolute_address = (Cpu_read(temp_address & 0xFF00));  // bug
+        last_absolute_address = (cpu_read(temp_address & 0xFF00));  // bug
     } else {
-        last_absolute_address = (Cpu_read(temp_address + 1));
+        last_absolute_address = (cpu_read(temp_address + 1));
     }
     last_absolute_address <<= 8;
     last_absolute_address |= LSB_final;
 }
 
 void Cpu::indexed_indirect() {
-    uint16_t temp_address = Cpu_read(PC++);
-    uint8_t LSB = Cpu_read((temp_address + X) & 0xFF);
-    last_absolute_address = Cpu_read((temp_address + X + 1) & 0xFF);
+    uint16_t temp_address = cpu_read(PC++);
+    uint8_t LSB = cpu_read((temp_address + X) & 0xFF);
+    last_absolute_address = cpu_read((temp_address + X + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address |= LSB;
 }
 
 void Cpu::indirect_indexed() {
-    uint16_t temp_address = Cpu_read(PC++);
-    uint8_t LSB = Cpu_read((temp_address)&0xFF);
-    last_absolute_address = Cpu_read((temp_address + 1) & 0xFF);
+    uint16_t temp_address = cpu_read(PC++);
+    uint8_t LSB = cpu_read((temp_address)&0xFF);
+    last_absolute_address = cpu_read((temp_address + 1) & 0xFF);
     last_absolute_address <<= 8;
     last_absolute_address |= LSB;
     last_absolute_address += Y;
@@ -379,7 +386,7 @@ void Cpu::accumulator() {
 }
 
 void Cpu::ADC() {
-    uint16_t temp = Cpu_read(last_absolute_address);
+    uint16_t temp = cpu_read(last_absolute_address);
     uint16_t temp_A = temp + A + CF;
     CF = (temp_A) >> 8;
     OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
@@ -389,7 +396,7 @@ void Cpu::ADC() {
 }
 
 void Cpu::AND() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     A &= temp;
     ZF = (!A);
     NF = A & 0x80;
@@ -398,13 +405,13 @@ void Cpu::AND() {
 void Cpu::ASL() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = Cpu_read(last_absolute_address);
+        temp = cpu_read(last_absolute_address);
     temp <<= 1;
     CF = (temp >> 8);
     ZF = !(temp & 0xFF);
     NF = (temp & 128);
     if (!accumulator_mod) {
-        Cpu_write(last_absolute_address, temp & 0xFF);
+        cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
@@ -438,7 +445,7 @@ void Cpu::BEQ() {
 }
 
 void Cpu::BIT() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     ZF = !(temp & A);
     NF = temp & 0x80;
     OF = temp & 0x40;
@@ -469,9 +476,9 @@ void Cpu::BRK() {
     push_on_stack(flags);
     BC = false;
     ID = true;
-    uint16_t temp = Cpu_read(0xFFFE);
+    uint16_t temp = cpu_read(0xFFFE);
     PC = temp;
-    temp = Cpu_read(0xFFFF);
+    temp = cpu_read(0xFFFF);
     PC |= temp << 8;
 }
 
@@ -504,7 +511,7 @@ void Cpu::CLV() {
 }
 
 void Cpu::cmp_with(uint8_t T) {
-    uint16_t read = Cpu_read(last_absolute_address);
+    uint16_t read = cpu_read(last_absolute_address);
     uint16_t temp = T - read;
     ZF = !temp;
     NF = temp & 0x80;
@@ -524,11 +531,11 @@ void Cpu::CPY() {
 }
 
 void Cpu::DEC() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     temp--;
     ZF = !temp;
     NF = temp & 0x80;
-    Cpu_write(last_absolute_address, temp & 0x00FF);
+    cpu_write(last_absolute_address, temp & 0x00FF);
 }
 
 void Cpu::DEX() {
@@ -544,18 +551,18 @@ void Cpu::DEY() {
 }
 
 void Cpu::EOR() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     A ^= temp;
     ZF = !A;
     NF = A & 0x80;
 }
 
 void Cpu::INC() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     temp++;
     ZF = !temp;
     NF = temp & 0x80;
-    Cpu_write(last_absolute_address, temp);
+    cpu_write(last_absolute_address, temp);
 }
 
 void Cpu::INX() {
@@ -582,21 +589,21 @@ void Cpu::JSR() {
 }
 
 void Cpu::LDA() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     A = temp;
     ZF = !A;
     NF = A & 0x80;
 }
 
 void Cpu::LDX() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     X = temp;
     ZF = !X;
     NF = X & 0x80;
 }
 
 void Cpu::LDY() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     Y = temp;
     ZF = !Y;
     NF = Y & 0x80;
@@ -605,13 +612,13 @@ void Cpu::LDY() {
 void Cpu::LSR() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = Cpu_read(last_absolute_address);
+        temp = cpu_read(last_absolute_address);
     CF = temp & 1;
     temp >>= 1;
     ZF = !(temp & 0xFF);
     NF = (temp & 0x80);
     if (!accumulator_mod) {
-        Cpu_write(last_absolute_address, temp & 0xFF);
+        cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
@@ -620,7 +627,7 @@ void Cpu::LSR() {
 void Cpu::NOP() {}
 
 void Cpu::ORA() {
-    uint8_t temp = Cpu_read(last_absolute_address);
+    uint8_t temp = cpu_read(last_absolute_address);
     A |= temp;
     ZF = !A;
     NF = A & 0x80;
@@ -637,27 +644,27 @@ void Cpu::PHP() {
 }
 
 void Cpu::PLA() {
-    A = Cpu_read(++SP + 0x0100);
+    A = cpu_read(++SP + 0x0100);
     ZF = !A;
     NF = A & 0x80;
 }
 
 void Cpu::PLP() {
-    flags = Cpu_read(++SP + 0x0100);
+    flags = cpu_read(++SP + 0x0100);
     UNUSED = true;  // for tests
 }
 
 void Cpu::ROL() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = Cpu_read(last_absolute_address);
+        temp = cpu_read(last_absolute_address);
     temp <<= 1;
     temp |= CF;
     CF = (temp >> 8);
     NF = temp & 0x80;
     ZF = !(temp & 0xFF);
     if (!accumulator_mod) {
-        Cpu_write(last_absolute_address, temp & 0xFF);
+        cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
@@ -666,14 +673,14 @@ void Cpu::ROL() {
 void Cpu::ROR() {
     uint16_t temp = A;
     if (!accumulator_mod)
-        temp = Cpu_read(last_absolute_address);
+        temp = cpu_read(last_absolute_address);
     temp += 0x100 * static_cast<uint16_t>(CF);
     CF = temp & 1;
     temp >>= 1;
     NF = temp & 0x80;
     ZF = !(temp & 0xFF);
     if (!accumulator_mod) {
-        Cpu_write(last_absolute_address, temp & 0xFF);
+        cpu_write(last_absolute_address, temp & 0xFF);
     } else {
         A = temp & 0xFF;
     }
@@ -681,29 +688,29 @@ void Cpu::ROR() {
 
 void Cpu::RTI() {
     SP++;
-    flags = Cpu_read(SP + 0x0100);
+    flags = cpu_read(SP + 0x0100);
     BC = false;
     UNUSED = false;  // for tests
     SP++;
-    uint16_t temp = Cpu_read(SP + 0x0100);
+    uint16_t temp = cpu_read(SP + 0x0100);
     PC = temp;
     SP++;
-    temp = Cpu_read(SP + 0x0100);
+    temp = cpu_read(SP + 0x0100);
     PC |= temp << 8;
 }
 
 void Cpu::RTS() {
     SP++;
-    uint16_t temp = Cpu_read(SP + 0x0100);
+    uint16_t temp = cpu_read(SP + 0x0100);
     PC = temp;
     SP++;
-    temp = Cpu_read(SP + 0x0100);
+    temp = cpu_read(SP + 0x0100);
     PC |= temp << 8;
     PC++;
 }
 
 void Cpu::SBC() {
-    uint16_t temp = Cpu_read(last_absolute_address);
+    uint16_t temp = cpu_read(last_absolute_address);
     temp ^= 0xFF;
     uint16_t temp_A = A + temp + CF;
     OF = ((temp_A ^ A) & 0x80 && (temp_A ^ temp) & 0x80);
@@ -726,15 +733,15 @@ void Cpu::SEI() {
 }
 
 void Cpu::STA() {
-    Cpu_write(last_absolute_address, A);
+    cpu_write(last_absolute_address, A);
 }
 
 void Cpu::STX() {
-    Cpu_write(last_absolute_address, X);
+    cpu_write(last_absolute_address, X);
 }
 
 void Cpu::STY() {
-    Cpu_write(last_absolute_address, Y);
+    cpu_write(last_absolute_address, Y);
 }
 
 void Cpu::TAX() {
@@ -772,17 +779,21 @@ void Cpu::TYA() {
 }
 
 void Cpu::throw_exception() {
-    uint8_t opcode = Cpu_read(PC - 1);
+    uint8_t opcode = cpu_read(PC - 1);
     throw IncorrectOpcodeError(opcode);
 }
 
-void Cpu::tick() {
+void Cpu::tick(bool even_cycle) {
+    if(dma.is_active()) {
+        dma.tick(even_cycle);
+        return;
+    }
     if (cycles) {
         cycles--;
         return;
     }
     UNUSED = true;  // for tests
-    uint8_t current_opcode = Cpu_read(PC++);
+    uint8_t current_opcode = cpu_read(PC++);
     //    std::cout << std::fixed << std::hex << (int)(PC - 1) << "  " << (int)current_opcode
     //              << "\tA:" << (int)A << " X:" << (int)X << " Y:" << (int)Y << " P:" << (int)flags
     //              << '\n';
@@ -803,9 +814,9 @@ void Cpu::reset() {
     last_absolute_address = 0;
     last_relative_address = 0;
     accumulator_mod = false;
-    uint16_t temp = Cpu_read(0xFFFC);
+    uint16_t temp = cpu_read(0xFFFC);
     PC = temp;
-    temp = Cpu_read(0xFFFD);
+    temp = cpu_read(0xFFFD);
     PC |= temp << 8;
     //    PC = 0xC000;  // for tests
     cycles = 8;
@@ -818,9 +829,9 @@ void Cpu::NMI() {
     UNUSED = true;  // for tests
     ID = true;
     push_on_stack(flags);
-    uint16_t temp = Cpu_read(0xFFFA);
+    uint16_t temp = cpu_read(0xFFFA);
     PC = temp;
-    temp = Cpu_read(0xFFFB);
+    temp = cpu_read(0xFFFB);
     PC |= temp << 8;
     cycles = 7;
 }
@@ -833,9 +844,9 @@ void Cpu::IRQ() {
         UNUSED = true;  // for tests
         ID = true;
         push_on_stack(flags);
-        uint16_t temp = Cpu_read(0xFFFE);
+        uint16_t temp = cpu_read(0xFFFE);
         PC = temp;
-        temp = Cpu_read(0xFFFF);
+        temp = cpu_read(0xFFFF);
         PC |= temp << 8;
         cycles = 7;
     }

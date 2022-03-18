@@ -7,6 +7,7 @@
 #include "connect_token.h"
 #include <memory>
 #include "nes_exceptions.h"
+#include "dma.h"
 
 namespace NES {
 class Cpu;
@@ -19,10 +20,10 @@ struct Instruction {
 class Cpu {
 public:
     Cpu();
-    void connect(Bus *bus_, ConnectToken) noexcept;
-    void tick();
-    uint8_t Cpu_read(uint16_t addr);
-    void Cpu_write(uint16_t addr, uint8_t data);
+    void connect(Bus *bus_, ConnectToken token) noexcept;
+    void tick(bool even_cycle);
+    uint8_t cpu_read(uint16_t addr);
+    void cpu_write(uint16_t addr, uint8_t data);
     // interrupts:
     void reset();
     void NMI();
@@ -50,6 +51,11 @@ private:
     // Bus
 
     Bus *bus;
+
+    //DMA
+
+    Dma dma;
+    bool dma_is_active = false;
 
     // Additional variables:
 

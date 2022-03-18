@@ -7,7 +7,7 @@ void Nes::tick() {
     int64_t frame_counter = 0;
     while (!frame_rendered) {
         if (frame_counter % 3 == 0) {
-            cpu.tick();
+            cpu.tick(frame_counter % 2 == 0);
         }
         frame_rendered = ppu.tick();
         frame_counter += 1;

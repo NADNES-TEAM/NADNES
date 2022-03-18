@@ -52,7 +52,7 @@ void AddressReg::set_y_scroll_from(const AddressReg &other) {
 
 uint8_t SpriteData::get_color() {
     if (counter == 0) {
-        int color = (shifter_high & 0x80) * 2 + (shifter_low & 0x80);
+        int color = ((shifter_high & 0x80) == 0x80) * 2 + ((shifter_low & 0x80) == 0x80);
         shifter_high <<= 1;
         shifter_low <<= 1;
         return color;
@@ -157,65 +157,82 @@ bool Ppu::tick() {
                 VRAM_addr_reg.set_y_scroll_from(VRAM_tmp_addr_reg);  // vert(v) = vert(t)
             }
 
-            // background
-            OAM_is_busy = false;
+            // sprites
+            // clearing secondary OAM
+            if (y_pos != -1 && x_pos == OAM_CLEAR_BEGIN) {
+                OAM_clearing_counter = 0;
+                OAM_is_busy = true;
+            }
             if (y_pos != -1 && OAM_CLEAR_BEGIN <= x_pos && x_pos < OAM_CLEAR_END &&
                 x_pos % 8 == 0) {
-                OAM_is_busy = true;
                 secondary_OAM[OAM_clearing_counter++] = {};
             }
 
-            sprite_zero_next_line = false;
+            // detecting sprites for next line
+            if (y_pos != -1 && x_pos == SP_DETECT_BEGIN) {
+                OAM_is_busy = false;
+                detected_sprites = 0;
+                sprite_detection_complete = false;
+                OAM_addr_reg = 0;
+            }
             if (y_pos != -1 && SP_DETECT_BEGIN <= x_pos && x_pos < SP_DETECT_END && x_pos % 2 &&
                 detected_sprites <= 8 && !sprite_detection_complete) {
                 int dy = y_pos - OAM[OAM_addr_reg];
-                if (0 <= dy && dy >= (8 + 8 * ctrl_reg.sprite_size)) {
+                if (0 <= dy && dy <= (8 + 8 * ctrl_reg.sprite_size)) {
                     if (detected_sprites < 8) {
                         sprite_zero_next_line |= sprite_eval_n == 0;
                         secondary_OAM[detected_sprites] = {OAM[OAM_addr_reg],
                                                            OAM[OAM_addr_reg + 1],
                                                            OAM[OAM_addr_reg + 2],
                                                            OAM[OAM_addr_reg + 3]};
+                        sprite_eval_n++;
+                    } else {
+                        status_reg.sprite_overflow = true;
+                        OAM_addr_reg += 3;
+                        if (sprite_eval_m == 3) {  // TODO:
+                            sprite_eval_n += 1;
+                        }
+                    }
+                    detected_sprites++;
+                } else {
+                    if (detected_sprites == 8) {
+                        sprite_eval_m++;
                     }
                     sprite_eval_n++;
-                } else {
-                    status_reg.sprite_overflow = true;
-                    OAM_addr_reg += 3;
-                    if (sprite_eval_m == 3) {  // TODO:
-                        sprite_eval_n += 1;
-                    }
                 }
-                detected_sprites++;
-            } else {
-                if (detected_sprites == 8) {
-                    sprite_eval_m++;
-                }
-                sprite_eval_n++;
+                sprite_detection_complete = sprite_eval_n == 0;
             }
-            sprite_detection_complete = sprite_eval_n == 0;
-        }
 
-        if (SP_FETCH_BEGIN <= x_pos && x_pos < SP_FETCH_END && (x_pos % 4 == 0)) {
-            SpriteData cur_sp;
-            if (sp_fetch_count < detected_sprites) {
-                cur_sp.attribute = secondary_OAM[sp_fetch_count].attribute;
-                cur_sp.counter = secondary_OAM[sp_fetch_count].x_coord;
-                uint8_t tile_index = secondary_OAM[sp_fetch_count].tile_index;
-                uint16_t addr = 0;
-                int dy = y_pos - secondary_OAM[sp_fetch_count].y_coord;
-                if (ctrl_reg.sprite_size == 0) {  // 8x8
-                    addr = 0x1000 * ctrl_reg.sprite_ptr_table + tile_index * 4 + dy ^
-                           (7 * cur_sp.flip_vertical);
-                } else {  // 8x16
-                    addr = 0x1000 * (tile_index & 1) + ((tile_index >> 1) + (dy > 8)) * 4 + dy ^
-                           (7 * cur_sp.flip_vertical);
-                }
-                uint8_t fetched_high = PPU_read(addr);
-                uint8_t fetched_low = PPU_read(addr + 8);
-                cur_sp.shifter_high = cur_sp.flip_horizontal ? reverse[fetched_high] : fetched_high;
-                cur_sp.shifter_low = cur_sp.flip_horizontal ? reverse[fetched_low] : fetched_low;
+            // loading data for detected sprites
+            if (x_pos == SP_FETCH_BEGIN) {
+                sp_fetch_count = 0;
             }
-            loaded_sprites[sp_fetch_count++] = cur_sp;
+            if (SP_FETCH_BEGIN <= x_pos && x_pos < SP_FETCH_END && (x_pos % 4 == 0) &&
+                sp_fetch_count < 8) {
+                SpriteData cur_sp;
+                if (sp_fetch_count < detected_sprites) {
+                    cur_sp.attribute = secondary_OAM[sp_fetch_count].attribute;
+                    cur_sp.counter = secondary_OAM[sp_fetch_count].x_coord;
+                    uint8_t tile_index = secondary_OAM[sp_fetch_count].tile_index;
+                    uint16_t addr = 0;
+                    int dy = y_pos - secondary_OAM[sp_fetch_count].y_coord;
+                    if (ctrl_reg.sprite_size == 0) {  // 8x8
+                        addr = 0x1000 * ctrl_reg.sprite_ptr_table + tile_index * 16 + dy ^
+                               (7 * cur_sp.flip_vertical);
+                    } else {  // 8x16
+                        addr =
+                            0x1000 * (tile_index & 1) + ((tile_index >> 1) + (dy > 8)) * 16 + dy ^
+                            (7 * cur_sp.flip_vertical);
+                    }
+                    uint8_t fetched_high = PPU_read(addr);
+                    uint8_t fetched_low = PPU_read(addr + 8);
+                    cur_sp.shifter_high =
+                        cur_sp.flip_horizontal ? reverse[fetched_high] : fetched_high;
+                    cur_sp.shifter_low =
+                        cur_sp.flip_horizontal ? reverse[fetched_low] : fetched_low;
+                }
+                loaded_sprites[sp_fetch_count++] = cur_sp;
+            }
         }
     }
 
@@ -236,7 +253,7 @@ bool Ppu::tick() {
     uint8_t sp_palette = 0x00;
     bool sp_priority = false;
     bool sprite_zero_chosen = false;
-    if (mask_reg.sp_enable) {
+    if (mask_reg.sp_enable && x_pos >= 1 && x_pos < 257) {
         for (int i = 0; i < 8; i++) {
             uint8_t color = loaded_sprites[i].get_color();
             if (color && (sp_color == 0x00)) {
@@ -252,30 +269,25 @@ bool Ppu::tick() {
     uint8_t cur_palette = 0;
     uint8_t cur_color = 0;
     if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
-        cur_palette = bg_cur_palette;
+        cur_palette = bg_cur_palette * 4;
         cur_color = bg_color;
     } else {
-        cur_palette = sp_palette;
+        cur_palette = sp_palette * 4 + 0x10;
         cur_color = sp_color;
     }
     bool left_8_enable = mask_reg.bg_left8_enable && mask_reg.sp_left8_enable;
     if (sprite_zero_cur_line && sprite_zero_chosen && bg_color != 0 && sp_color != 0) {
         status_reg.sprite_zero_hit |=
-            (x_pos >= (1 + 8 * !left_8_enable)) && ((x_pos <= HOR_VISIBLE_END));
+            (x_pos >= (1 + 8 * !left_8_enable)) && (x_pos <= HOR_VISIBLE_END) && (x_pos != 255);
     }
 
-    screen->set_pixel(y_pos, x_pos, get_color_from_palette(bg_cur_palette, bg_color));
+    screen->set_pixel(y_pos, x_pos, colors[PPU_read(0x3F00 + cur_palette + cur_color)]);
+
     if (++x_pos >= 341) {
         x_pos = 0;
-        OAM_clearing_counter = 0;
-        OAM_addr_reg = 0;
-        sprite_detection_complete = false;
-        sp_fetch_count = 0;
         sprite_zero_cur_line = sprite_zero_next_line;
         if (++y_pos >= 261) {
             screen->refresh_screen();
-            //            test_utility();
-
             y_pos = -1;
             return true;
         }
@@ -288,9 +300,9 @@ void Ppu::write_ctrl_reg(uint8_t data) {
     ctrl_reg.reg = data;
     VRAM_tmp_addr_reg.nametable_x = ctrl_reg.base_nametable_x;
     VRAM_tmp_addr_reg.nametable_y = ctrl_reg.base_nametable_y;
-    //    if (!prev_NMI_enable_state && ctrl_reg.NMI_enable && status_reg.vertical_blank) {
-    //        cpu->NMI();
-    //    }  // TODO: check this feature
+    if (!prev_NMI_enable_state && ctrl_reg.NMI_enable && status_reg.vertical_blank) {
+        cpu->NMI();
+    }  // TODO: check this feature
 }
 
 void Ppu::write_mask_reg(uint8_t data) {
@@ -387,14 +399,14 @@ void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
 }
 
-Ppu::Ppu() : OAM(256), secondary_OAM(32), palette_mem(32) {}
+Ppu::Ppu() : OAM(256), secondary_OAM(32), palette_mem(32), loaded_sprites(8) {}
 
 void Ppu::set_OAM_address(uint8_t address) {
     OAM_addr_reg = address;
 }
 
 void Ppu::OAM_write(uint8_t data) {
-    OAM[OAM_addr_reg] = data;
+    OAM[OAM_addr_reg++] = data;
 }
 
 uint8_t Ppu::OAM_read() const {
