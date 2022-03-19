@@ -12,8 +12,7 @@ struct Color {
 
 class ScreenInterface {
 public:
-    virtual void set_pixel(int row, int column,
-                           Color color) = 0;
+    virtual void set_pixel(int row, int column, Color color) = 0;
     virtual void refresh_screen() = 0;
 };
 

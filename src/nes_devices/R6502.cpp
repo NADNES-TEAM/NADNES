@@ -9,7 +9,7 @@ uint8_t Cpu::cpu_read(uint16_t addr) {
 }
 
 void Cpu::cpu_write(uint16_t addr, uint8_t data) {
-    if(addr == 0x4014) {
+    if (addr == 0x4014) {
         dma.activate(data);
         return;
     }
@@ -287,8 +287,6 @@ Cpu::Cpu()
                  4, 0, 2, 4, 2, 0, 4, 4, 4, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0,
                  0, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0, 2, 6, 0, 0, 3, 3, 5, 0, 2, 2,
                  2, 0, 4, 4, 6, 0, 2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0} {}
-
-
 
 void Cpu::connect(Bus *bus_, ConnectToken token) noexcept {
     bus = bus_;
@@ -784,7 +782,7 @@ void Cpu::throw_exception() {
 }
 
 void Cpu::tick(bool even_cycle) {
-    if(dma.is_active()) {
+    if (dma.is_active()) {
         dma.tick(even_cycle);
         return;
     }
@@ -820,6 +818,7 @@ void Cpu::reset() {
     PC |= temp << 8;
     //    PC = 0xC000;  // for tests
     cycles = 8;
+    dma.reset();
 }
 
 void Cpu::NMI() {

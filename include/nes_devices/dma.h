@@ -18,6 +18,7 @@ public:
     void tick(bool even_cycle);
     [[nodiscard]] bool is_active() const noexcept;
     void activate(uint8_t address);
+    void reset();
 };
 
 }  // namespace NES

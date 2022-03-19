@@ -17,6 +17,8 @@ public:
 
     void tick();
 
+    void reset();
+
 private:
     Cartridge cartridge;
     Ppu ppu;

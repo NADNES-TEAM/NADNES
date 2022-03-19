@@ -1,12 +1,13 @@
 #pragma once
 
-#include "interfaces/keyboard_interface.h"
 #include "connect_token.h"
+#include "interfaces/keyboard_interface.h"
 
 namespace NES {
 class Controller {
 public:
-    explicit Controller(KeyboardInterface *keyboardInterface = nullptr) : m_keyboard_interface(keyboardInterface) {}
+    explicit Controller(KeyboardInterface *keyboardInterface = nullptr)
+        : m_keyboard_interface(keyboardInterface) {}
 
     void init() const;
 

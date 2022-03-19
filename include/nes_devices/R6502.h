@@ -7,7 +7,7 @@
 #include "connect_token.h"
 #include <memory>
 #include "nes_exceptions.h"
-#include "dma.h"
+#include "nes_devices/dma.h"
 
 namespace NES {
 class Cpu;
@@ -52,7 +52,7 @@ private:
 
     Bus *bus;
 
-    //DMA
+    // DMA
 
     Dma dma;
     bool dma_is_active = false;

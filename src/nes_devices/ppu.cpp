@@ -1,8 +1,8 @@
 #include "nes_devices/ppu.h"
 #include <iomanip>
 #include <iostream>
-#include "nes_devices/R6502.h"
 #include "interfaces/screen_interface.h"
+#include "nes_devices/R6502.h"
 
 namespace NES {
 
@@ -268,7 +268,7 @@ bool Ppu::tick() {
     }
     uint8_t cur_palette = 0;
     uint8_t cur_color = 0;
-    if (sp_color || bg_color){
+    if (sp_color || bg_color) {
         if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
             cur_palette = bg_cur_palette * 4;
             cur_color = bg_color;
@@ -417,6 +417,13 @@ uint8_t Ppu::OAM_read() const {
 
 void Ppu::connect(Cpu *cpu_, ConnectToken) noexcept {
     cpu = cpu_;
+}
+void Ppu::reset() {
+    ctrl_reg.reg = 0;
+    mask_reg.reg = 0;
+    double_write_toggle = false;
+    VRAM_read_buff = 0;
+    odd_frame = false;
 }
 
 }  // namespace NES

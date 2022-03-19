@@ -1,4 +1,4 @@
-#include "dma.h"
+#include "nes_devices/dma.h"
 #include "nes_devices/bus.h"
 
 namespace NES {
@@ -32,4 +32,9 @@ void Dma::tick(bool even_cycle) {
         counter = 0;
     }
 }
+
+void Dma::reset() {
+    activated = false;
+}
+
 }  // namespace NES

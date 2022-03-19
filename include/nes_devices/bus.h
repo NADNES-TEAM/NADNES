@@ -2,11 +2,11 @@
 
 #include <array>
 #include <cstdint>
-#include "nes_devices/controller.h"
-#include "nes_devices/ppu.h"
 #include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"
+#include "nes_devices/controller.h"
+#include "nes_devices/ppu.h"
 
 namespace NES {
 class Bus {

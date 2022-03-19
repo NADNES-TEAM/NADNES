@@ -1,13 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <stdexcept>
 #include <string>
 #include <vector>
-#include "interfaces/screen_interface.h"
 #include "all_nes_fwd.h"
 #include "cartridge.h"
 #include "connect_token.h"
+#include "interfaces/screen_interface.h"
 
 namespace NES {
 
@@ -129,8 +128,8 @@ class Ppu {
     // sprites rendering state
     union {
         struct {
-            uint8_t sprite_eval_m: 2;
-            uint8_t sprite_eval_n: 6;
+            uint8_t sprite_eval_m : 2;
+            uint8_t sprite_eval_n : 6;
         };
         uint8_t OAM_addr_reg = 0;
     };
@@ -183,6 +182,8 @@ public:
     void connect(Cpu *cpu_, ConnectToken) noexcept;
 
     [[nodiscard]] explicit Ppu();
+
+    void reset();
 
     void write_ctrl_reg(uint8_t data);
 

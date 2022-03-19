@@ -24,7 +24,7 @@ add_executable( NADNES
         src/nes_devices/bus.cpp
         src/nes_devices/controller.cpp
         src/nes_devices/R6502.cpp
-        src/dma.cpp)
+        src/nes_devices/dma.cpp)
 
 target_link_libraries(NADNES
         Qt::Core

@@ -30,4 +30,9 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
     cpu.reset();
 }
 
+void Nes::reset() {
+    ppu.reset();
+    cpu.reset();
+}
+
 }  // namespace NES
