@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     main_window.show();
     auto *keyboardInterface = main_window.get_keyboard_interface();
     auto *screenInterface = main_window.get_screen_interface();
-    NES::Nes nes("../DK.nes", screenInterface, keyboardInterface);
+    NES::Nes nes(argv[1], screenInterface, keyboardInterface);
     auto *timer = new QTimer(&application);
     timer->callOnTimeout([&nes]() {
         nes.tick();

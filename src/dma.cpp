@@ -1,5 +1,5 @@
 #include "dma.h"
-#include "bus.h"
+#include "nes_devices/bus.h"
 
 namespace NES {
 void Dma::activate(uint8_t address) {

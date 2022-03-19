@@ -353,7 +353,7 @@ void Cpu::indirect() {
     temp_address <<= 8;
     temp_address |= LSB_temp;
     uint16_t LSB_final = cpu_read(temp_address);
-    if ((LSB_temp & 0xFF) == 0xFF) {
+    if (LSB_temp == 0xFF) {
         last_absolute_address = (cpu_read(temp_address & 0xFF00));  // bug
     } else {
         last_absolute_address = (cpu_read(temp_address + 1));
