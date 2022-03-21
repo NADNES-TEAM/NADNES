@@ -219,10 +219,11 @@ bool Ppu::tick() {
                     if (ctrl_reg.sprite_size == 0) {  // 8x8
                         addr = 0x1000 * ctrl_reg.sprite_ptr_table + tile_index * 16 + dy ^
                                (7 * cur_sp.flip_vertical);
-                    } else {  // 8x16
-                        addr =
-                            0x1000 * (tile_index & 1) + ((tile_index >> 1) + (dy > 8)) * 16 + dy ^
-                            (7 * cur_sp.flip_vertical);
+                    } else {                               // 8x16
+                        addr = 0x1000 * (tile_index & 1);  // nametable
+                        // tile
+                        addr += ((tile_index / 2 * 2) + ((dy >= 8) ^ cur_sp.flip_vertical)) * 16;
+                        addr += (dy % 8) ^ (7 * cur_sp.flip_vertical);  // row
                     }
                     uint8_t fetched_high = PPU_read(addr + 8);
                     uint8_t fetched_low = PPU_read(addr);
@@ -270,7 +271,8 @@ bool Ppu::tick() {
     uint8_t cur_color = 0;
     if (sp_color || bg_color) {
         if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
-            cur_palette = (((x_pos - 1) % 8 + fine_x_scroll) > 7) ? bg_next_palette : bg_cur_palette;
+            cur_palette =
+                (((x_pos - 1) % 8 + fine_x_scroll) > 7) ? bg_next_palette : bg_cur_palette;
             cur_palette *= 4;
             cur_color = bg_color;
         } else {
