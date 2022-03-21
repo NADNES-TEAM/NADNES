@@ -270,7 +270,8 @@ bool Ppu::tick() {
     uint8_t cur_color = 0;
     if (sp_color || bg_color) {
         if ((sp_color == 0) || (bg_color != 0 && sp_priority)) {
-            cur_palette = bg_cur_palette * 4;
+            cur_palette = (((x_pos - 1) % 8 + fine_x_scroll) > 7) ? bg_next_palette : bg_cur_palette;
+            cur_palette *= 4;
             cur_color = bg_color;
         } else {
             cur_palette = sp_palette * 4 + 0x10;
@@ -291,6 +292,7 @@ bool Ppu::tick() {
         if (++y_pos >= 261) {
             screen->refresh_screen();
             y_pos = -1;
+            odd_frame ^= 1;
             return true;
         }
     }
@@ -421,6 +423,7 @@ void Ppu::connect(Cpu *cpu_, ConnectToken) noexcept {
 void Ppu::reset() {
     ctrl_reg.reg = 0;
     mask_reg.reg = 0;
+    VRAM_tmp_addr_reg.reg = 0;
     double_write_toggle = false;
     VRAM_read_buff = 0;
     odd_frame = false;
