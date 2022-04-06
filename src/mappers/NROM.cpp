@@ -1,5 +1,5 @@
 #include "mappers/NROM.h"
-#include "mapper.h"
+#include "interfaces/mapper.h"
 
 namespace NES {
 NROMMapper::NROMMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
@@ -24,6 +24,7 @@ uint16_t NROMMapper::map_PPU_address(uint16_t address) const {
     if (address < 0x2000) {
         return address;
     } else {
+        address -= 0x2000;
         if (mirror_type == Mirroring::Horizontal) {
             return (address % 0x0400 + 0x0800 * (address >= 0x2800) + 0x2000);
         } else {

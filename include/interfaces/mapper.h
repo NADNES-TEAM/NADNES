@@ -6,9 +6,9 @@
 namespace NES {
 enum class Mirroring { Horizontal, Vertical };
 
-const uint16_t PRG_ROM_BANK_SIZE = 1 << 14;
-const uint16_t CHR_ROM_BANK_SIZE = 1 << 13;
-const uint16_t CHR_RAM_size = 1 << 12;
+constexpr uint16_t PRG_ROM_BANK_SIZE = 1 << 14;
+constexpr uint16_t CHR_ROM_BANK_SIZE = 1 << 13;
+constexpr uint16_t CHR_RAM_size = 1 << 12;
 
 struct AbstractMapper {
     [[nodiscard]] virtual uint16_t map_read_from_CPU(uint16_t address) const = 0;

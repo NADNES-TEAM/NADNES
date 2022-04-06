@@ -1,8 +1,9 @@
 #pragma once
 
-#include "mapper.h"
+#include "interfaces/mapper.h"
 
 namespace NES {
+
 struct NROMMapper : AbstractMapper {
     Mirroring mirror_type;
     uint8_t PRG_banks_count;

@@ -1,4 +1,4 @@
-#include "cartridge.h"
+#include "nes_devices/cartridge.h"
 #include <fstream>
 #include <iostream>
 #include "NROM.h"
