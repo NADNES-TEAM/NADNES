@@ -9,11 +9,13 @@ namespace NES {
 
 struct NesError : std::runtime_error {
     using std::runtime_error::runtime_error;
+
     static std::string to_hex8(uint8_t v) {
         std::stringstream ss;
         ss << std::hex << std::setfill('0') << std::setw(2) << v;
         return ss.str();
     }
+
     static std::string to_hex_addr(uint16_t addr) {
         std::stringstream ss;
         ss << "$" << std::hex << std::setfill('0') << std::setw(4) << addr;

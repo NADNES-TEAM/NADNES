@@ -397,9 +397,6 @@ void Ppu::PPU_write(uint16_t address, uint8_t data) {
 void Ppu::connect(PpuToCartridgeInterface *cartridge_, ConnectToken) noexcept {
     cartridge = cartridge_;
 }
-Color Ppu::get_color_from_palette(uint8_t palette, uint8_t color) const {
-    return colors[PPU_read(0x3F00 + palette * 4 + color)];
-}
 
 void Ppu::connect(ScreenInterface *screen_, ConnectToken) noexcept {
     screen = screen_;
@@ -422,7 +419,8 @@ uint8_t Ppu::OAM_read() const {
 void Ppu::connect(Cpu *cpu_, ConnectToken) noexcept {
     cpu = cpu_;
 }
-void Ppu::reset() {
+
+void Ppu::reset(ResetToken) {
     ctrl_reg.reg = 0;
     mask_reg.reg = 0;
     VRAM_tmp_addr_reg.reg = 0;

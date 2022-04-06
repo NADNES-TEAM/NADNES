@@ -1,4 +1,5 @@
 #include "nes.h"
+#include "reset_token.h"
 
 namespace NES {
 
@@ -27,12 +28,12 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
     controller.connect(keyboard_, ConnectToken());
 
     cpu.connect(&bus, ConnectToken());
-    cpu.reset();
+    cpu.reset(ResetToken());
 }
 
 void Nes::reset() {
-    ppu.reset();
-    cpu.reset();
+    ppu.reset(ResetToken());
+    cpu.reset(ResetToken());
 }
 
 }  // namespace NES

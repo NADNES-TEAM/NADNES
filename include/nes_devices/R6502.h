@@ -8,6 +8,7 @@
 #include <memory>
 #include "nes_exceptions.h"
 #include "nes_devices/dma.h"
+#include "reset_token.h"
 
 namespace NES {
 class Cpu;
@@ -25,7 +26,7 @@ public:
     uint8_t cpu_read(uint16_t addr);
     void cpu_write(uint16_t addr, uint8_t data);
     // interrupts:
-    void reset();
+    void reset(ResetToken);
     void NMI();
     void IRQ();
 

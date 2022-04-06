@@ -7,6 +7,7 @@
 #include "cartridge.h"
 #include "connect_token.h"
 #include "interfaces/screen_interface.h"
+#include "reset_token.h"
 
 namespace NES {
 
@@ -144,20 +145,20 @@ class Ppu {
     bool sprite_zero_cur_line = false;
 
     // background rendering constants [ )
-    const int VERT_VISIBLE_BEGIN = -1;
-    const int VERT_VISIBLE_END = 240;
-    const int HOR_VISIBLE_BEGIN = 1;
-    const int HOR_VISIBLE_END = 257;
-    const int HOR_PRERENDER_BEGIN = 321;
-    const int HOR_PRERENDER_END = 337;
+    constexpr static int VERT_VISIBLE_BEGIN = -1;
+    constexpr static int VERT_VISIBLE_END = 240;
+    constexpr static int HOR_VISIBLE_BEGIN = 1;
+    constexpr static int HOR_VISIBLE_END = 257;
+    constexpr static int HOR_PRERENDER_BEGIN = 321;
+    constexpr static int HOR_PRERENDER_END = 337;
 
     // sprite evaluation constants [ )
-    const int OAM_CLEAR_BEGIN = 1;
-    const int OAM_CLEAR_END = 65;
-    const int SP_DETECT_BEGIN = 65;
-    const int SP_DETECT_END = 257;
-    const int SP_FETCH_BEGIN = 257;
-    const int SP_FETCH_END = 321;
+    constexpr static int OAM_CLEAR_BEGIN = 1;
+    constexpr static int OAM_CLEAR_END = 65;
+    constexpr static int SP_DETECT_BEGIN = 65;
+    constexpr static int SP_DETECT_END = 257;
+    constexpr static int SP_FETCH_BEGIN = 257;
+    constexpr static int SP_FETCH_END = 321;
 
     // memory
     std::vector<uint8_t> OAM;
@@ -170,8 +171,6 @@ class Ppu {
 
     [[nodiscard]] uint8_t PPU_read(uint16_t address) const;
 
-    [[nodiscard]] Color get_color_from_palette(uint8_t palette, uint8_t color) const;
-
     void PPU_write(uint16_t address, uint8_t data);
 
 public:
@@ -183,7 +182,7 @@ public:
 
     [[nodiscard]] explicit Ppu();
 
-    void reset();
+    void reset(ResetToken);
 
     void write_ctrl_reg(uint8_t data);
 

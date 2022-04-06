@@ -803,7 +803,7 @@ void Cpu::tick(bool even_cycle) {
     UNUSED = true;  // for tests
 }
 
-void Cpu::reset() {
+void Cpu::reset(ResetToken) {
     A = 0;
     X = 0;
     Y = 0;
