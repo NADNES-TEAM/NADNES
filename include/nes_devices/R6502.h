@@ -23,8 +23,6 @@ public:
     Cpu();
     void connect(Bus *bus_, ConnectToken token) noexcept;
     void tick(bool even_cycle);
-    uint8_t cpu_read(uint16_t addr);
-    void cpu_write(uint16_t addr, uint8_t data);
     // interrupts:
     void reset(ResetToken);
     void NMI();
@@ -87,7 +85,8 @@ private:
     std::array<Instruction, 1 << 8> map_opcodes;
     std::array<uint8_t, 1 << 8> map_cycles;
     // Others
-
+    uint8_t cpu_read(uint16_t addr);
+    void cpu_write(uint16_t addr, uint8_t data);
     void add_relative();
     void cmp_with(uint8_t T);
     void push_on_stack(uint8_t T);
