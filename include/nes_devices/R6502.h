@@ -13,22 +13,15 @@
 namespace NES {
 class Cpu;
 using no_param = void (Cpu::*)();
+
+#pragma pack(push, 1)
+
 struct Instruction {
     no_param func;
     no_param addr_mod;
 };
 
-class Cpu {
-public:
-    Cpu();
-    void connect(Bus *bus_, ConnectToken token) noexcept;
-    void tick(bool even_cycle);
-    // interrupts:
-    void reset(ResetToken);
-    void NMI();
-    void IRQ();
-
-private:
+struct CpuData {
     union {
         struct {
             bool CF     : 1;
@@ -47,6 +40,32 @@ private:
 
     uint8_t A, X, Y, SP;
     uint16_t PC;
+
+    // DMA
+
+    bool dma_is_active = false;
+
+    // Additional variables
+
+    bool accumulator_mod{false};
+    uint16_t last_absolute_address;
+    uint16_t last_relative_address;
+    uint8_t cycles;
+};
+
+class Cpu : CpuData {
+public:
+    Cpu();
+    void connect(Bus *bus_, ConnectToken token) noexcept;
+    void tick(bool even_cycle);
+    void save(std::ofstream &file);
+    void load(std::ifstream &file);
+    // interrupts:
+    void reset(ResetToken);
+    void NMI();
+    void IRQ();
+
+private:
     // Bus
 
     Bus *bus;
@@ -54,14 +73,7 @@ private:
     // DMA
 
     Dma dma;
-    bool dma_is_active = false;
 
-    // Additional variables:
-
-    bool accumulator_mod{false};
-    uint16_t last_absolute_address;
-    uint16_t last_relative_address;
-    uint8_t cycles;
     // Methods for filling the array:
 
     void throw_exception();
@@ -91,5 +103,7 @@ private:
     void cmp_with(uint8_t T);
     void push_on_stack(uint8_t T);
 };
+
+#pragma pack(pop)
 
 }  // namespace NES

@@ -2,13 +2,13 @@
 
 #include <QObject>
 #include <string>
-#include "nes_devices/controller.h"
 #include "interfaces/keyboard_interface.h"
-#include "nes_devices/ppu.h"
-#include "nes_devices/R6502.h"
 #include "interfaces/screen_interface.h"
+#include "nes_devices/R6502.h"
 #include "nes_devices/bus.h"
 #include "nes_devices/cartridge.h"
+#include "nes_devices/controller.h"
+#include "nes_devices/ppu.h"
 
 namespace NES {
 struct Nes {
@@ -19,6 +19,9 @@ public:
 
     void reset();
 
+    void save(const std::string &filename);
+
+    void load(const std::string &filename);
 
 private:
     Cartridge cartridge;

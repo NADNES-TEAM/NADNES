@@ -1,6 +1,7 @@
 #include "nes_devices/R6502.h"
 #include <iostream>
 #include <utility>
+#include <fstream>
 
 namespace NES {
 
@@ -849,6 +850,16 @@ void Cpu::IRQ() {
         PC |= temp << 8;
         cycles = 7;
     }
+}
+
+void Cpu::save(std::ofstream &file) {
+    file.write(reinterpret_cast<char *>(this), sizeof(CpuData));
+    dma.save(file);
+}
+
+void Cpu::load(std::ifstream &file) {
+    file.read(reinterpret_cast<char *>(this), sizeof(CpuData));
+    dma.load(file);
 }
 
 }  // namespace NES

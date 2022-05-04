@@ -1,4 +1,5 @@
 #include "nes_devices/bus.h"
+#include <fstream>
 
 namespace NES {
 
@@ -36,6 +37,7 @@ void Bus::mem_write(uint16_t addr, uint8_t data) {
         cartridge->CPU_write(addr, data);
     }
 }
+
 uint8_t Bus::mem_read(uint16_t addr) {
     if (addr < 0x2000) {  // RAM
         return RAM[addr % 0x800];
@@ -64,13 +66,25 @@ uint8_t Bus::mem_read(uint16_t addr) {
     }
     return 0;
 }
+
 void Bus::connect(CpuToCartridgeInterface *cartridge_, ConnectToken) noexcept {
     cartridge = cartridge_;
 }
+
 void Bus::connect(Ppu *ppu_, ConnectToken) noexcept {
     ppu = ppu_;
 }
+
 void Bus::connect(Controller *controller_, ConnectToken) noexcept {
     controller = controller_;
 }
+
+void Bus::save(std::ofstream &file) {
+    file.write(reinterpret_cast<char *>(&RAM[0]), RAM.size());
+}
+
+void Bus::load(std::ifstream &file) {
+    file.read(reinterpret_cast<char *>(&RAM[0]), RAM.size());
+}
+
 }  // namespace NES

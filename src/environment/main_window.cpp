@@ -101,6 +101,7 @@ void MainWindow::load_rom() {
                 this->m_nes->tick();
             } catch (NesError &e) { handle_exception(e); }
         });
+        last_save_path = "";
         m_clock.start();
     } catch (NES::NesError &e) { handle_exception(e); }
 }
@@ -124,11 +125,63 @@ void MainWindow::reset_nes() {
     }
 }
 
+void MainWindow::save_game_to() {
+    if (!m_nes) {
+        return;
+    }
+    QString save_path =
+        QFileDialog::getSaveFileName(this, "Select save file", "", "NADNES saves (*.save)");
+    if (save_path.isEmpty()) {
+        return;
+    }
+    last_save_path = save_path;
+    m_nes->save(save_path.toStdString());
+}
+
+void MainWindow::quicksave() {
+    if (!m_nes) {
+        return;
+    }
+    if (last_save_path.isEmpty()) {
+        save_game_to();
+        return;
+    }
+    m_nes->save(last_save_path.toStdString());
+}
+
+void MainWindow::load_game_from() {
+    if (!m_nes) {
+        return;
+    }
+    QString load_path =
+        QFileDialog::getOpenFileName(this, "Select save file", "", "NADNES saves (*.save)");
+    if (load_path.isEmpty()) {
+        return;
+    }
+    last_save_path = load_path;
+    m_nes->load(load_path.toStdString());
+}
+
+void MainWindow::quickload() {
+    if (last_save_path.isEmpty()) {
+        load_game_from();
+        return;
+    }
+    m_nes->load(last_save_path.toStdString());
+}
+
 void MainWindow::create_menus() {
     nes_menu = menuBar()->addMenu("Emulator");
     nes_menu->addAction(load_act);
     nes_menu->addAction(reset_act);
     nes_menu->addAction(pause_act);
+
+    saves_menu = menuBar()->addMenu("Game saves");
+    saves_menu->addAction(quicksave_act);
+    saves_menu->addAction(save_to_act);
+    saves_menu->addSeparator();
+    saves_menu->addAction(quickload_act);
+    saves_menu->addAction(load_from_act);
 }
 
 void MainWindow::create_actions() {
@@ -146,6 +199,26 @@ void MainWindow::create_actions() {
     pause_act->setShortcut(QKeySequence("Esc"));
     pause_act->setStatusTip("Pause or resume emulation");
     connect(pause_act, &QAction::triggered, this, &MainWindow::pause_nes);
+
+    save_to_act = new QAction("Save game as...", this);
+    save_to_act->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    save_to_act->setStatusTip("Save game to selected file");
+    connect(save_to_act, &QAction::triggered, this, &MainWindow::save_game_to);
+
+    quicksave_act = new QAction("Quicksave", this);
+    quicksave_act->setShortcut(QKeySequence("Ctrl+S"));
+    quicksave_act->setStatusTip("Save game to last selected file");
+    connect(quicksave_act, &QAction::triggered, this, &MainWindow::quicksave);
+
+    load_from_act = new QAction("Load game from...", this);
+    load_from_act->setShortcut(QKeySequence("Ctrl+Shift+L"));
+    load_from_act->setStatusTip("Load game from selected save file");
+    connect(load_from_act, &QAction::triggered, this, &MainWindow::load_game_from);
+
+    quickload_act = new QAction("Quickload", this);
+    quickload_act->setShortcut(QKeySequence("Ctrl+L"));
+    quickload_act->setStatusTip("Load game from last selected save file");
+    connect(quickload_act, &QAction::triggered, this, &MainWindow::quickload);
 }
 
 }  // namespace NES

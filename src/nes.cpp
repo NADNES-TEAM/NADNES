@@ -1,4 +1,5 @@
 #include "nes.h"
+#include "nes_exceptions.h"
 #include "reset_token.h"
 
 namespace NES {
@@ -34,6 +35,30 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
 void Nes::reset() {
     ppu.reset(ResetToken());
     cpu.reset(ResetToken());
+}
+
+void Nes::save(const std::string &filename) {
+    auto file = std::ofstream(filename, std::ios::binary);
+    if (!file) {
+        throw UnableToOpenFileError(filename);
+    }
+    cpu.save(file);
+    ppu.save(file);
+    cartridge.save(file);
+    bus.save(file);
+    file.close();
+}
+
+void Nes::load(const std::string &filename) {
+    auto file = std::ifstream(filename, std::ios::binary);
+    if (!file) {
+        throw UnableToOpenFileError(filename);
+    }
+    cpu.load(file);
+    ppu.load(file);
+    cartridge.load(file);
+    bus.load(file);
+    file.close();
 }
 
 }  // namespace NES

@@ -11,6 +11,8 @@
 
 namespace NES {
 
+#pragma pack(push, 1)
+
 class AddressReg {
     friend class Ppu;
 
@@ -66,7 +68,7 @@ struct SpriteData {
     uint8_t get_color();
 };
 
-class Ppu {
+struct PpuData {
     // registers
     union {
         struct {
@@ -134,8 +136,7 @@ class Ppu {
         };
         uint8_t OAM_addr_reg = 0;
     };
-    std::vector<SpriteInfo> secondary_OAM;
-    std::vector<SpriteData> loaded_sprites;
+
     int OAM_clearing_counter = 0;
     bool OAM_is_busy = false;
     int detected_sprites = 0;
@@ -143,7 +144,9 @@ class Ppu {
     int sp_fetch_count = 0;
     bool sprite_zero_next_line = false;
     bool sprite_zero_cur_line = false;
+};
 
+class Ppu : PpuData {
     // background rendering constants [ )
     constexpr static int VERT_VISIBLE_BEGIN = -1;
     constexpr static int VERT_VISIBLE_END = 240;
@@ -161,6 +164,8 @@ class Ppu {
     constexpr static int SP_FETCH_END = 321;
 
     // memory
+    std::vector<SpriteInfo> secondary_OAM;
+    std::vector<SpriteData> loaded_sprites;
     std::vector<uint8_t> OAM;
     std::vector<uint8_t> palette_mem;
 
@@ -205,6 +210,10 @@ public:
     uint8_t VRAM_read();
 
     bool tick();
-};
 
+    void save(std::ofstream &file);
+
+    void load(std::ifstream &file);
+};
+#pragma pack(pop)
 }  // namespace NES

@@ -1,5 +1,7 @@
 #pragma once
+
 #include <cstdint>
+#include <fstream>
 #include "all_nes_fwd.h"
 #include "connect_token.h"
 
@@ -10,8 +12,8 @@ class Dma {
     int counter = 0;
     bool activated = false;
     bool started = false;
-    Bus *bus = nullptr;
     uint8_t transfer_data = 0;
+    Bus *bus = nullptr;
 
 public:
     void connect(Bus *bus_, ConnectToken) noexcept;
@@ -19,6 +21,8 @@ public:
     [[nodiscard]] bool is_active() const noexcept;
     void activate(uint8_t address);
     void reset();
+    void save(std::ofstream &file);
+    void load(std::ifstream &file);
 };
 
 }  // namespace NES

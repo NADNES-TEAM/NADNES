@@ -37,4 +37,12 @@ void Dma::reset() {
     activated = false;
 }
 
+void Dma::save(std::ofstream &file) {
+    file.write(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
+}
+
+void Dma::load(std::ifstream &file) {
+    file.read(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
+}
+
 }  // namespace NES

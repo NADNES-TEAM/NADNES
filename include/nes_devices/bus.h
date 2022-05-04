@@ -22,5 +22,7 @@ public:
     void connect(CpuToCartridgeInterface *cartridge_, ConnectToken) noexcept;
     void connect(Ppu *ppu_, ConnectToken) noexcept;
     void connect(Controller *controller, ConnectToken) noexcept;
+    void save(std::ofstream &file);
+    void load(std::ifstream &file);
 };
 }  // namespace NES

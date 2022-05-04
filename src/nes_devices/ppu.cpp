@@ -1,4 +1,5 @@
 #include "nes_devices/ppu.h"
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include "interfaces/screen_interface.h"
@@ -427,6 +428,26 @@ void Ppu::reset(ResetToken) {
     double_write_toggle = false;
     VRAM_read_buff = 0;
     odd_frame = false;
+}
+
+void Ppu::save(std::ofstream &file) {
+    file.write(reinterpret_cast<char *>(this), sizeof(PpuData));
+    file.write(reinterpret_cast<char *>(&OAM[0]), OAM.size());
+    file.write(reinterpret_cast<char *>(&palette_mem[0]), palette_mem.size());
+    file.write(reinterpret_cast<char *>(&secondary_OAM[0]),
+               secondary_OAM.size() * sizeof(secondary_OAM[0]));
+    file.write(reinterpret_cast<char *>(&loaded_sprites[0]),
+               loaded_sprites.size() * sizeof(loaded_sprites[0]));
+}
+
+void Ppu::load(std::ifstream &file) {
+    file.read(reinterpret_cast<char *>(this), sizeof(PpuData));
+    file.read(reinterpret_cast<char *>(&OAM[0]), OAM.size());
+    file.read(reinterpret_cast<char *>(&palette_mem[0]), palette_mem.size());
+    file.read(reinterpret_cast<char *>(&secondary_OAM[0]),
+              secondary_OAM.size() * sizeof(secondary_OAM[0]));
+    file.read(reinterpret_cast<char *>(&loaded_sprites[0]),
+              loaded_sprites.size() * sizeof(loaded_sprites[0]));
 }
 
 }  // namespace NES
