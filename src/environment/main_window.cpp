@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QMap>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QTimer>
 #include <bitset>
 #include <iostream>
@@ -9,6 +10,13 @@
 #include "nes_properties.h"
 
 namespace NES {
+
+void handle_exception(std::exception &e) {
+    std::cout << e.what();
+    QMessageBox error_msg;
+    error_msg.setText(e.what());
+    error_msg.exec();
+}
 
 QMap<Qt::Key, int> MainWindow::m_index_by_key{{Qt::Key::Key_A, 0},
                                               {Qt::Key::Key_S, 1},
@@ -88,9 +96,13 @@ void MainWindow::load_rom() {
         m_nes = std::make_unique<Nes>(rom_path.toStdString(),
                                       get_screen_interface(),
                                       get_keyboard_interface());
-        m_clock.callOnTimeout([&]() { this->m_nes->tick(); });
+        m_clock.callOnTimeout([&]() {
+            try {
+                this->m_nes->tick();
+            } catch (NesError &e) { handle_exception(e); }
+        });
         m_clock.start();
-    } catch (NES::NesError &e) { std::cout << e.what(); }
+    } catch (NES::NesError &e) { handle_exception(e); }
 }
 
 void MainWindow::pause_nes() {
@@ -103,10 +115,12 @@ void MainWindow::pause_nes() {
 }
 
 void MainWindow::reset_nes() {
-    m_nes->reset();
-    if (pause) {
-        m_clock.start();
-        pause = false;
+    if (m_nes) {
+        m_nes->reset();
+        if (pause) {
+            m_clock.start();
+            pause = false;
+        }
     }
 }
 
