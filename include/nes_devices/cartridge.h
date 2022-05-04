@@ -61,8 +61,7 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
     void PPU_write(uint16_t address, uint8_t data) override;
 
 public:
-    Cartridge();
-    void load(const std::string &filename);
+    explicit Cartridge(const std::string &filename);
 };
 
 }  // namespace NES

@@ -23,9 +23,7 @@ enum class MapperTypes : uint8_t { NROM = 0 };
     }
 }
 
-Cartridge::Cartridge() : CHR_RAM(CHR_RAM_size) {}
-
-void Cartridge::load(const std::string &filename) {
+Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
     std::ifstream rom_file(filename, std::ios::binary);
     if (!rom_file.is_open()) {
         throw UnableToOpenFileError(filename);

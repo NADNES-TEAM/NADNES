@@ -20,22 +20,9 @@ QMap<Qt::Key, int> MainWindow::m_index_by_key{{Qt::Key::Key_A, 0},
                                               {Qt::Key::Key_Right, 7}};
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    auto pressed_key = static_cast<const Qt::Key>(event->key());
-    switch (pressed_key) {
-        case Qt::Key::Key_Escape:
-            if (pause) {
-                m_clock.start();
-            } else {
-                m_clock.stop();
-            }
-            pause = !pause;
-            break;
-        default: {
-            unsigned value = m_index_by_key.value(pressed_key, 8);
-            std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
-            m_pressed_keys_bitset |= mask;              // 2 operations but still ok
-        }
-    }
+    unsigned value = m_index_by_key.value(static_cast<const Qt::Key>(event->key()), 8);
+    std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
+    m_pressed_keys_bitset |= mask;              // 2 operations but still ok
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -54,12 +41,19 @@ void MainWindow::set_pixel(int row, int column, Color color) {
     }
 }
 
+ScreenInterface *MainWindow::get_screen_interface() {
+    return dynamic_cast<ScreenInterface *>(this);
+}
+
+KeyboardInterface *MainWindow::get_keyboard_interface() {
+    return dynamic_cast<KeyboardInterface *>(this);
+}
+
 MainWindow::MainWindow()
     : QMainWindow(),
       m_screen_image(SCREEN_WIDTH, SCREEN_HEIGHT, QImage::Format_RGB888),
       m_image_label(new QLabel),
-      m_clock(this)
-     {
+      m_clock(this) {
     m_image_label->setPixmap(QPixmap::fromImage(m_screen_image));
     m_image_label->setBackgroundRole(QPalette::Window);
     m_image_label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -89,22 +83,38 @@ void MainWindow::load_rom() {
     QString rom_path = QFileDialog::getOpenFileName(this, "Select ROM", "", "iNes files (*.nes)");
     if (rom_path.isEmpty())
         return;
-//    std::cout << rom_path.toStdString() << '\n';
     try {
         m_clock.stop();
-        m_nes = std::make_unique<Nes>(
-             get_screen_interface(), get_keyboard_interface());
-//        m_nes = Nes(this, this);
-        m_nes->load_cartridge(rom_path.toStdString());
-        m_nes->reset();
+        m_nes = std::make_unique<Nes>(rom_path.toStdString(),
+                                      get_screen_interface(),
+                                      get_keyboard_interface());
         m_clock.callOnTimeout([&]() { this->m_nes->tick(); });
         m_clock.start();
     } catch (NES::NesError &e) { std::cout << e.what(); }
 }
 
+void MainWindow::pause_nes() {
+    if (pause) {
+        m_clock.start();
+    } else {
+        m_clock.stop();
+    }
+    pause = !pause;
+}
+
+void MainWindow::reset_nes() {
+    m_nes->reset();
+    if (pause) {
+        m_clock.start();
+        pause = false;
+    }
+}
+
 void MainWindow::create_menus() {
-    nes_menu = menuBar()->addMenu("NADNES");
+    nes_menu = menuBar()->addMenu("Emulator");
     nes_menu->addAction(load_act);
+    nes_menu->addAction(reset_act);
+    nes_menu->addAction(pause_act);
 }
 
 void MainWindow::create_actions() {
@@ -112,14 +122,16 @@ void MainWindow::create_actions() {
     load_act->setShortcuts(QKeySequence::Open);
     load_act->setStatusTip("Select and load existing ROM file");
     connect(load_act, &QAction::triggered, this, &MainWindow::load_rom);
-}
 
-ScreenInterface *MainWindow::get_screen_interface() {
-    return dynamic_cast<ScreenInterface *>(this);
-}
-KeyboardInterface *MainWindow::get_keyboard_interface() {
-    return dynamic_cast<KeyboardInterface *>(this);
-}
+    reset_act = new QAction("Reset", this);
+    reset_act->setShortcut(QKeySequence("Ctrl+R"));
+    reset_act->setStatusTip("Reset NES state");
+    connect(reset_act, &QAction::triggered, this, &MainWindow::reset_nes);
 
+    pause_act = new QAction("Pause/Resume", this);
+    pause_act->setShortcut(QKeySequence("Esc"));
+    pause_act->setStatusTip("Pause or resume emulation");
+    connect(pause_act, &QAction::triggered, this, &MainWindow::pause_nes);
+}
 
 }  // namespace NES
