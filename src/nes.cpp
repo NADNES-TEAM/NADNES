@@ -15,9 +15,13 @@ void Nes::tick() {
     };
 }
 
-Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_)
-    : cartridge(filename) {
+Nes::Nes(ScreenInterface *screen_, KeyboardInterface *keyboard_) {
     ppu.connect(screen_, ConnectToken());
+    controller.connect(keyboard_, ConnectToken());
+}
+
+void Nes::reset() {
+
     ppu.connect(&cartridge, ConnectToken());
     ppu.connect(&cpu, ConnectToken());
 
@@ -25,15 +29,13 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
     bus.connect(&cartridge, ConnectToken());
     bus.connect(&controller, ConnectToken());
 
-    controller.connect(keyboard_, ConnectToken());
-
     cpu.connect(&bus, ConnectToken());
+    ppu.reset(ResetToken());
     cpu.reset(ResetToken());
 }
 
-void Nes::reset() {
-    ppu.reset(ResetToken());
-    cpu.reset(ResetToken());
+void Nes::load_cartridge(const std::string &filename) {
+    cartridge.load(filename);
 }
 
 }  // namespace NES

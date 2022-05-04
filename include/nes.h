@@ -13,11 +13,13 @@
 namespace NES {
 struct Nes {
 public:
-    Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_);
+    Nes(ScreenInterface *screen_, KeyboardInterface *keyboard_);
 
     void tick();
 
     void reset();
+
+    void load_cartridge(const std::string &filename);
 
 private:
     Cartridge cartridge;
