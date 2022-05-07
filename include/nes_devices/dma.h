@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <fstream>
+#include <iosfwd>
 #include "all_nes_fwd.h"
 #include "connect_token.h"
 
@@ -21,8 +21,8 @@ public:
     [[nodiscard]] bool is_active() const noexcept;
     void activate(uint8_t address);
     void reset();
-    void save(std::ofstream &file);
-    void load(std::ifstream &file);
+    void save(std::ostream &file);
+    void load(std::istream &file);
 };
 
 }  // namespace NES

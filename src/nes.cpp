@@ -1,4 +1,5 @@
 #include "nes.h"
+#include <fstream>
 #include "nes_exceptions.h"
 #include "reset_token.h"
 

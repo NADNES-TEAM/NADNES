@@ -1,5 +1,4 @@
 #include "nes_devices/ppu.h"
-#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include "interfaces/screen_interface.h"
@@ -430,7 +429,7 @@ void Ppu::reset(ResetToken) {
     odd_frame = false;
 }
 
-void Ppu::save(std::ofstream &file) {
+void Ppu::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(this), sizeof(PpuData));
     file.write(reinterpret_cast<char *>(&OAM[0]), OAM.size());
     file.write(reinterpret_cast<char *>(&palette_mem[0]), palette_mem.size());
@@ -440,7 +439,7 @@ void Ppu::save(std::ofstream &file) {
                loaded_sprites.size() * sizeof(loaded_sprites[0]));
 }
 
-void Ppu::load(std::ifstream &file) {
+void Ppu::load(std::istream &file) {
     file.read(reinterpret_cast<char *>(this), sizeof(PpuData));
     file.read(reinterpret_cast<char *>(&OAM[0]), OAM.size());
     file.read(reinterpret_cast<char *>(&palette_mem[0]), palette_mem.size());

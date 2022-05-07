@@ -211,9 +211,9 @@ public:
 
     bool tick();
 
-    void save(std::ofstream &file);
+    void save(std::ostream &file);
 
-    void load(std::ifstream &file);
+    void load(std::istream &file);
 };
 #pragma pack(pop)
 }  // namespace NES

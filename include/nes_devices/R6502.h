@@ -58,8 +58,8 @@ public:
     Cpu();
     void connect(Bus *bus_, ConnectToken token) noexcept;
     void tick(bool even_cycle);
-    void save(std::ofstream &file);
-    void load(std::ifstream &file);
+    void save(std::ostream &file);
+    void load(std::istream &file);
     // interrupts:
     void reset(ResetToken);
     void NMI();

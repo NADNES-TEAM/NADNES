@@ -37,11 +37,11 @@ void Dma::reset() {
     activated = false;
 }
 
-void Dma::save(std::ofstream &file) {
+void Dma::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
 }
 
-void Dma::load(std::ifstream &file) {
+void Dma::load(std::istream &file) {
     file.read(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
 }
 

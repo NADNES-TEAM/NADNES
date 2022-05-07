@@ -63,9 +63,9 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
 public:
     explicit Cartridge(const std::string &filename);
 
-    void save(std::ofstream &file);
+    void save(std::ostream &file);
 
-    void load(std::ifstream &file);
+    void load(std::istream &file);
 };
 
 }  // namespace NES

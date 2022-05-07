@@ -1,5 +1,5 @@
 #include "nes_devices/bus.h"
-#include <fstream>
+#include <iosfwd>
 
 namespace NES {
 
@@ -79,11 +79,11 @@ void Bus::connect(Controller *controller_, ConnectToken) noexcept {
     controller = controller_;
 }
 
-void Bus::save(std::ofstream &file) {
+void Bus::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(&RAM[0]), RAM.size());
 }
 
-void Bus::load(std::ifstream &file) {
+void Bus::load(std::istream &file) {
     file.read(reinterpret_cast<char *>(&RAM[0]), RAM.size());
 }
 

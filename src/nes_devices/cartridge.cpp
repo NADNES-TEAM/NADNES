@@ -76,11 +76,11 @@ void Cartridge::PPU_write(uint16_t address, uint8_t data) {
     }
 }
 
-void Cartridge::save(std::ofstream &file) {
+void Cartridge::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(&CHR_RAM[0]), CHR_RAM_size);
 }
 
-void Cartridge::load(std::ifstream &file) {
+void Cartridge::load(std::istream &file) {
     file.read(reinterpret_cast<char *>(&CHR_RAM[0]), CHR_RAM_size);
 }
 
