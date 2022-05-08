@@ -8,15 +8,13 @@
 #include <QtGui>
 #include <memory>
 #include <mutex>
-#include "interfaces/keyboard_interface.h"
+#include "environment/gamepad.h"
 #include "interfaces/screen_interface.h"
 #include "nes.h"
 
 namespace NES {
 
-enum class Keys : int { A, B, Select, Start, Up, Down, Left, Right, None };
-
-class MainWindow : public QMainWindow, public ScreenInterface, public KeyboardInterface {
+class MainWindow : public QMainWindow, public ScreenInterface {
     Q_OBJECT
 
 public:
@@ -26,10 +24,10 @@ public:
     void closeEvent(QCloseEvent *event) override;
 
     // Keyboard methods
-    KeyboardInterface *get_keyboard_interface();
+    KeyboardInterface *get_pl1_keyboard_interface();
+    KeyboardInterface *get_pl2_keyboard_interface();
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
-    [[nodiscard]] uint8_t get_pressed_keys() const override;
 
     // Screen methods
     ScreenInterface *get_screen_interface();
@@ -44,7 +42,7 @@ private slots:
     void load_game_from();
     void quicksave();
     void quickload();
-    void open_keymap();
+    void open_pl1_keymap();
 
 private:
     void create_menus();
@@ -74,12 +72,9 @@ private:
     QMenu *m_settings_menu;
     QAction *m_open_pl1_keymap_act;
     QAction *m_open_pl2_keymap_act;
-    QWidget *m_pl1_keymap_window;
-    QWidget *m_pl2_keymap_window;
-
-
-    static QMap<Qt::Key, NES::Keys> m_pl1_index_by_key;
-    std::atomic<uint8_t> m_pressed_keys_bitset{};
+    Gamepad m_player1_gp;
+    Gamepad m_player2_gp;
+    bool m_two_players_flag;
 };
 
 }  // namespace NES

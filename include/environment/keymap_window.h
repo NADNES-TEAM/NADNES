@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QTableWidget>
 #include <QWidget>
-#include "environment/main_window.h"
+#include "default_keymaps.h"
 
 namespace NES {
 
@@ -13,8 +13,13 @@ class KeymapWindow : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn, const QString &title);
+    explicit KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn,
+                          QMap<NES::Keys, Qt::Key> &btn_to_key,
+                          Players player);
     ~KeymapWindow() override = default;
+    void update_table();
+
+    Players m_player;
 
 private slots:
     void on_restore_btn_clicked();
@@ -26,8 +31,8 @@ private slots:
 
 private:
     QTableWidget *m_table;
-    QMap<NES::Keys, Qt::Key> btn_to_key;
-    QMap<Qt::Key, NES::Keys> &key_to_btn;
+    QMap<Qt::Key, NES::Keys> &m_key_to_btn;
+    QMap<NES::Keys, Qt::Key> &m_btn_to_key;
     QKeySequenceEdit *m_sequence;
 };
 

@@ -7,7 +7,6 @@
 #include <QTimer>
 #include <bitset>
 #include <iostream>
-#include "environment/keymap_window.h"
 #include "nes_exceptions.h"
 #include "nes_properties.h"
 
@@ -37,19 +36,17 @@ struct PauseHolder {
 };
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    int value = static_cast<int>(m_pl1_index_by_key.value(Qt::Key(event->key()), Keys::None));
-    std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
-    m_pressed_keys_bitset |= mask;              // 2 operations but still ok
+    m_player1_gp.key_pressed(Qt::Key(event->key()));
+    if (m_two_players_flag) {
+        m_player2_gp.key_pressed(Qt::Key(event->key()));
+    }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-    int value = static_cast<int>(m_pl1_index_by_key.value(Qt::Key(event->key()), Keys::None));
-    std::atomic<uint8_t> mask = ~(1u << value);  // ~(1 << 8) == 0xFF
-    m_pressed_keys_bitset &= mask;               // 2 operations but still ok
-}
-
-uint8_t MainWindow::get_pressed_keys() const {
-    return m_pressed_keys_bitset;
+    m_player1_gp.key_released(Qt::Key(event->key()));
+    if (m_two_players_flag) {
+        m_player2_gp.key_released(Qt::Key(event->key()));
+    }
 }
 
 void MainWindow::set_pixel(int row, int column, Color color) {
@@ -62,8 +59,12 @@ ScreenInterface *MainWindow::get_screen_interface() {
     return dynamic_cast<ScreenInterface *>(this);
 }
 
-KeyboardInterface *MainWindow::get_keyboard_interface() {
-    return dynamic_cast<KeyboardInterface *>(this);
+KeyboardInterface *MainWindow::get_pl1_keyboard_interface() {
+    return dynamic_cast<KeyboardInterface *>(&m_player1_gp);
+}
+
+KeyboardInterface *MainWindow::get_pl2_keyboard_interface() {
+    return dynamic_cast<KeyboardInterface *>(&m_player2_gp);
 }
 
 MainWindow::MainWindow()
@@ -88,6 +89,8 @@ MainWindow::MainWindow()
     create_actions();
     create_menus();
     read_settings();
+    m_player1_gp.load_player(Players::SinglePlayer);
+
     QString tmp = m_last_save_path;
     if (!m_last_rom_path.isEmpty() &&
         QMessageBox::Yes ==
@@ -104,7 +107,6 @@ MainWindow::MainWindow()
     if (!m_last_save_path.isEmpty()) {
         quickload();
     }
-    m_pl1_keymap_window = new KeymapWindow(m_pl1_index_by_key, "Player 1");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -118,8 +120,6 @@ void MainWindow::refresh_screen() {
     m_image_label->update();
 }
 
-QMap<Qt::Key, NES::Keys> MainWindow::m_pl1_index_by_key;
-
 void MainWindow::write_settings() {
     QSettings settings("NAD", "NADNES");
     settings.setValue("last_loaded_rom", m_last_rom_path);
@@ -128,24 +128,6 @@ void MainWindow::write_settings() {
 
 void MainWindow::read_settings() {
     QSettings settings("NAD", "NADNES");
-    settings.beginGroup("keymap");
-    m_pl1_index_by_key.insert(settings.value("key_0", Qt::Key::Key_A).value<Qt::Key>(),
-                              NES::Keys::A);
-    m_pl1_index_by_key.insert(settings.value("key_1", Qt::Key::Key_S).value<Qt::Key>(),
-                              NES::Keys::B);
-    m_pl1_index_by_key.insert(settings.value("key_2", Qt::Key::Key_Tab).value<Qt::Key>(),
-                              NES::Keys::Select);
-    m_pl1_index_by_key.insert(settings.value("key_3", Qt::Key::Key_Return).value<Qt::Key>(),
-                              NES::Keys::Start);
-    m_pl1_index_by_key.insert(settings.value("key_4", Qt::Key::Key_Up).value<Qt::Key>(),
-                              NES::Keys::Up);
-    m_pl1_index_by_key.insert(settings.value("key_5", Qt::Key::Key_Down).value<Qt::Key>(),
-                              NES::Keys::Down);
-    m_pl1_index_by_key.insert(settings.value("key_6", Qt::Key::Key_Left).value<Qt::Key>(),
-                              NES::Keys::Left);
-    m_pl1_index_by_key.insert(settings.value("key_7", Qt::Key::Key_Right).value<Qt::Key>(),
-                              NES::Keys::Right);
-    settings.endGroup();
     m_last_rom_path = settings.value("last_loaded_rom", "").toString();
     m_last_save_path = settings.value("last_save_file", "").toString();
 }
@@ -160,7 +142,8 @@ void MainWindow::load_rom(QString path = "") {
         m_clock.stop();
         m_nes = std::make_unique<Nes>(path.toStdString(),
                                       get_screen_interface(),
-                                      get_keyboard_interface());
+                                      get_pl1_keyboard_interface(),
+                                      get_pl2_keyboard_interface());
         m_clock.callOnTimeout([&]() {
             try {
                 this->m_nes->tick();
@@ -242,8 +225,8 @@ void MainWindow::quickload() {
     m_nes->load(m_last_save_path.toStdString());
 }
 
-void MainWindow::open_keymap() {
-    m_pl1_keymap_window->show();
+void MainWindow::open_pl1_keymap() {
+    m_player1_gp.show_editor();
 }
 
 void MainWindow::create_menus() {
@@ -302,7 +285,7 @@ void MainWindow::create_actions() {
     m_open_pl1_keymap_act = new QAction("Keymap", this);
     m_open_pl1_keymap_act->setShortcut(QKeySequence("Ctrl+,"));
     m_open_pl1_keymap_act->setStatusTip("Open keymap settings");
-    connect(m_open_pl1_keymap_act, &QAction::triggered, this, &MainWindow::open_keymap);
+    connect(m_open_pl1_keymap_act, &QAction::triggered, this, &MainWindow::open_pl1_keymap);
 }
 
 }  // namespace NES

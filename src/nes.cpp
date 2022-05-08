@@ -17,7 +17,10 @@ void Nes::tick() {
     };
 }
 
-Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterface *keyboard_)
+Nes::Nes(const std::string &filename,
+         ScreenInterface *screen_,
+         KeyboardInterface *keyboard_1_,
+         KeyboardInterface *keyboard_2_)
     : cartridge(filename) {
     ppu.connect(screen_, ConnectToken());
     ppu.connect(&cartridge, ConnectToken());
@@ -27,7 +30,7 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
     bus.connect(&cartridge, ConnectToken());
     bus.connect(&controller, ConnectToken());
 
-    controller.connect(keyboard_, ConnectToken());
+    controller.connect(keyboard_1_, ConnectToken());
 
     cpu.connect(&bus, ConnectToken());
     cpu.reset(ResetToken());
