@@ -3,9 +3,11 @@
 #include <QMap>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QSettings>
 #include <QTimer>
 #include <bitset>
 #include <iostream>
+#include "environment/keymap_window.h"
 #include "nes_exceptions.h"
 #include "nes_properties.h"
 
@@ -18,23 +20,32 @@ void handle_exception(std::exception &e) {
     error_msg.exec();
 }
 
-QMap<Qt::Key, int> MainWindow::m_index_by_key{{Qt::Key::Key_A, 0},
-                                              {Qt::Key::Key_S, 1},
-                                              {Qt::Key::Key_Tab, 2},
-                                              {Qt::Key::Key_Return, 3},
-                                              {Qt::Key::Key_Up, 4},
-                                              {Qt::Key::Key_Down, 5},
-                                              {Qt::Key::Key_Left, 6},
-                                              {Qt::Key::Key_Right, 7}};
+struct PauseHolder {
+    QTimer &timer;
+
+    explicit PauseHolder(QTimer &timer_) : timer(timer_) {
+        if (timer.isActive()) {
+            timer.stop();
+        }
+    }
+
+    ~PauseHolder() {
+        if (!timer.isActive()) {
+            timer.start();
+        }
+    }
+};
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    unsigned value = m_index_by_key.value(static_cast<const Qt::Key>(event->key()), 8);
+    auto value = static_cast<unsigned>(
+        m_index_by_key.value(static_cast<const Qt::Key>(event->key()), Keys::None));
     std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
     m_pressed_keys_bitset |= mask;              // 2 operations but still ok
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-    unsigned value = m_index_by_key.value(static_cast<const Qt::Key>(event->key()), 8);
+    auto value = static_cast<unsigned>(
+        m_index_by_key.value(static_cast<const Qt::Key>(event->key()), Keys::None));
     std::atomic<uint8_t> mask = ~(1u << value);  // ~(1 << 8) == 0xFF
     m_pressed_keys_bitset &= mask;               // 2 operations but still ok
 }
@@ -78,6 +89,28 @@ MainWindow::MainWindow()
 
     create_actions();
     create_menus();
+    read_settings();
+    QString tmp = last_save_path;
+    if (!last_rom_path.isEmpty() &&
+        QMessageBox::Yes ==
+            QMessageBox::question(this,
+                                  "Restore session?",
+                                  "Would you like to restore previous game session?",
+                                  (QMessageBox::Yes | QMessageBox::No),
+                                  QMessageBox::Yes)) {
+        load_rom(last_rom_path);
+    } else {
+        last_rom_path = "";
+    }
+    last_save_path = tmp;
+    if (!last_save_path.isEmpty()) {
+        quickload();
+    }
+    keymap_window = new KeymapWindow(m_index_by_key);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    write_settings();
 }
 
 void MainWindow::refresh_screen() {
@@ -87,13 +120,44 @@ void MainWindow::refresh_screen() {
     m_image_label->update();
 }
 
-void MainWindow::load_rom() {
-    QString rom_path = QFileDialog::getOpenFileName(this, "Select ROM", "", "iNes files (*.nes)");
-    if (rom_path.isEmpty())
+QMap<Qt::Key, NES::Keys> MainWindow::m_index_by_key;
+
+void MainWindow::write_settings() {
+    QSettings settings("NAD", "NADNES");
+    settings.setValue("last_loaded_rom", last_rom_path);
+    settings.setValue("last_save_file", last_save_path);
+}
+
+void MainWindow::read_settings() {
+    QSettings settings("NAD", "NADNES");
+    settings.beginGroup("keymap");
+    m_index_by_key.insert(settings.value("key_0", Qt::Key::Key_A).value<Qt::Key>(), NES::Keys::A);
+    m_index_by_key.insert(settings.value("key_1", Qt::Key::Key_S).value<Qt::Key>(), NES::Keys::B);
+    m_index_by_key.insert(settings.value("key_2", Qt::Key::Key_Tab).value<Qt::Key>(),
+                          NES::Keys::Select);
+    m_index_by_key.insert(settings.value("key_3", Qt::Key::Key_Return).value<Qt::Key>(),
+                          NES::Keys::Start);
+    m_index_by_key.insert(settings.value("key_4", Qt::Key::Key_Up).value<Qt::Key>(), NES::Keys::Up);
+    m_index_by_key.insert(settings.value("key_5", Qt::Key::Key_Down).value<Qt::Key>(),
+                          NES::Keys::Down);
+    m_index_by_key.insert(settings.value("key_6", Qt::Key::Key_Left).value<Qt::Key>(),
+                          NES::Keys::Left);
+    m_index_by_key.insert(settings.value("key_7", Qt::Key::Key_Right).value<Qt::Key>(),
+                          NES::Keys::Right);
+    settings.endGroup();
+    last_rom_path = settings.value("last_loaded_rom", "").toString();
+    last_save_path = settings.value("last_save_file", "").toString();
+}
+
+void MainWindow::load_rom(QString path = "") {
+    if (path.isEmpty()) {
+        path = QFileDialog::getOpenFileName(this, "Select ROM", "", "iNes files (*.nes)");
+    }
+    if (path.isEmpty())
         return;
     try {
         m_clock.stop();
-        m_nes = std::make_unique<Nes>(rom_path.toStdString(),
+        m_nes = std::make_unique<Nes>(path.toStdString(),
                                       get_screen_interface(),
                                       get_keyboard_interface());
         m_clock.callOnTimeout([&]() {
@@ -101,6 +165,7 @@ void MainWindow::load_rom() {
                 this->m_nes->tick();
             } catch (NesError &e) { handle_exception(e); }
         });
+        last_rom_path = path;
         last_save_path = "";
         m_clock.start();
     } catch (NES::NesError &e) { handle_exception(e); }
@@ -129,6 +194,7 @@ void MainWindow::save_game_to() {
     if (!m_nes) {
         return;
     }
+    PauseHolder ph(m_clock);
     QString save_path =
         QFileDialog::getSaveFileName(this, "Select save file", "", "NADNES saves (*.save)");
     if (save_path.isEmpty()) {
@@ -153,6 +219,7 @@ void MainWindow::load_game_from() {
     if (!m_nes) {
         return;
     }
+    PauseHolder ph(m_clock);
     QString load_path =
         QFileDialog::getOpenFileName(this, "Select save file", "", "NADNES saves (*.save)");
     if (load_path.isEmpty()) {
@@ -163,11 +230,19 @@ void MainWindow::load_game_from() {
 }
 
 void MainWindow::quickload() {
+    if (!m_nes) {
+        return;
+    }
+    PauseHolder ph(m_clock);
     if (last_save_path.isEmpty()) {
         load_game_from();
         return;
     }
     m_nes->load(last_save_path.toStdString());
+}
+
+void MainWindow::open_keymap() {
+    keymap_window->show();
 }
 
 void MainWindow::create_menus() {
@@ -176,19 +251,22 @@ void MainWindow::create_menus() {
     nes_menu->addAction(reset_act);
     nes_menu->addAction(pause_act);
 
-    saves_menu = menuBar()->addMenu("Game saves");
+    saves_menu = menuBar()->addMenu("Saves");
     saves_menu->addAction(quicksave_act);
     saves_menu->addAction(save_to_act);
     saves_menu->addSeparator();
     saves_menu->addAction(quickload_act);
     saves_menu->addAction(load_from_act);
+
+    settings_menu = menuBar()->addMenu("Settings");
+    settings_menu->addAction(open_keymap_act);
 }
 
 void MainWindow::create_actions() {
     load_act = new QAction("Load ROM...", this);
     load_act->setShortcuts(QKeySequence::Open);
     load_act->setStatusTip("Select and load existing ROM file");
-    connect(load_act, &QAction::triggered, this, &MainWindow::load_rom);
+    connect(load_act, &QAction::triggered, this, [this]() { load_rom(); });
 
     reset_act = new QAction("Reset", this);
     reset_act->setShortcut(QKeySequence("Ctrl+R"));
@@ -219,6 +297,11 @@ void MainWindow::create_actions() {
     quickload_act->setShortcut(QKeySequence("Ctrl+L"));
     quickload_act->setStatusTip("Load game from last selected save file");
     connect(quickload_act, &QAction::triggered, this, &MainWindow::quickload);
+
+    open_keymap_act = new QAction("Keymap", this);
+    open_keymap_act->setShortcut(QKeySequence("Ctrl+,"));
+    open_keymap_act->setStatusTip("Open keymap settings");
+    connect(open_keymap_act, &QAction::triggered, this, &MainWindow::open_keymap);
 }
 
 }  // namespace NES
