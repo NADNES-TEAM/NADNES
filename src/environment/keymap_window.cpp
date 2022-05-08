@@ -4,9 +4,10 @@
 
 namespace NES {
 
-KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_) : key_to_btn(key_to_btn_) {
+KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_, const QString &title) : key_to_btn(key_to_btn_) {
+    setWindowTitle(title);
     setFixedSize(509, 280);
-    QFile file("../keymap.ui");
+    QFile file("../UI/keymap.ui");
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);

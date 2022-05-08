@@ -37,15 +37,13 @@ struct PauseHolder {
 };
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    auto value = static_cast<unsigned>(
-        m_index_by_key.value(static_cast<const Qt::Key>(event->key()), Keys::None));
+    int value = static_cast<int>(m_pl1_index_by_key.value(Qt::Key(event->key()), Keys::None));
     std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
     m_pressed_keys_bitset |= mask;              // 2 operations but still ok
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-    auto value = static_cast<unsigned>(
-        m_index_by_key.value(static_cast<const Qt::Key>(event->key()), Keys::None));
+    int value = static_cast<int>(m_pl1_index_by_key.value(Qt::Key(event->key()), Keys::None));
     std::atomic<uint8_t> mask = ~(1u << value);  // ~(1 << 8) == 0xFF
     m_pressed_keys_bitset &= mask;               // 2 operations but still ok
 }
@@ -90,23 +88,23 @@ MainWindow::MainWindow()
     create_actions();
     create_menus();
     read_settings();
-    QString tmp = last_save_path;
-    if (!last_rom_path.isEmpty() &&
+    QString tmp = m_last_save_path;
+    if (!m_last_rom_path.isEmpty() &&
         QMessageBox::Yes ==
             QMessageBox::question(this,
                                   "Restore session?",
                                   "Would you like to restore previous game session?",
                                   (QMessageBox::Yes | QMessageBox::No),
                                   QMessageBox::Yes)) {
-        load_rom(last_rom_path);
+        load_rom(m_last_rom_path);
     } else {
-        last_rom_path = "";
+        m_last_rom_path = "";
     }
-    last_save_path = tmp;
-    if (!last_save_path.isEmpty()) {
+    m_last_save_path = tmp;
+    if (!m_last_save_path.isEmpty()) {
         quickload();
     }
-    keymap_window = new KeymapWindow(m_index_by_key);
+    m_pl1_keymap_window = new KeymapWindow(m_pl1_index_by_key, "Player 1");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -120,33 +118,36 @@ void MainWindow::refresh_screen() {
     m_image_label->update();
 }
 
-QMap<Qt::Key, NES::Keys> MainWindow::m_index_by_key;
+QMap<Qt::Key, NES::Keys> MainWindow::m_pl1_index_by_key;
 
 void MainWindow::write_settings() {
     QSettings settings("NAD", "NADNES");
-    settings.setValue("last_loaded_rom", last_rom_path);
-    settings.setValue("last_save_file", last_save_path);
+    settings.setValue("last_loaded_rom", m_last_rom_path);
+    settings.setValue("last_save_file", m_last_save_path);
 }
 
 void MainWindow::read_settings() {
     QSettings settings("NAD", "NADNES");
     settings.beginGroup("keymap");
-    m_index_by_key.insert(settings.value("key_0", Qt::Key::Key_A).value<Qt::Key>(), NES::Keys::A);
-    m_index_by_key.insert(settings.value("key_1", Qt::Key::Key_S).value<Qt::Key>(), NES::Keys::B);
-    m_index_by_key.insert(settings.value("key_2", Qt::Key::Key_Tab).value<Qt::Key>(),
-                          NES::Keys::Select);
-    m_index_by_key.insert(settings.value("key_3", Qt::Key::Key_Return).value<Qt::Key>(),
-                          NES::Keys::Start);
-    m_index_by_key.insert(settings.value("key_4", Qt::Key::Key_Up).value<Qt::Key>(), NES::Keys::Up);
-    m_index_by_key.insert(settings.value("key_5", Qt::Key::Key_Down).value<Qt::Key>(),
-                          NES::Keys::Down);
-    m_index_by_key.insert(settings.value("key_6", Qt::Key::Key_Left).value<Qt::Key>(),
-                          NES::Keys::Left);
-    m_index_by_key.insert(settings.value("key_7", Qt::Key::Key_Right).value<Qt::Key>(),
-                          NES::Keys::Right);
+    m_pl1_index_by_key.insert(settings.value("key_0", Qt::Key::Key_A).value<Qt::Key>(),
+                              NES::Keys::A);
+    m_pl1_index_by_key.insert(settings.value("key_1", Qt::Key::Key_S).value<Qt::Key>(),
+                              NES::Keys::B);
+    m_pl1_index_by_key.insert(settings.value("key_2", Qt::Key::Key_Tab).value<Qt::Key>(),
+                              NES::Keys::Select);
+    m_pl1_index_by_key.insert(settings.value("key_3", Qt::Key::Key_Return).value<Qt::Key>(),
+                              NES::Keys::Start);
+    m_pl1_index_by_key.insert(settings.value("key_4", Qt::Key::Key_Up).value<Qt::Key>(),
+                              NES::Keys::Up);
+    m_pl1_index_by_key.insert(settings.value("key_5", Qt::Key::Key_Down).value<Qt::Key>(),
+                              NES::Keys::Down);
+    m_pl1_index_by_key.insert(settings.value("key_6", Qt::Key::Key_Left).value<Qt::Key>(),
+                              NES::Keys::Left);
+    m_pl1_index_by_key.insert(settings.value("key_7", Qt::Key::Key_Right).value<Qt::Key>(),
+                              NES::Keys::Right);
     settings.endGroup();
-    last_rom_path = settings.value("last_loaded_rom", "").toString();
-    last_save_path = settings.value("last_save_file", "").toString();
+    m_last_rom_path = settings.value("last_loaded_rom", "").toString();
+    m_last_save_path = settings.value("last_save_file", "").toString();
 }
 
 void MainWindow::load_rom(QString path = "") {
@@ -165,27 +166,27 @@ void MainWindow::load_rom(QString path = "") {
                 this->m_nes->tick();
             } catch (NesError &e) { handle_exception(e); }
         });
-        last_rom_path = path;
-        last_save_path = "";
+        m_last_rom_path = path;
+        m_last_save_path = "";
         m_clock.start();
     } catch (NES::NesError &e) { handle_exception(e); }
 }
 
 void MainWindow::pause_nes() {
-    if (pause) {
+    if (m_pause_flag) {
         m_clock.start();
     } else {
         m_clock.stop();
     }
-    pause = !pause;
+    m_pause_flag = !m_pause_flag;
 }
 
 void MainWindow::reset_nes() {
     if (m_nes) {
         m_nes->reset();
-        if (pause) {
+        if (m_pause_flag) {
             m_clock.start();
-            pause = false;
+            m_pause_flag = false;
         }
     }
 }
@@ -200,7 +201,7 @@ void MainWindow::save_game_to() {
     if (save_path.isEmpty()) {
         return;
     }
-    last_save_path = save_path;
+    m_last_save_path = save_path;
     m_nes->save(save_path.toStdString());
 }
 
@@ -208,11 +209,11 @@ void MainWindow::quicksave() {
     if (!m_nes) {
         return;
     }
-    if (last_save_path.isEmpty()) {
+    if (m_last_save_path.isEmpty()) {
         save_game_to();
         return;
     }
-    m_nes->save(last_save_path.toStdString());
+    m_nes->save(m_last_save_path.toStdString());
 }
 
 void MainWindow::load_game_from() {
@@ -225,7 +226,7 @@ void MainWindow::load_game_from() {
     if (load_path.isEmpty()) {
         return;
     }
-    last_save_path = load_path;
+    m_last_save_path = load_path;
     m_nes->load(load_path.toStdString());
 }
 
@@ -234,74 +235,74 @@ void MainWindow::quickload() {
         return;
     }
     PauseHolder ph(m_clock);
-    if (last_save_path.isEmpty()) {
+    if (m_last_save_path.isEmpty()) {
         load_game_from();
         return;
     }
-    m_nes->load(last_save_path.toStdString());
+    m_nes->load(m_last_save_path.toStdString());
 }
 
 void MainWindow::open_keymap() {
-    keymap_window->show();
+    m_pl1_keymap_window->show();
 }
 
 void MainWindow::create_menus() {
-    nes_menu = menuBar()->addMenu("Emulator");
-    nes_menu->addAction(load_act);
-    nes_menu->addAction(reset_act);
-    nes_menu->addAction(pause_act);
+    m_nes_menu = menuBar()->addMenu("Emulator");
+    m_nes_menu->addAction(m_load_act);
+    m_nes_menu->addAction(m_reset_act);
+    m_nes_menu->addAction(m_pause_act);
 
-    saves_menu = menuBar()->addMenu("Saves");
-    saves_menu->addAction(quicksave_act);
-    saves_menu->addAction(save_to_act);
-    saves_menu->addSeparator();
-    saves_menu->addAction(quickload_act);
-    saves_menu->addAction(load_from_act);
+    m_saves_menu = menuBar()->addMenu("Saves");
+    m_saves_menu->addAction(m_quicksave_act);
+    m_saves_menu->addAction(m_save_to_act);
+    m_saves_menu->addSeparator();
+    m_saves_menu->addAction(m_quickload_act);
+    m_saves_menu->addAction(m_load_from_act);
 
-    settings_menu = menuBar()->addMenu("Settings");
-    settings_menu->addAction(open_keymap_act);
+    m_settings_menu = menuBar()->addMenu("Settings");
+    m_settings_menu->addAction(m_open_pl1_keymap_act);
 }
 
 void MainWindow::create_actions() {
-    load_act = new QAction("Load ROM...", this);
-    load_act->setShortcuts(QKeySequence::Open);
-    load_act->setStatusTip("Select and load existing ROM file");
-    connect(load_act, &QAction::triggered, this, [this]() { load_rom(); });
+    m_load_act = new QAction("Load ROM...", this);
+    m_load_act->setShortcuts(QKeySequence::Open);
+    m_load_act->setStatusTip("Select and load existing ROM file");
+    connect(m_load_act, &QAction::triggered, this, [this]() { load_rom(); });
 
-    reset_act = new QAction("Reset", this);
-    reset_act->setShortcut(QKeySequence("Ctrl+R"));
-    reset_act->setStatusTip("Reset NES state");
-    connect(reset_act, &QAction::triggered, this, &MainWindow::reset_nes);
+    m_reset_act = new QAction("Reset", this);
+    m_reset_act->setShortcut(QKeySequence("Ctrl+R"));
+    m_reset_act->setStatusTip("Reset NES state");
+    connect(m_reset_act, &QAction::triggered, this, &MainWindow::reset_nes);
 
-    pause_act = new QAction("Pause/Resume", this);
-    pause_act->setShortcut(QKeySequence("Esc"));
-    pause_act->setStatusTip("Pause or resume emulation");
-    connect(pause_act, &QAction::triggered, this, &MainWindow::pause_nes);
+    m_pause_act = new QAction("Pause/Resume", this);
+    m_pause_act->setShortcut(QKeySequence("Esc"));
+    m_pause_act->setStatusTip("Pause or resume emulation");
+    connect(m_pause_act, &QAction::triggered, this, &MainWindow::pause_nes);
 
-    save_to_act = new QAction("Save game as...", this);
-    save_to_act->setShortcut(QKeySequence("Ctrl+Shift+S"));
-    save_to_act->setStatusTip("Save game to selected file");
-    connect(save_to_act, &QAction::triggered, this, &MainWindow::save_game_to);
+    m_save_to_act = new QAction("Save game as...", this);
+    m_save_to_act->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    m_save_to_act->setStatusTip("Save game to selected file");
+    connect(m_save_to_act, &QAction::triggered, this, &MainWindow::save_game_to);
 
-    quicksave_act = new QAction("Quicksave", this);
-    quicksave_act->setShortcut(QKeySequence("Ctrl+S"));
-    quicksave_act->setStatusTip("Save game to last selected file");
-    connect(quicksave_act, &QAction::triggered, this, &MainWindow::quicksave);
+    m_quicksave_act = new QAction("Quicksave", this);
+    m_quicksave_act->setShortcut(QKeySequence("Ctrl+S"));
+    m_quicksave_act->setStatusTip("Save game to last selected file");
+    connect(m_quicksave_act, &QAction::triggered, this, &MainWindow::quicksave);
 
-    load_from_act = new QAction("Load game from...", this);
-    load_from_act->setShortcut(QKeySequence("Ctrl+Shift+L"));
-    load_from_act->setStatusTip("Load game from selected save file");
-    connect(load_from_act, &QAction::triggered, this, &MainWindow::load_game_from);
+    m_load_from_act = new QAction("Load game from...", this);
+    m_load_from_act->setShortcut(QKeySequence("Ctrl+Shift+L"));
+    m_load_from_act->setStatusTip("Load game from selected save file");
+    connect(m_load_from_act, &QAction::triggered, this, &MainWindow::load_game_from);
 
-    quickload_act = new QAction("Quickload", this);
-    quickload_act->setShortcut(QKeySequence("Ctrl+L"));
-    quickload_act->setStatusTip("Load game from last selected save file");
-    connect(quickload_act, &QAction::triggered, this, &MainWindow::quickload);
+    m_quickload_act = new QAction("Quickload", this);
+    m_quickload_act->setShortcut(QKeySequence("Ctrl+L"));
+    m_quickload_act->setStatusTip("Load game from last selected save file");
+    connect(m_quickload_act, &QAction::triggered, this, &MainWindow::quickload);
 
-    open_keymap_act = new QAction("Keymap", this);
-    open_keymap_act->setShortcut(QKeySequence("Ctrl+,"));
-    open_keymap_act->setStatusTip("Open keymap settings");
-    connect(open_keymap_act, &QAction::triggered, this, &MainWindow::open_keymap);
+    m_open_pl1_keymap_act = new QAction("Keymap", this);
+    m_open_pl1_keymap_act->setShortcut(QKeySequence("Ctrl+,"));
+    m_open_pl1_keymap_act->setStatusTip("Open keymap settings");
+    connect(m_open_pl1_keymap_act, &QAction::triggered, this, &MainWindow::open_keymap);
 }
 
 }  // namespace NES

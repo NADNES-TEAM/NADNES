@@ -55,27 +55,30 @@ private:
     QLabel *m_image_label;
     QImage m_screen_image;
 
-    QMenu *nes_menu;
-    QAction *load_act;
-    QAction *reset_act;
-    QAction *pause_act;
+    QMenu *m_nes_menu;
+    QAction *m_load_act;
+    QAction *m_reset_act;
+    QAction *m_pause_act;
     QTimer m_clock;
     std::unique_ptr<Nes> m_nes = nullptr;
-    bool pause = false;
+    bool m_pause_flag = false;
 
-    QMenu *saves_menu;
-    QAction *save_to_act;
-    QAction *load_from_act;
-    QAction *quickload_act;
-    QAction *quicksave_act;
-    QString last_rom_path;
-    QString last_save_path;
+    QMenu *m_saves_menu;
+    QAction *m_save_to_act;
+    QAction *m_load_from_act;
+    QAction *m_quickload_act;
+    QAction *m_quicksave_act;
+    QString m_last_rom_path;
+    QString m_last_save_path;
 
-    QMenu *settings_menu;
-    QAction *open_keymap_act;
-    QWidget *keymap_window;
+    QMenu *m_settings_menu;
+    QAction *m_open_pl1_keymap_act;
+    QAction *m_open_pl2_keymap_act;
+    QWidget *m_pl1_keymap_window;
+    QWidget *m_pl2_keymap_window;
 
-    static QMap<Qt::Key, NES::Keys> m_index_by_key;
+
+    static QMap<Qt::Key, NES::Keys> m_pl1_index_by_key;
     std::atomic<uint8_t> m_pressed_keys_bitset{};
 };
 

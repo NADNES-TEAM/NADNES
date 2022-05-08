@@ -13,7 +13,7 @@ class KeymapWindow : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn);
+    explicit KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn, const QString &title);
     ~KeymapWindow() override = default;
 
 private slots:
