@@ -37,14 +37,12 @@ void Gamepad::load_player(Players new_player) {
         settings.endGroup();
     }
     key_to_btn.clear();
-    if (new_player != Players::None) {
-        settings.beginGroup("keymap/player_" + QString::number(static_cast<int>(new_player)));
-        for (int i = 0; i < BTN_COUNT; i++) {
-            auto key = default_keymap[new_player][NES::Keys(i)];
-            key = settings.value("key_" + QString::number(i), key).value<Qt::Key>();
-            btn_to_key[NES::Keys(i)] = key;
-            key_to_btn.insert(key, NES::Keys(i));
-        }
+    settings.beginGroup("keymap/player_" + QString::number(static_cast<int>(new_player)));
+    for (int i = 0; i < BTN_COUNT; i++) {
+        auto key = default_keymap[new_player][NES::Keys(i)];
+        key = settings.value("key_" + QString::number(i), key).value<Qt::Key>();
+        btn_to_key[NES::Keys(i)] = key;
+        key_to_btn.insert(key, NES::Keys(i));
     }
     keymap_editor->m_player = new_player;
     keymap_editor->update_table();

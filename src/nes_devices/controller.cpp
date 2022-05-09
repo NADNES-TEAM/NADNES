@@ -19,16 +19,21 @@ void Controller::write(uint16_t addr, uint8_t value) {
     }
     m_active = (value & 1);
     if (!m_active) {
-        m_snapshot[0] = m_keyboard_interface->get_pressed_keys();
-        m_snapshot[1] = 0;  // Something
+        m_snapshot[0] = m_port1_keyboard_interface->get_pressed_keys();
+        m_snapshot[1] = m_port2_keyboard_interface->get_pressed_keys();
     }
 }
 
-void Controller::connect(KeyboardInterface *keyboard_interface, ConnectToken) {
-    m_keyboard_interface = keyboard_interface;
+void Controller::connect_to_port1(KeyboardInterface *keyboard_interface, ConnectToken) {
+    m_port1_keyboard_interface = keyboard_interface;
 }
+
+void Controller::connect_to_port2(KeyboardInterface *keyboard_interface, ConnectToken) {
+    m_port2_keyboard_interface = keyboard_interface;
+}
+
 void Controller::init() const {
-    if (m_keyboard_interface == nullptr) {
+    if (m_port1_keyboard_interface == nullptr) {
         throw UninitializedController1InterfaceError();
     }
 }

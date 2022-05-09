@@ -14,12 +14,11 @@ class KeymapWindow : public QWidget {
 
 public:
     explicit KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn,
-                          QMap<NES::Keys, Qt::Key> &btn_to_key,
-                          Players player);
+                          QMap<NES::Keys, Qt::Key> &btn_to_key);
     ~KeymapWindow() override = default;
     void update_table();
 
-    Players m_player;
+    Players m_player = Players::None;
 
 private slots:
     void on_restore_btn_clicked();

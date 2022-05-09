@@ -30,7 +30,8 @@ Nes::Nes(const std::string &filename,
     bus.connect(&cartridge, ConnectToken());
     bus.connect(&controller, ConnectToken());
 
-    controller.connect(keyboard_1_, ConnectToken());
+    controller.connect_to_port1(keyboard_1_, ConnectToken());
+    controller.connect_to_port2(keyboard_2_, ConnectToken());
 
     cpu.connect(&bus, ConnectToken());
     cpu.reset(ResetToken());

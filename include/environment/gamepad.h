@@ -12,7 +12,7 @@ struct Gamepad : KeyboardInterface {
     QMap<Qt::Key, NES::Keys> key_to_btn;
     QMap<NES::Keys, Qt::Key> btn_to_key;
     std::atomic<uint8_t> pressed_keys_bitset{};
-    KeymapWindow *keymap_editor = new KeymapWindow(key_to_btn, btn_to_key, player);
+    KeymapWindow *keymap_editor = new KeymapWindow(key_to_btn, btn_to_key);
     Players player = Players::None;
 
     [[nodiscard]] uint8_t get_pressed_keys() const override;

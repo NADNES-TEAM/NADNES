@@ -43,6 +43,9 @@ private slots:
     void quicksave();
     void quickload();
     void open_pl1_keymap();
+    void open_pl2_keymap();
+    void switch_to_single_player();
+    void switch_to_cooperative();
 
 private:
     void create_menus();
@@ -72,9 +75,12 @@ private:
     QMenu *m_settings_menu;
     QAction *m_open_pl1_keymap_act;
     QAction *m_open_pl2_keymap_act;
+    QAction *m_single_player_act;
+    QAction *m_coop_player_act;
+    QActionGroup *m_profile_group;
+    QMenu *m_profile_menu;
     Gamepad m_player1_gp;
     Gamepad m_player2_gp;
-    bool m_two_players_flag;
 };
 
 }  // namespace NES

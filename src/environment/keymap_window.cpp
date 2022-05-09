@@ -4,9 +4,8 @@
 namespace NES {
 
 KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
-                           QMap<NES::Keys, Qt::Key> &btn_to_key_,
-                           Players player)
-    : m_key_to_btn(key_to_btn_), m_btn_to_key(btn_to_key_), m_player(player) {
+                           QMap<NES::Keys, Qt::Key> &btn_to_key_)
+    : m_key_to_btn(key_to_btn_), m_btn_to_key(btn_to_key_){
     //    setWindowTitle(title);
     setFixedSize(509, 280);  // TODO: config?
     QFile file("../UI/keymap.ui");
@@ -19,7 +18,7 @@ KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
     update_table();
 }
 
-void KeymapWindow::on_restore_btn_clicked() {  // TODO
+void KeymapWindow::on_restore_btn_clicked() {
     for (int i = 0; i < BTN_COUNT; i++) {
         auto cur = QKeySequence(default_keymap[m_player][NES::Keys(i)]).toString();
         m_table->item(i, 1)->setText(cur);

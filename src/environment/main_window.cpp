@@ -13,7 +13,7 @@
 namespace NES {
 
 void handle_exception(std::exception &e) {
-    std::cout << e.what();
+    std::cout << e.what() << '\n';
     QMessageBox error_msg;
     error_msg.setText(e.what());
     error_msg.exec();
@@ -37,16 +37,12 @@ struct PauseHolder {
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     m_player1_gp.key_pressed(Qt::Key(event->key()));
-    if (m_two_players_flag) {
-        m_player2_gp.key_pressed(Qt::Key(event->key()));
-    }
+    m_player2_gp.key_pressed(Qt::Key(event->key()));
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     m_player1_gp.key_released(Qt::Key(event->key()));
-    if (m_two_players_flag) {
-        m_player2_gp.key_released(Qt::Key(event->key()));
-    }
+    m_player2_gp.key_released(Qt::Key(event->key()));
 }
 
 void MainWindow::set_pixel(int row, int column, Color color) {
@@ -229,6 +225,20 @@ void MainWindow::open_pl1_keymap() {
     m_player1_gp.show_editor();
 }
 
+void MainWindow::open_pl2_keymap() {
+    m_player2_gp.show_editor();
+}
+
+void MainWindow::switch_to_single_player() {
+    m_player1_gp.load_player(Players::SinglePlayer);
+    m_player2_gp.load_player(Players::None);
+}
+
+void MainWindow::switch_to_cooperative() {
+    m_player1_gp.load_player(Players::Player1);
+    m_player2_gp.load_player(Players::Player2);
+}
+
 void MainWindow::create_menus() {
     m_nes_menu = menuBar()->addMenu("Emulator");
     m_nes_menu->addAction(m_load_act);
@@ -242,8 +252,12 @@ void MainWindow::create_menus() {
     m_saves_menu->addAction(m_quickload_act);
     m_saves_menu->addAction(m_load_from_act);
 
-    m_settings_menu = menuBar()->addMenu("Settings");
+    m_settings_menu = menuBar()->addMenu("Controls");
     m_settings_menu->addAction(m_open_pl1_keymap_act);
+    m_settings_menu->addAction(m_open_pl2_keymap_act);
+    m_profile_menu = m_settings_menu->addMenu("Profile");
+    m_profile_menu->addAction(m_single_player_act);
+    m_profile_menu->addAction(m_coop_player_act);
 }
 
 void MainWindow::create_actions() {
@@ -282,10 +296,32 @@ void MainWindow::create_actions() {
     m_quickload_act->setStatusTip("Load game from last selected save file");
     connect(m_quickload_act, &QAction::triggered, this, &MainWindow::quickload);
 
-    m_open_pl1_keymap_act = new QAction("Keymap", this);
-    m_open_pl1_keymap_act->setShortcut(QKeySequence("Ctrl+,"));
-    m_open_pl1_keymap_act->setStatusTip("Open keymap settings");
+    m_open_pl1_keymap_act = new QAction("Player 1", this);
+    m_open_pl1_keymap_act->setShortcut(QKeySequence("Ctrl+1"));
+    m_open_pl1_keymap_act->setStatusTip("Open player 1 keymap settings");
     connect(m_open_pl1_keymap_act, &QAction::triggered, this, &MainWindow::open_pl1_keymap);
+
+    m_open_pl2_keymap_act = new QAction("Player 2", this);
+    m_open_pl2_keymap_act->setShortcut(QKeySequence("Ctrl+2"));
+    m_open_pl2_keymap_act->setStatusTip("Open player 2 keymap settings");
+    connect(m_open_pl2_keymap_act, &QAction::triggered, this, &MainWindow::open_pl2_keymap);
+
+    m_single_player_act = new QAction("Single player", this);
+    m_single_player_act->setShortcut(QKeySequence("Ctrl+Shift+1"));
+    m_single_player_act->setStatusTip("Switch to single player keymap");
+    connect(m_single_player_act, &QAction::triggered, this, &MainWindow::switch_to_single_player);
+    m_single_player_act->setCheckable(true);
+
+    m_coop_player_act = new QAction("Single player", this);
+    m_coop_player_act->setShortcut(QKeySequence("Ctrl+Shift+2"));
+    m_coop_player_act->setStatusTip("Switch to local cooperative keymap");
+    connect(m_coop_player_act, &QAction::triggered, this, &MainWindow::switch_to_cooperative);
+    m_coop_player_act->setCheckable(true);
+
+    m_profile_group = new QActionGroup(this);
+    m_profile_group->addAction(m_single_player_act);
+    m_profile_group->addAction(m_coop_player_act);
+    m_single_player_act->setChecked(true);
 }
 
 }  // namespace NES
