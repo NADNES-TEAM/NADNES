@@ -81,19 +81,15 @@ std::vector<Search::ResultRaw> Nes::search(const Search::ParamsOfSearch &params)
     return result_data;
 }
 bool Nes::change_memory_value(const Search::ParamsOfChange &params) {
-    try {
-        uint8_t *memory_p;
-        size_t size_of_memory;
-        get_memory_p(memory_p, size_of_memory, params);
-        if (params.index + params.data_in.size() > size_of_memory)
-            return false;
-        for (size_t i = 0; i < params.data_in.size(); i++) {
-            *(memory_p + params.index + i) = params.data_in[i];
-        }
-        return true;
-    } catch (...) {
+    uint8_t *memory_p;
+    size_t size_of_memory;
+    get_memory_p(memory_p, size_of_memory, params);
+    if (params.index + params.data_in.size() > size_of_memory)
         return false;
+    for (size_t i = 0; i < params.data_in.size(); i++) {
+        *(memory_p + params.index + i) = params.data_in[i];
     }
+    return true;
 }
 
 }  // namespace NES
