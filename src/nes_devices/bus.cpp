@@ -1,7 +1,6 @@
 #include "nes_devices/bus.h"
 
 namespace NES {
-
 void Bus::mem_write(uint16_t addr, uint8_t data) {
     if (addr >= 0 && addr < 0x2000) {  // RAM
         RAM[addr % 0x800] = data;
@@ -73,4 +72,8 @@ void Bus::connect(Ppu *ppu_, ConnectToken) noexcept {
 void Bus::connect(Controller *controller_, ConnectToken) noexcept {
     controller = controller_;
 }
+uint8_t *Bus::get_RAM() {
+    return &RAM[0];
+}
+Bus::Bus(): RAM(1<<11) {}
 }  // namespace NES

@@ -75,5 +75,11 @@ void Cartridge::PPU_write(uint16_t address, uint8_t data) {
         throw WritingToRomError();
     }
 }
+uint8_t *Cartridge::get_ROM() {
+    return &PRG_ROM[0];
+}
+size_t Cartridge::get_ROM_size() {
+    return  PRG_ROM.size();
+}
 
 }  // namespace NES
