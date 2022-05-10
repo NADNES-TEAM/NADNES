@@ -25,6 +25,7 @@ add_executable( NADNES
         src/main.cpp
         src/nes_devices/cartridge.cpp src/nes_devices/ppu.cpp
         src/mappers/NROM.cpp
+        src/mappers/UNROM.cpp
         src/nes_devices/bus.cpp
         src/nes_devices/controller.cpp
         src/nes_devices/R6502.cpp

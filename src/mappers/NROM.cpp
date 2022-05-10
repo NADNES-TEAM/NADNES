@@ -1,15 +1,14 @@
 #include "mappers/NROM.h"
-#include "interfaces/mapper.h"
 
 namespace NES {
-NROMMapper::NROMMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
+NromMapper::NromMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
     : mirror_type(mirror_type_), PRG_banks_count(prg), CHR_banks_count(chr) {
     if (prg > 2 || chr != 1) {
         throw InvalidMapperConfigurationError();
     }
 }
 
-uint16_t NROMMapper::map_read_from_CPU(uint16_t address) const {
+uint32_t NromMapper::map_read_from_CPU(uint16_t address) const {
     if (address >= 0x8000) {
         return (address % (PRG_banks_count == 1 ? 0x4000 : 0x8000));
     } else {
@@ -17,7 +16,7 @@ uint16_t NROMMapper::map_read_from_CPU(uint16_t address) const {
     }
 }
 
-uint16_t NROMMapper::map_PPU_address(uint16_t address) const {
+uint16_t NromMapper::map_PPU_address(uint16_t address) const {
     if (address >= 0x3F00) {
         throw AddressOutOfBoundsError(address, "PPU");
     }

@@ -51,6 +51,7 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
     std::vector<uint8_t> PRG_ROM;
     std::vector<uint8_t> CHR_ROM;
     std::vector<uint8_t> CHR_RAM;
+    bool use_CHR_ROM_as_RAM = false;
 
     [[nodiscard]] uint8_t CPU_read(uint16_t address) const override;
 
@@ -62,6 +63,8 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
 
 public:
     explicit Cartridge(const std::string &filename);
+
+    void reset(const ResetToken &token);
 
     void save(std::ostream &file);
 

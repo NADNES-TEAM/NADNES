@@ -39,6 +39,7 @@ Nes::Nes(const std::string &filename,
 
 void Nes::reset() {
     ppu.reset(ResetToken());
+    cartridge.reset(ResetToken());
     cpu.reset(ResetToken());
 }
 

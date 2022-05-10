@@ -12,7 +12,7 @@ struct NesError : std::runtime_error {
 
     static std::string to_hex8(uint8_t v) {
         std::stringstream ss;
-        ss << std::hex << std::setfill('0') << std::setw(2) << v;
+        ss << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(v);
         return ss.str();
     }
 

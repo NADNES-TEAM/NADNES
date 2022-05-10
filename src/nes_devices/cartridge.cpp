@@ -2,9 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include "NROM.h"
+#include "UNROM.h"
 
 namespace NES {
-enum class MapperTypes : uint8_t { NROM = 0 };
+enum class MapperTypes : uint8_t { NROM = 0, UNROM = 2 };
 
 [[nodiscard]] std::unique_ptr<AbstractMapper> construct_mapper(const iNesHeader &header) {
     uint8_t mapper_number;
@@ -16,9 +17,13 @@ enum class MapperTypes : uint8_t { NROM = 0 };
     MapperTypes mapper_type{mapper_number};
     switch (mapper_type) {
         case MapperTypes::NROM:
-            return std::make_unique<NROMMapper>(NROMMapper(Mirroring{header.mirror_type},
-                                                           header.PRG_ROM_banks_lsb,
-                                                           header.CHR_ROM_banks_lsb));
+            return std::make_unique<NromMapper>(Mirroring(header.mirror_type),
+                                                header.PRG_ROM_banks_lsb,
+                                                header.CHR_ROM_banks_lsb);
+        case MapperTypes::UNROM:
+            return std::make_unique<UnromMapper>(Mirroring(header.mirror_type),
+                                                 header.PRG_ROM_banks_lsb,
+                                                 header.CHR_ROM_banks_lsb);
         default: throw UnknownMapperTypeError(mapper_number);
     }
 }
@@ -39,15 +44,19 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
 
     mapper = construct_mapper(header);
 
-    uint8_t PRG_banks_count = (header.PRG_ROM_size_msb << 4) + header.PRG_ROM_banks_lsb;
-    uint16_t PRG_ROM_size = PRG_ROM_BANK_SIZE * PRG_banks_count;
+    uint8_t PRG_banks_count = header.PRG_ROM_banks_lsb;
+    uint32_t PRG_ROM_size = PRG_ROM_BANK_SIZE * PRG_banks_count;
     PRG_ROM.resize(PRG_ROM_size);
     rom_file.read(reinterpret_cast<char *>(&PRG_ROM.front()), PRG_ROM_size);
 
     uint8_t CHR_banks_count = (header.CHR_ROM_size_msb << 4) + header.CHR_ROM_banks_lsb;
-    uint16_t CHR_ROM_size = CHR_ROM_BANK_SIZE * CHR_banks_count;
-    CHR_ROM.resize(CHR_ROM_size);
-    rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_size);
+    if (CHR_banks_count == 0) {
+        CHR_ROM.resize(1 << 13);
+        use_CHR_ROM_as_RAM = true;
+    } else {
+        CHR_ROM.resize(CHR_ROM_BANK_SIZE * CHR_banks_count);
+    }
+    rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_BANK_SIZE * CHR_banks_count);
 }
 
 uint8_t Cartridge::CPU_read(uint16_t address) const {
@@ -71,6 +80,8 @@ void Cartridge::PPU_write(uint16_t address, uint8_t data) {
     uint16_t mapped_address = mapper->map_PPU_address(address);
     if (mapped_address >= CHR_ROM.size()) {
         CHR_RAM[mapped_address % CHR_ROM.size()] = data;
+    } else if (use_CHR_ROM_as_RAM) {
+        CHR_ROM[mapped_address] = data;
     } else {
         throw WritingToRomError();
     }
@@ -78,10 +89,22 @@ void Cartridge::PPU_write(uint16_t address, uint8_t data) {
 
 void Cartridge::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(&CHR_RAM[0]), CHR_RAM_size);
+    if (use_CHR_ROM_as_RAM) {
+        file.write(reinterpret_cast<char *>(&CHR_ROM[0]), CHR_ROM.size());
+    }
+    mapper->save(file);
 }
 
 void Cartridge::load(std::istream &file) {
     file.read(reinterpret_cast<char *>(&CHR_RAM[0]), CHR_RAM_size);
+    if (use_CHR_ROM_as_RAM) {
+        file.read(reinterpret_cast<char *>(&CHR_ROM[0]), CHR_ROM.size());
+    }
+    mapper->load(file);
+}
+
+void Cartridge::reset(const ResetToken &token) {
+    mapper->reset(token);
 }
 
 }  // namespace NES

@@ -26,7 +26,7 @@ void Dma::tick(bool even_cycle) {
     } else {
         bus->mem_write(0x2004, transfer_data);
     }
-    if (counter == 256) {
+    if (counter == 256 && !even_cycle) {
         started = false;
         activated = false;
         counter = 0;
