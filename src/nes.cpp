@@ -29,26 +29,11 @@ Nes::Nes(const std::string &filename, ScreenInterface *screen_, KeyboardInterfac
 
     cpu.connect(&bus, ConnectToken());
     cpu.reset(ResetToken());
-    search({{Search::Input::raw_bytes,Search::Place::RAM,{0}},1,Search::Action::all});
 }
 
 void Nes::reset() {
     ppu.reset(ResetToken());
     cpu.reset(ResetToken());
-    std::vector<Search::ResultRaw> kek = search({{Search::Input::raw_bytes,Search::Place::RAM,{0}},0,Search::Action::encrease});
-    std::cout<<"########################\n";
-    for(int i=0;i<kek.size();i++){
-        std::cout<<std::hex<<kek[i].address<<"   ";
-        for(int j=0;j<kek[i].old_data.size();j++){
-            std::cout<<std::fixed<<(int)kek[i].old_data[j];
-        }
-        std::cout<<"   ";
-        for(int j=0;j<kek[i].cur_data.size();j++){
-            std::cout<<std::fixed<<(int)kek[i].cur_data[j];
-        }
-        std::cout<<'\n';
-    }
-    std::cout<<kek.size();
 }
 
 void Nes::get_memory_p(uint8_t *&memory_p, size_t &size_of_memory, const Search::Params &params) {
