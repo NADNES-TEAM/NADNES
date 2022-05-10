@@ -32,16 +32,26 @@ add_executable(NADNES
         include/nes.h
         src/nes.cpp
         src/main.cpp
-        src/nes_devices/cartridge.cpp src/nes_devices/ppu.cpp
+        src/nes_devices/cartridge.cpp
+        src/nes_devices/ppu.cpp
         src/mappers/NROM.cpp
         src/mappers/UNROM.cpp
         src/nes_devices/bus.cpp
         src/nes_devices/controller.cpp
         src/main_controller.cpp
         src/nes_devices/R6502.cpp
+        include/search.h
+        src/nes_devices/search.cpp
         src/nes_devices/dma.cpp
         src/local_emulator.cpp
-        include/local_emulator.h src/remote_emulator.cpp include/remote_player.h src/remote_player.cpp include/colors_map.h src/colors_map.cpp include/Server.h src/Server.cpp)
+        include/local_emulator.h
+        src/remote_emulator.cpp
+        include/remote_player.h
+        src/remote_player.cpp
+        include/colors_map.h
+        src/colors_map.cpp
+        include/Server.h
+        src/Server.cpp)
 
 target_link_libraries(NADNES
         Qt::Core

@@ -64,6 +64,10 @@ class Cartridge : public CpuToCartridgeInterface, public PpuToCartridgeInterface
 public:
     explicit Cartridge(const std::string &filename);
 
+    uint8_t *get_ROM();
+
+    size_t get_ROM_size();
+
     void reset(const ResetToken &token);
 
     void save(std::ostream &file);
