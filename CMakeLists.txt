@@ -56,12 +56,11 @@ add_executable(NADNES
         include/Server.h
         src/Server.cpp
         src/environment/cheat_window.cpp
-        include/cheating/cheat_format.h
-        src/cheating/cheat_format.cpp
         include/environment/search_cheat.h
         src/environment/search_cheat.cpp
         include/environment/apply_cheat.h
         src/environment/apply_cheat.cpp
+        include/cheating/cheat_format.h
         src/cheating/cheat_format.cpp)
 
 target_link_libraries(NADNES

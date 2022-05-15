@@ -1,7 +1,10 @@
 #include "environment/main_window.h"
 #include <QList>
 #include <QMenuBar>
+#include <QUiLoader>
 #include <bitset>
+#include <iostream>
+#include "nes_exceptions.h"
 #include "nes_properties.h"
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
@@ -54,7 +57,7 @@ void MainWindow::create_menus() {
     m_nes_menu->addAction(m_load_act);
     m_nes_menu->addAction(m_reset_act);
     m_nes_menu->addAction(m_pause_act);
-    m_nes_menu->addAction(mem_search_act);
+    m_nes_menu->addAction(m_mem_search_act);
 
     m_saves_menu = menuBar()->addMenu("Saves");
     m_saves_menu->addAction(m_quicksave_act);
@@ -173,9 +176,9 @@ void MainWindow::create_actions() {
     m_profile_group->addAction(m_coop_player_act);
     m_player1_single_act->setChecked(true);
 
-    mem_search_act = new QAction("Cheat", this);
-    mem_search_act->setStatusTip("Open a window with cheat options");
-    connect(mem_search_act, SIGNAL(triggered()), this, SLOT(create_search_window()));
+    m_mem_search_act = new QAction("Cheat", this);
+    m_mem_search_act->setStatusTip("Open a window with cheat options");
+    connect(m_mem_search_act, SIGNAL(triggered()), this, SLOT(create_search_window()));
 }
 
 void MainWindow::create_search_window() {

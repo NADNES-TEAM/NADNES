@@ -61,7 +61,7 @@ public:
     QAction *m_player1_single_act;
     QAction *m_player2_single_act;
     QAction *m_coop_player_act;
-    QAction *mem_search_act;
+    QAction *m_mem_search_act;
 
     void create_search_window();
 
