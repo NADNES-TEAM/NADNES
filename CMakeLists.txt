@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
 include_directories(include/mappers)
+include_directories(uis)
 
 find_package(Qt6 COMPONENTS
         Core
@@ -29,6 +30,8 @@ add_executable(NADNES
         src/environment/keymap_window.cpp
         include/environment/main_window.h
         src/environment/main_window.cpp
+        include/environment/cheat_window.h
+        src/environment/cheat_window.cpp
         include/nes.h
         src/nes.cpp
         src/main.cpp
@@ -51,7 +54,15 @@ add_executable(NADNES
         include/colors_map.h
         src/colors_map.cpp
         include/Server.h
-        src/Server.cpp)
+        src/Server.cpp
+        src/environment/cheat_window.cpp
+        include/cheating/cheat_format.h
+        src/cheating/cheat_format.cpp
+        include/environment/search_cheat.h
+        src/environment/search_cheat.cpp
+        include/environment/apply_cheat.h
+        src/environment/apply_cheat.cpp
+        src/cheating/cheat_format.cpp)
 
 target_link_libraries(NADNES
         Qt::Core

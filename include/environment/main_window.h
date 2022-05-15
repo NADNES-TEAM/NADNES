@@ -8,6 +8,8 @@
 #include <QtGui>
 #include "gamepad.h"
 #include "interfaces/screen_interface.h"
+#include "nes.h"
+#include "cheat_window.h"
 
 enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
 
@@ -59,11 +61,14 @@ public:
     QAction *m_player1_single_act;
     QAction *m_player2_single_act;
     QAction *m_coop_player_act;
+    QAction *mem_search_act;
+
+    void create_search_window();
 
 private:
     void create_menus();
     void create_actions();
-
+    QMenu *nes_menu;
     QLabel *m_image_label;
     QImage m_screen_image;
 
@@ -74,4 +79,11 @@ private:
     QMenu *m_network_menu;
     QActionGroup *m_profile_group;
     std::vector<std::pair<QAction *, int>> m_all_actions;
+
+    QTimer m_clock;
+    std::unique_ptr<NES::Nes> m_nes = nullptr;
+    bool pause = false;
+
+    static QMap<Qt::Key, int> m_index_by_key;
+    std::atomic<uint8_t> m_pressed_keys_bitset{};
 };

@@ -34,10 +34,6 @@ MainWindow::MainWindow()
     setCentralWidget(m_image_label);
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 
-    // 17 ms = (58.8235 Hz) ^ -1, ideal is 16.6393 ms = (60.0988 Hz) ^ -1
-    // APU_FRAME_COUNTER_FREQ_HZ = 60
-    // PPU_VERTICAL_FRAME_RATE_FREQ_HZ = 60.0988
-
     create_actions();
     create_menus();
 }
@@ -58,6 +54,7 @@ void MainWindow::create_menus() {
     m_nes_menu->addAction(m_load_act);
     m_nes_menu->addAction(m_reset_act);
     m_nes_menu->addAction(m_pause_act);
+    m_nes_menu->addAction(mem_search_act);
 
     m_saves_menu = menuBar()->addMenu("Saves");
     m_saves_menu->addAction(m_quicksave_act);
@@ -175,6 +172,67 @@ void MainWindow::create_actions() {
     m_profile_group->addAction(m_player2_single_act);
     m_profile_group->addAction(m_coop_player_act);
     m_player1_single_act->setChecked(true);
+
+    mem_search_act = new QAction("Cheat", this);
+    mem_search_act->setStatusTip("Open a window with cheat options");
+    connect(mem_search_act, SIGNAL(triggered()), this, SLOT(create_search_window()));
+}
+
+void MainWindow::create_search_window() {
+    QUiLoader loader;
+    QFile fileMain("../uis/cheat_window.ui");  // just uis/... doesn't work
+    QFile fileSearch("../uis/search_cheat.ui");
+    QFile fileApply("../uis/apply_cheat.ui");
+    fileMain.open(QIODevice::ReadOnly| QIODevice::Text);
+    cheat_window = new Cheating::CheatWindow(nullptr);
+    loader.load(&fileMain, cheat_window);
+    cheat_window->tabWidget = cheat_window->findChild<QTabWidget *>("tabWidget");
+    fileMain.close();
+    fileSearch.open(QIODevice::ReadOnly| QIODevice::Text);
+    auto *search_cheat = new Cheating::SearchCheat();
+    loader.load(&fileSearch, search_cheat);
+    fileSearch.close();
+    fileApply.open(QIODevice::ReadOnly| QIODevice::Text);
+    auto *apply_cheat = new Cheating::ApplyCheat();
+    loader.load(&fileApply, apply_cheat);
+    fileApply.close();
+
+    cheat_window->tabWidget->clear();
+    cheat_window->tabWidget->addTab(search_cheat, "searchTab");
+    cheat_window->tabWidget->addTab(apply_cheat, "applyTab");
+
+    search_cheat->newButton = cheat_window->findChild<QPushButton *>("newButton");
+    search_cheat->filterButton = cheat_window->findChild<QPushButton *>("filterButton");
+    search_cheat->exportButton = cheat_window->findChild<QPushButton *>("exportButton");
+
+    search_cheat->hexRadio = cheat_window->findChild<QRadioButton *>("hexRadio");
+    search_cheat->decRadio = cheat_window->findChild<QRadioButton *>("decRadio");
+    search_cheat->twoBytes = cheat_window->findChild<QRadioButton *>("twoBytes");
+    search_cheat->oneByte = cheat_window->findChild<QRadioButton *>("oneByte");
+    search_cheat->eqRadio = cheat_window->findChild<QRadioButton *>("eqRadio");
+    search_cheat->neqRadio = cheat_window->findChild<QRadioButton *>("neqRadio");
+    search_cheat->leRadio = cheat_window->findChild<QRadioButton *>("leRadio");
+    search_cheat->leeqRadio = cheat_window->findChild<QRadioButton *>("leeqRadio");
+    search_cheat->grRadio = cheat_window->findChild<QRadioButton *>("grRadio");
+    search_cheat->greqRadio = cheat_window->findChild<QRadioButton *>("greqRadio");
+
+    search_cheat->checkRam = cheat_window->findChild<QCheckBox *>("checkRam");
+    search_cheat->checkRom = cheat_window->findChild<QCheckBox *>("checkRom");
+
+    search_cheat->tableWidget = cheat_window->findChild<QTableWidget *>("tableWidget");
+
+    apply_cheat->selectAll = cheat_window->findChild<QPushButton *>("selectAll");
+    apply_cheat->unselectAll = cheat_window->findChild<QPushButton *>("unselectAll");
+    apply_cheat->applyButton = cheat_window->findChild<QPushButton *>("applyButton");
+
+    apply_cheat->cheatTable = cheat_window->findChild<QTableWidget *>("cheatTable");
+
+    apply_cheat->init();
+//    qDebug() << search_cheat->oneByte << ' ' << search_cheat->leRadio << '\n';
+    search_cheat->onNewButtonClick();
+//    qDebug() << cheat_window->findChild<QTableWidget *>("tableWidget") << '\n';
+//    qDebug() << cheat_window->findChild<QTableWidget *>("tableWidget")->rowCount() << '\n';
+    cheat_window->show();
 }
 
 void MainWindow::enable_actions(ActionRole role) const {
