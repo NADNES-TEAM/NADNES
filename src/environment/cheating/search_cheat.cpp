@@ -1,13 +1,14 @@
+#include "environment/cheating/search_cheat.h"
 #include <QMessageBox>
 #include <iostream>
-#include "environment/cheating/search_cheat.h"
 
 namespace NES::Cheating {
 
 SearchCheat::SearchCheat(QWidget *parent) : QWidget(parent) {}
 
-void SearchCheat::init(){
+void SearchCheat::init() {
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
+    connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
 }
 
 void SearchCheat::onNewButtonClicked() {
@@ -16,14 +17,43 @@ void SearchCheat::onNewButtonClicked() {
         // TODO
     }
     if (!checkRam->isChecked() && !checkRom->isChecked()) {
-//        QMessageBox message;
-//        message.setText(tr("Please, choose at least one place to search"));
-//        message.setStandardButtons(QMessageBox::Ok);
-//        message.exec();
+        //        QMessageBox message;
+        //        message.setText(tr("Please, choose at least one place to search"));
+        //        message.setStandardButtons(QMessageBox::Ok);
+        //        message.exec();
         // TODO
         return;
     }
-    tableWidget->setRowCount(0);
+
+
+    // TODO check that params are correct
+    result = nes->search(getParams(), result);
+    fillTable();
+}
+
+void SearchCheat::some_slot() {
+    std::cout << "cout" << std::endl;
+    qDebug() << "qDebug\n";
+}
+void SearchCheat::onFilterButtonClicked() {
+    if (nes == nullptr) {
+        return;
+        // TODO
+    }
+    if (!checkRam->isChecked() && !checkRom->isChecked()) {
+        // TODO
+        return;
+    }
+
+
+    // TODO check that params are correct
+    auto params = getParams();
+    params.is_initial = false;
+    result = nes->search(params, result);
+    fillTable();
+}
+
+ParamsOfSearch SearchCheat::getParams() const  {
     ParamsOfSearch paramsOfSearch;
     paramsOfSearch.place.id = int(checkRam->isChecked()) + 2 * int(checkRom->isChecked()) - 1;
     paramsOfSearch.is_initial = true;
@@ -32,25 +62,25 @@ void SearchCheat::onNewButtonClicked() {
         paramsOfSearch.event = Action::save;
     } else if (increased->isChecked()) {
         paramsOfSearch.event = Action::encrease;
-    }else if (decreased->isChecked()) {
+    } else if (decreased->isChecked()) {
         paramsOfSearch.event = Action::decrease;
-    }else if (increased_or_save->isChecked()) {
+    } else if (increased_or_save->isChecked()) {
         paramsOfSearch.event = Action::encrease_or_save;
-    }else if (decreased_or_save->isChecked()) {
+    } else if (decreased_or_save->isChecked()) {
         paramsOfSearch.event = Action::decrease_or_save;
-    }else if (changed->isChecked()) {
+    } else if (changed->isChecked()) {
         paramsOfSearch.event = Action::changed;
-    }else if (leRadio->isChecked()) {
+    } else if (leRadio->isChecked()) {
         paramsOfSearch.event = Action::l_num;
-    }else if (grRadio->isChecked()) {
+    } else if (grRadio->isChecked()) {
         paramsOfSearch.event = Action::g_num;
-    }else if (leeqRadio->isChecked()) {
+    } else if (leeqRadio->isChecked()) {
         paramsOfSearch.event = Action::leq_num;
-    }else if (greqRadio->isChecked()) {
+    } else if (greqRadio->isChecked()) {
         paramsOfSearch.event = Action::geq_num;
-    }else if (eqRadio->isChecked()) {
+    } else if (eqRadio->isChecked()) {
         paramsOfSearch.event = Action::eq_num;
-    }else if (neqRadio->isChecked()) {
+    } else if (neqRadio->isChecked()) {
         // TODO
         paramsOfSearch.event = Action::all;
     }
@@ -62,30 +92,22 @@ void SearchCheat::onNewButtonClicked() {
         std::reverse(s.begin(), s.end());
         paramsOfSearch.data_in = std::stoi(s, nullptr, 16);
     }
-
-    // TODO check that params are correct
-    result = nes->search(paramsOfSearch, result);
-
+    return paramsOfSearch;
+}
+void SearchCheat::fillTable() {
+    tableWidget->setRowCount(0);
     tableWidget->setRowCount(result.size());
     int i = 0;
     for (const auto &it : result) {
-        tableWidget->setItem(i, 0, new QTableWidgetItem(tr("%1").arg(
-                                       it.cur_value
-                                       )));
+        tableWidget->setItem(i, 0, new QTableWidgetItem(tr("%1").arg(it.cur_value)));
 
-        tableWidget->setItem(i, 1, new QTableWidgetItem(tr("%1").arg(
-                                       it.old_value
-                                       )));
-        tableWidget->setItem(i, 2, new QTableWidgetItem(tr("%1").arg(
-                                       (it.place.id == 0 ? "RAM" : "ROM")
-                                       )));
+        tableWidget->setItem(i, 1, new QTableWidgetItem(tr("%1").arg(it.old_value)));
+        tableWidget->setItem(
+            i,
+            2,
+            new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM"))));
         i++;
     }
 }
 
-void SearchCheat::some_slot() {
-    std::cout << "cout" << std::endl;
-    qDebug() << "qDebug\n";
-}
-
-}
+}  // namespace NES::Cheating

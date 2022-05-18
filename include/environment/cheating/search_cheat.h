@@ -21,9 +21,12 @@ public:
     ~SearchCheat() override = default;
 
     void init();
+    ParamsOfSearch getParams() const;
+    void fillTable();
 
 public slots:
     void onNewButtonClicked();
+    void onFilterButtonClicked();
     void some_slot();
 
 public:
