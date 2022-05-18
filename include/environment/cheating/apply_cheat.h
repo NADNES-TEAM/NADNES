@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QTableWidget>
+#include "apply_cheat.h"
 
 
 namespace NES::Cheating {
@@ -12,7 +13,7 @@ class ApplyCheat : public QWidget {
 public:
     explicit ApplyCheat(QWidget *parent = nullptr);
     ~ApplyCheat() override = default;
-    void init();
+
 
 private slots:
 //    void onNewClicked();

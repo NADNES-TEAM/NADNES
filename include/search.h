@@ -1,27 +1,50 @@
 #pragma once
-#include<vector>
-#include<cstdint>
-namespace Search {
-enum class Action { save, encrease, decrease, encrease_or_save, changed, decrease_or_save, all ,eq_num,g_num,geq_num,l_num,leq_num};
-enum class Input { raw_bytes, num };
-enum class Place { RAM, ROM };
+#include <cstdint>
+#include <string>
+#include <vector>
+namespace NES::Cheating {
+enum class Action {
+    save,
+    encrease,
+    decrease,
+    encrease_or_save,
+    changed,
+    decrease_or_save,
+    all,
+    eq_num,
+    g_num,
+    geq_num,
+    l_num,
+    leq_num
+};
+struct Place {
+    int id{};
+    static size_t rom_size;
+    static uint8_t *ram_mem;
+    static uint8_t *rom_mem;
+    [[nodiscard]] size_t get_size() const;
+    [[nodiscard]] uint8_t *get_mem() const;
+    static Place RAM, ROM, RAM_AND_ROM;
+};
+enum class ByteCount : std::size_t { ONE = 1, TWO = 2 };
 struct ResultRaw {
-    std::size_t address;
-    std::vector<uint8_t> old_data, cur_data;
+    Place place{};
+    std::size_t address{};
+    long long old_value{}, cur_value{};
+    static long long get_value(uint8_t *first, ByteCount byteCount);
 };
 struct Params {
-    Input type;
-    Place place;
-    std::vector<uint8_t> data_in;
-    [[nodiscard]] long long convert_to_num(const std::vector<uint8_t> &elem) const;
+    Place place{};
+    ByteCount byteCount{};
+    long long data_in{};
 };
 struct ParamsOfSearch : Params {
     bool is_initial{true};
-    Action event;
+    Action event{};
     bool check_coincidence(ResultRaw &raw) const;
 };
 struct ParamsOfChange : Params {
-    std::size_t index;
+    std::size_t index{};
 };
 
-}
+}  // namespace NES::Cheating

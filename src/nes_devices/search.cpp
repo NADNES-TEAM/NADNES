@@ -1,30 +1,15 @@
 #include "search.h"
 #include <cassert>
 #include "algorithm"
-long long Search::Params::convert_to_num(const std::vector<uint8_t> &elem) const {
-    long long num = 0;
-    long long cur_degree = 1;
+#include <string>
 
-    if (type == Search::Input::num) {
-        for (unsigned char i : elem) {
-            num += i * cur_degree;
-            cur_degree *= 1 << 8;
-        }
-    }
+namespace NES::Cheating {
 
-    if (type == Search::Input::raw_bytes) {
-        for (size_t i = elem.size() - 1; i >= 0 && i < elem.size(); i--) {
-            num += elem[i] * cur_degree;
-            cur_degree *= 1 << 8;
-        }
-    }
-    return num;
-}
-
-bool Search::ParamsOfSearch::check_coincidence(Search::ResultRaw &raw) const {
-    long long num_old = convert_to_num(raw.old_data);
-    long long num_new = convert_to_num(raw.cur_data);
-    long long num_in = convert_to_num(data_in);
+Place Place::RAM{0}, Place::ROM{1}, Place::RAM_AND_ROM{2};
+bool ParamsOfSearch::check_coincidence(ResultRaw &raw) const {
+    long long num_old = raw.old_value;
+    long long num_new = raw.cur_value;
+    long long num_in = data_in;
     switch (event) {
         case Action::all: return true;
         case Action::save: return num_new == num_old;
@@ -40,4 +25,37 @@ bool Search::ParamsOfSearch::check_coincidence(Search::ResultRaw &raw) const {
         case Action::l_num: return num_new < num_in;
         default: assert(false);
     }
+}
+
+size_t Place::rom_size{};
+size_t Place::get_size() const {
+    assert(id == 0 || id == 1);
+    if (id == 0) {
+        return (1 << 11);
+    } else {
+        assert(rom_size != 0);
+        return rom_size;
+    }
+}
+uint8_t *Place::ram_mem{};
+uint8_t *Place::rom_mem{};
+uint8_t *Place::get_mem() const {
+    assert(id == 0 || id == 1);
+    if (id == 0) {
+        assert(ram_mem != nullptr);
+        return ram_mem;
+    } else {
+        assert(rom_mem != nullptr);
+        return rom_mem;
+    }
+}
+long long ResultRaw::get_value(uint8_t *first, ByteCount byteCount) {
+    if (byteCount == ByteCount::ONE) {
+        return *first;
+    } else if (byteCount == ByteCount::TWO) {
+        return *first + (1 << 8) * *std::next(first);
+    } else {
+        assert(false);
+    }
+}
 }

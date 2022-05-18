@@ -220,11 +220,21 @@ void MainWindow::create_search_window() {
     search_cheat->leeqRadio = cheat_window->findChild<QRadioButton *>("leeqRadio");
     search_cheat->grRadio = cheat_window->findChild<QRadioButton *>("grRadio");
     search_cheat->greqRadio = cheat_window->findChild<QRadioButton *>("greqRadio");
+    search_cheat->decreased = cheat_window->findChild<QRadioButton *>("decreased");
+    search_cheat->increased = cheat_window->findChild<QRadioButton *>("increased");
+    search_cheat->decreased_or_save = cheat_window->findChild<QRadioButton *>("decreased_save");
+    search_cheat->increased_or_save = cheat_window->findChild<QRadioButton *>("increased_save");
+    search_cheat->save = cheat_window->findChild<QRadioButton *>("save");
+    search_cheat->changed = cheat_window->findChild<QRadioButton *>("changed");
 
-    search_cheat->checkRam = cheat_window->findChild<QCheckBox *>("checkRam");
-    search_cheat->checkRom = cheat_window->findChild<QCheckBox *>("checkRom");
+
+
+    search_cheat->checkRam = cheat_window->findChild<QCheckBox *>("checkRAM");
+    search_cheat->checkRom = cheat_window->findChild<QCheckBox *>("checkROM");
 
     search_cheat->tableWidget = cheat_window->findChild<QTableWidget *>("tableWidget");
+    search_cheat->nes = m_nes.get();
+    search_cheat->compareWith = cheat_window->findChild<QLineEdit *>("compareWith");
 
     apply_cheat->selectAll = cheat_window->findChild<QPushButton *>("selectAll");
     apply_cheat->unselectAll = cheat_window->findChild<QPushButton *>("unselectAll");
@@ -232,8 +242,7 @@ void MainWindow::create_search_window() {
 
     apply_cheat->cheatTable = cheat_window->findChild<QTableWidget *>("cheatTable");
 
-    apply_cheat->init();
-    search_cheat->onNewButtonClick();
+    search_cheat->init();
     cheat_window->show();
 }
 

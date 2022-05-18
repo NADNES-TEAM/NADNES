@@ -3,10 +3,5 @@
 namespace NES::Cheating {
 
 ApplyCheat::ApplyCheat(QWidget *parent) : QWidget(parent) {}
-void ApplyCheat::init() {
 
-}
-//void ApplyCheat::onNewClicked() {
-//
-//}
 }

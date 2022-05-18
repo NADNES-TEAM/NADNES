@@ -7,6 +7,8 @@
 #include <QTableWidget>
 #include <QWidget>
 #include <QCheckBox>
+#include "search.h"
+#include "nes.h"
 
 namespace NES::Cheating {
 
@@ -18,8 +20,11 @@ public:
     explicit SearchCheat(QWidget *parent = nullptr);
     ~SearchCheat() override = default;
 
+    void init();
+
 public slots:
-    void onNewButtonClick();
+    void onNewButtonClicked();
+    void some_slot();
 
 public:
     QPushButton *newButton{};
@@ -36,13 +41,21 @@ public:
     QRadioButton *leeqRadio{};
     QRadioButton *grRadio{};
     QRadioButton *greqRadio{};
+    QRadioButton *increased{};
+    QRadioButton *decreased{};
+    QRadioButton *increased_or_save{};
+    QRadioButton *decreased_or_save{};
+    QRadioButton *save{};
+    QRadioButton *changed{};
     QLineEdit *compareWith{};
 
     QCheckBox *checkRom{};
     QCheckBox *checkRam{};
 
     QTableWidget *tableWidget{};
-//    friend CheatWindow;
+
+    Nes *nes;
+    std::vector<ResultRaw> result;
 };
 
 }  // namespace NES::Cheating

@@ -1,9 +1,8 @@
 #include "nes.h"
 #include <fstream>
 #include "nes_exceptions.h"
-#include "reset_token.h"
 #include <iostream>
-
+#include "reset_token.h"
 namespace NES {
 
 void Nes::tick() {
@@ -44,58 +43,47 @@ void Nes::reset() {
     cpu.reset(ResetToken());
 }
 
-void Nes::get_memory_p(uint8_t *&memory_p, size_t &size_of_memory, const Search::Params &params) {
-    switch (params.place) {
-        case Search::Place::RAM:
-            memory_p = bus.get_RAM();
-            size_of_memory = 1 << 11;
-            break;
-        case Search::Place::ROM:
-            memory_p = cartridge.get_ROM();
-            size_of_memory = cartridge.get_ROM_size();
-            break;
-    }
-}
-
-std::vector<Search::ResultRaw> Nes::search(const Search::ParamsOfSearch &params) {
-    uint8_t *memory_p;
-    size_t size_of_memory;
-    get_memory_p(memory_p, size_of_memory, params);
+std::vector<Cheating::ResultRaw> Nes::search(
+    const Cheating::ParamsOfSearch &params,
+    const std::vector<Cheating::ResultRaw> &old_result_data) {
+    Cheating::Place::rom_size = cartridge.get_ROM_size();
+    Cheating::Place::ram_mem = bus.get_RAM();
+    Cheating::Place::rom_mem = cartridge.get_ROM();
+    std::vector<Cheating::ResultRaw> new_result_data;
     if (params.is_initial) {
-        result_data.clear();
-        size_t size_of_element = params.data_in.size();
-        for (size_t i = 0; i < size_of_memory - size_of_element + 1; i++) {
-            auto p_l = memory_p + i;
-            auto p_r = p_l + size_of_element;
-            std::vector<uint8_t> elem(p_l, p_r);
-            Search::ResultRaw raw = {i, elem, elem};
-            if (params.check_coincidence(raw)) {
-                result_data.push_back(raw);
+        for (int where = 0; where < 2; ++where) {
+            if (params.place.id != Cheating::Place::RAM_AND_ROM.id && params.place.id != where) {
+                continue;
+            }
+            for (size_t i = 0; i <= Cheating::Place{where}.get_size() - size_t(params.byteCount);
+                 i++) {
+                auto p_l = Cheating::Place{where}.get_mem();
+                long long value = Cheating::ResultRaw::get_value(p_l, params.byteCount);
+                Cheating::ResultRaw raw = {Cheating::Place{where}, i, value, value};
+                if (params.check_coincidence(raw)) {
+                    new_result_data.push_back(raw);
+                }
             }
         }
     } else {
-        std::vector<Search::ResultRaw> temp_result_data;
-        for (auto &raw : result_data) {
-            raw.old_data = raw.cur_data;
-            for (size_t i = 0; i < params.data_in.size(); i++) {
-                raw.cur_data[i] = *(memory_p + raw.address + i);
-            }
+        for (auto raw : old_result_data) {
+            raw.old_value = raw.cur_value;
+            raw.cur_value = Cheating::ResultRaw::get_value(raw.place.get_mem(), params.byteCount);
             if (params.check_coincidence(raw)) {
-                temp_result_data.push_back(raw);
+                new_result_data.push_back(raw);
             }
         }
-        result_data = temp_result_data;
     }
-    return result_data;
+    return new_result_data;
 }
-bool Nes::change_memory_value(const Search::ParamsOfChange &params) {
-    uint8_t *memory_p;
-    size_t size_of_memory;
-    get_memory_p(memory_p, size_of_memory, params);
-    if (params.index + params.data_in.size() > size_of_memory)
+bool Nes::change_memory_value(const Cheating::ParamsOfChange &params) {
+    uint8_t *memory_p = params.place.get_mem();
+    size_t size_of_memory = params.place.get_size();
+    if (params.index + size_t(params.byteCount) > size_of_memory)
         return false;
-    for (size_t i = 0; i < params.data_in.size(); i++) {
-        *(memory_p + params.index + i) = params.data_in[i];
+    for (size_t i = 0, d = params.data_in; i < size_t(params.byteCount); i++) {
+        *(memory_p + params.index + i) = d % (1 << 8);
+        d >>= 8;
     }
     return true;
 }
