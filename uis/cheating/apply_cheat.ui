@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
-    <height>649</height>
+    <width>422</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,28 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_9">
      <item>
-      <widget class="QTableWidget" name="cheatTable"/>
+      <widget class="QTableWidget" name="cheatTable">
+       <column>
+        <property name="text">
+         <string>Cheat Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Selected</string>
+        </property>
+       </column>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QPushButton" name="loadCheats">
+         <property name="text">
+          <string>Load cheats</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QPushButton" name="selectAll">
          <property name="text">

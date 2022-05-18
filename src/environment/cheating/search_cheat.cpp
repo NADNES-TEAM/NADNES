@@ -1,8 +1,10 @@
 #include "environment/cheating/search_cheat.h"
-#include <QMessageBox>
-#include <iostream>
+#include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QUiLoader>
 #include <fstream>
+#include <iostream>
 
 namespace NES::Cheating {
 
@@ -12,6 +14,7 @@ void SearchCheat::init() {
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
     connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
     connect(exportButton, &QPushButton::clicked, this, &SearchCheat::onExportButtonClicked);
+    connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 }
 
 void SearchCheat::onNewButtonClicked() {
@@ -95,19 +98,30 @@ ParamsOfSearch SearchCheat::getParams() const {
     return paramsOfSearch;
 }
 void SearchCheat::fillTable() {
+    disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
+
     tableWidget->setRowCount(0);
     tableWidget->setRowCount(result.size());
     int i = 0;
     for (const auto &it : result) {
-        tableWidget->setItem(i, 0, new QTableWidgetItem(tr("%1").arg(it.cur_value)));
+        QTableWidgetItem *item;
+        item = new QTableWidgetItem(tr("%1").arg(it.cur_value));
+        tableWidget->setItem(i, 0, item);
 
-        tableWidget->setItem(i, 1, new QTableWidgetItem(tr("%1").arg(it.old_value)));
-        tableWidget->setItem(
-            i,
-            2,
-            new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM"))));
+        item = new QTableWidgetItem(tr("%1").arg(it.old_value));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 1, item);
+
+        item = new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM")));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 2, item);
+
+        item = new QTableWidgetItem(tr("%1").arg(it.address));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 3, item);
         i++;
     }
+    connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 }
 void SearchCheat::onExportButtonClicked() {
     if (!nes) {
@@ -118,12 +132,50 @@ void SearchCheat::onExportButtonClicked() {
     if (save_path.isEmpty()) {
         return;
     }
-    auto file = std::ofstream(save_path.toStdString(), std::ios::binary);
+    file_name = save_path.toStdString();
+    QFile defaultSaveFile("../uis/cheating/save_cheat_window.ui");
+    QUiLoader qUiLoader;
+    defaultSaveFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    save_default = new QWidget();
+    qUiLoader.load(&defaultSaveFile, save_default);
+    defaultSaveFile.close();
+    save_default->show();
+    buttonBox = save_default->findChild<QDialogButtonBox *>("buttonBox");
+    defaultSaveEdit = save_default->findChild<QLineEdit *>("lineEdit");
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(onOkButtonClicked()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(closeDialog()));
+    save_default->show();
+}
+
+void SearchCheat::onOkButtonClicked() {
+    auto file = std::ofstream(file_name, std::ios::binary);
     if (!file) {
-        throw UnableToOpenFileError(save_path.toStdString());
+        throw UnableToOpenFileError(file_name);
     }
     save_cheat(file);
     qDebug() << "file write success\n";
+    closeDialog();
+}
+
+void SearchCheat::closeDialog() {
+    save_default->close();
+}
+void SearchCheat::onCellChanged(int row, int column) {
+    if (column != 0) {
+        qDebug() << column << "\n";
+        return;
+    }
+    ParamsOfChange paramsOfChange;
+    paramsOfChange.place.id = result[row].place.id;
+    // TODO save params
+    paramsOfChange.byteCount = ByteCount{size_t(oneByte->isChecked() ? 1 : 2)};
+    paramsOfChange.data_in =
+        ResultRaw::get_value(paramsOfChange.place.get_mem() + result[row].address,
+                             paramsOfChange.byteCount);
+    result[row].old_value = result[row].cur_value;
+    result[row].cur_value = paramsOfChange.data_in;
+    paramsOfChange.index = result[row].address;
+    Nes::change_memory_value(paramsOfChange);
 }
 
 }  // namespace NES::Cheating

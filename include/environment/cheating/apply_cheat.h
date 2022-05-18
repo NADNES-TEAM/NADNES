@@ -13,10 +13,9 @@ class ApplyCheat : public QWidget {
 public:
     explicit ApplyCheat(QWidget *parent = nullptr);
     ~ApplyCheat() override = default;
-
+    void init();
 
 private slots:
-//    void onNewClicked();
 
 
 public:
@@ -24,6 +23,7 @@ public:
     QPushButton *selectAll{};
     QPushButton *unselectAll{};
     QPushButton *applyButton{};
+    QPushButton *loadCheatsButton{};
 
     QTableWidget *cheatTable{};
     friend CheatWindow;

@@ -241,8 +241,10 @@ void MainWindow::create_search_window() {
     apply_cheat->applyButton = cheat_window->findChild<QPushButton *>("applyButton");
 
     apply_cheat->cheatTable = cheat_window->findChild<QTableWidget *>("cheatTable");
+    apply_cheat->loadCheatsButton = cheat_window->findChild<QPushButton *>("loadCheats");
 
     search_cheat->init();
+    apply_cheat->init();
     cheat_window->show();
 }
 

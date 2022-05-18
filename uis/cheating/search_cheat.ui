@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>483</width>
-    <height>611</height>
+    <width>526</width>
+    <height>822</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,6 +39,11 @@
          <column>
           <property name="text">
            <string>Where</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Address</string>
           </property>
          </column>
         </widget>

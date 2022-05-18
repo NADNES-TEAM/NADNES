@@ -7,9 +7,11 @@
 #include <QTableWidget>
 #include <QWidget>
 #include <QCheckBox>
+#include <QDialogButtonBox>
 #include "search.h"
 #include "nes.h"
 
+class QButtonBox;
 namespace NES::Cheating {
 
 //class CheatWindow;
@@ -26,6 +28,9 @@ public:
 
     void save_cheat(std::ostream &file) {
         size_t n = result.size();
+        // TODO check correct
+        size_t d = stoi(defaultSaveEdit->text().toStdString());
+        file.write(reinterpret_cast<char *>(&d), sizeof(d));
         file.write(reinterpret_cast<char *>(&n), sizeof(n));
         file.write(reinterpret_cast<char *>(&result[0]), n * sizeof(ResultRaw));
     }
@@ -34,6 +39,9 @@ public slots:
     void onNewButtonClicked();
     void onFilterButtonClicked();
     void onExportButtonClicked();
+    void onOkButtonClicked();
+    void closeDialog();
+    void onCellChanged(int row, int column);
     void some_slot();
 
 public:
@@ -58,6 +66,10 @@ public:
     QRadioButton *save{};
     QRadioButton *changed{};
     QLineEdit *compareWith{};
+    QLineEdit *defaultSaveEdit{};
+    std::string file_name;
+    QDialogButtonBox *buttonBox{};
+    QWidget *save_default{};
 
     QCheckBox *checkRom{};
     QCheckBox *checkRam{};

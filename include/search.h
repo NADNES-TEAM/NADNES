@@ -18,7 +18,7 @@ enum class Action {
     leq_num
 };
 struct Place {
-    int id{};
+    int id{};  // 0 1 2
     static size_t rom_size;
     static uint8_t *ram_mem;
     static uint8_t *rom_mem;
