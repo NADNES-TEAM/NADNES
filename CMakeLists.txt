@@ -61,7 +61,9 @@ add_executable(NADNES
         include/environment/apply_cheat.h
         src/environment/apply_cheat.cpp
         include/cheating/cheat_format.h
-        src/cheating/cheat_format.cpp)
+        src/cheating/cheat_format.cpp
+        src/nes_devices/search.cpp
+        )
 
 target_link_libraries(NADNES
         Qt::Core

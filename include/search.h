@@ -6,7 +6,7 @@ enum class Action { save, encrease, decrease, encrease_or_save, changed, decreas
 enum class Input { raw_bytes, num };
 enum class Place { RAM, ROM };
 struct ResultRaw {
-    size_t address;
+    std::size_t address;
     std::vector<uint8_t> old_data, cur_data;
 };
 struct Params {
@@ -21,7 +21,7 @@ struct ParamsOfSearch : Params {
     bool check_coincidence(ResultRaw &raw) const;
 };
 struct ParamsOfChange : Params {
-    size_t index;
+    std::size_t index;
 };
 
 }
