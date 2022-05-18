@@ -39,7 +39,7 @@ public:
     QRadioButton *twoBytes{};
     QRadioButton *oneByte{};
     QRadioButton *eqRadio{};
-    QRadioButton *neqRadio{};
+    QRadioButton *all{};
     QRadioButton *leRadio{};
     QRadioButton *leeqRadio{};
     QRadioButton *grRadio{};

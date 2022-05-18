@@ -215,7 +215,7 @@ void MainWindow::create_search_window() {
     search_cheat->twoBytes = cheat_window->findChild<QRadioButton *>("twoBytes");
     search_cheat->oneByte = cheat_window->findChild<QRadioButton *>("oneByte");
     search_cheat->eqRadio = cheat_window->findChild<QRadioButton *>("eqRadio");
-    search_cheat->neqRadio = cheat_window->findChild<QRadioButton *>("neqRadio");
+    search_cheat->all = cheat_window->findChild<QRadioButton *>("all");
     search_cheat->leRadio = cheat_window->findChild<QRadioButton *>("leRadio");
     search_cheat->leeqRadio = cheat_window->findChild<QRadioButton *>("leeqRadio");
     search_cheat->grRadio = cheat_window->findChild<QRadioButton *>("grRadio");

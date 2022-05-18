@@ -25,7 +25,6 @@ void SearchCheat::onNewButtonClicked() {
         return;
     }
 
-
     // TODO check that params are correct
     result = nes->search(getParams(), result);
     fillTable();
@@ -45,7 +44,6 @@ void SearchCheat::onFilterButtonClicked() {
         return;
     }
 
-
     // TODO check that params are correct
     auto params = getParams();
     params.is_initial = false;
@@ -53,7 +51,7 @@ void SearchCheat::onFilterButtonClicked() {
     fillTable();
 }
 
-ParamsOfSearch SearchCheat::getParams() const  {
+ParamsOfSearch SearchCheat::getParams() const {
     ParamsOfSearch paramsOfSearch;
     paramsOfSearch.place.id = int(checkRam->isChecked()) + 2 * int(checkRom->isChecked()) - 1;
     paramsOfSearch.is_initial = true;
@@ -80,8 +78,7 @@ ParamsOfSearch SearchCheat::getParams() const  {
         paramsOfSearch.event = Action::geq_num;
     } else if (eqRadio->isChecked()) {
         paramsOfSearch.event = Action::eq_num;
-    } else if (neqRadio->isChecked()) {
-        // TODO
+    } else if (all->isChecked()) {
         paramsOfSearch.event = Action::all;
     }
 

@@ -96,6 +96,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QRadioButton" name="all">
+                <property name="text">
+                 <string>all</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QRadioButton" name="leRadio">
                 <property name="text">
                  <string>&lt;</string>
@@ -130,13 +137,6 @@
                <widget class="QRadioButton" name="grRadio">
                 <property name="text">
                  <string>&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="neqRadio">
-                <property name="text">
-                 <string>≠</string>
                 </property>
                </widget>
               </item>
