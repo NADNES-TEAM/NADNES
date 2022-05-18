@@ -1,6 +1,8 @@
 #include "environment/cheating/search_cheat.h"
 #include <QMessageBox>
 #include <iostream>
+#include <QFileDialog>
+#include <fstream>
 
 namespace NES::Cheating {
 
@@ -9,6 +11,7 @@ SearchCheat::SearchCheat(QWidget *parent) : QWidget(parent) {}
 void SearchCheat::init() {
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
     connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
+    connect(exportButton, &QPushButton::clicked, this, &SearchCheat::onExportButtonClicked);
 }
 
 void SearchCheat::onNewButtonClicked() {
@@ -105,6 +108,22 @@ void SearchCheat::fillTable() {
             new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM"))));
         i++;
     }
+}
+void SearchCheat::onExportButtonClicked() {
+    if (!nes) {
+        return;
+    }
+    QString save_path =
+        QFileDialog::getSaveFileName(this, "Select save file", "", "NADNES cheats (*.cheat)");
+    if (save_path.isEmpty()) {
+        return;
+    }
+    auto file = std::ofstream(save_path.toStdString(), std::ios::binary);
+    if (!file) {
+        throw UnableToOpenFileError(save_path.toStdString());
+    }
+    save_cheat(file);
+    qDebug() << "file write success\n";
 }
 
 }  // namespace NES::Cheating

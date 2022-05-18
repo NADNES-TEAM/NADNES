@@ -21,12 +21,19 @@ public:
     ~SearchCheat() override = default;
 
     void init();
-    ParamsOfSearch getParams() const;
+    [[nodiscard]] ParamsOfSearch getParams() const;
     void fillTable();
+
+    void save_cheat(std::ostream &file) {
+        size_t n = result.size();
+        file.write(reinterpret_cast<char *>(&n), sizeof(n));
+        file.write(reinterpret_cast<char *>(&result[0]), n * sizeof(ResultRaw));
+    }
 
 public slots:
     void onNewButtonClicked();
     void onFilterButtonClicked();
+    void onExportButtonClicked();
     void some_slot();
 
 public:
