@@ -169,9 +169,14 @@ void SearchCheat::onCellChanged(int row, int column) {
     paramsOfChange.place.id = result[row].place.id;
     // TODO save params
     paramsOfChange.byteCount = ByteCount{size_t(oneByte->isChecked() ? 1 : 2)};
-    paramsOfChange.data_in =
-        ResultRaw::get_value(paramsOfChange.place.get_mem() + result[row].address,
-                             paramsOfChange.byteCount);
+    auto s =
+        tableWidget->itemAt(row, column)->text().toStdString();
+    if (hexRadio->isChecked()) {
+        std::reverse(s.begin(), s.end());
+        paramsOfChange.data_in = std::stoi(s, nullptr, 16);
+    } else {
+        paramsOfChange.data_in = std::stoi(s);
+    }
     result[row].old_value = result[row].cur_value;
     result[row].cur_value = paramsOfChange.data_in;
     paramsOfChange.index = result[row].address;

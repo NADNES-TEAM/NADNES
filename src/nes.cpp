@@ -43,12 +43,28 @@ void Nes::reset() {
     cpu.reset(ResetToken());
 }
 
+namespace {
+void print_counter(uint8_t *data, size_t len) {
+    std::unordered_map<uint8_t, int> mp;
+    for (int i = 0; i < len; ++i) {
+        mp[data[i]]++;
+    }
+    std::cout << "{\n";
+    for (const auto &p : mp) {
+        std::cout << "\t" << p.first << " " << p.second << "\n";
+    }
+    std::cout << "}\n";
+}
+}
+
 std::vector<Cheating::ResultRaw> Nes::search(
     const Cheating::ParamsOfSearch &params,
     const std::vector<Cheating::ResultRaw> &old_result_data) {
     Cheating::Place::rom_size = cartridge.get_ROM_size();
     Cheating::Place::ram_mem = bus.get_RAM();
     Cheating::Place::rom_mem = cartridge.get_ROM();
+//    print_counter(bus.get_RAM(), (1 << 11));
+//    print_counter(cartridge.get_ROM(), cartridge.get_ROM_size());
     std::vector<Cheating::ResultRaw> new_result_data;
     if (params.is_initial) {
         for (int where = 0; where < 2; ++where) {
@@ -57,7 +73,7 @@ std::vector<Cheating::ResultRaw> Nes::search(
             }
             for (size_t i = 0; i <= Cheating::Place{where}.get_size() - size_t(params.byteCount);
                  i++) {
-                auto p_l = Cheating::Place{where}.get_mem();
+                auto p_l = Cheating::Place{where}.get_mem() + i;
                 long long value = Cheating::ResultRaw::get_value(p_l, params.byteCount);
                 Cheating::ResultRaw raw = {Cheating::Place{where}, i, value, value};
                 if (params.check_coincidence(raw)) {
@@ -68,7 +84,7 @@ std::vector<Cheating::ResultRaw> Nes::search(
     } else {
         for (auto raw : old_result_data) {
             raw.old_value = raw.cur_value;
-            raw.cur_value = Cheating::ResultRaw::get_value(raw.place.get_mem(), params.byteCount);
+            raw.cur_value = Cheating::ResultRaw::get_value(raw.place.get_mem() + raw.address, params.byteCount);
             if (params.check_coincidence(raw)) {
                 new_result_data.push_back(raw);
             }

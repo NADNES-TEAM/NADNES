@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 namespace NES::Cheating {
+
 enum class Action {
     save,
     encrease,
