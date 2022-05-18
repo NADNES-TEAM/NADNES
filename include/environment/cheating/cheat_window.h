@@ -1,5 +1,4 @@
-#ifndef UNTITLED_H
-#define UNTITLED_H
+#pragma once
 
 #include <QWidget>
 #include <QTabWidget>
@@ -19,5 +18,3 @@ public:
 };
 
 }
-
-#endif // UNTITLED_H

@@ -9,7 +9,7 @@
 #include "gamepad.h"
 #include "interfaces/screen_interface.h"
 #include "nes.h"
-#include "cheat_window.h"
+#include "cheating/cheat_window.h"
 
 enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
 

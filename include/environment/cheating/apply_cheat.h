@@ -1,6 +1,4 @@
-#ifndef NADNES_APPLY_CHEAT_H
-#define NADNES_APPLY_CHEAT_H
-
+#pragma once
 #include <QWidget>
 #include <QPushButton>
 #include <QTableWidget>
@@ -31,5 +29,3 @@ public:
 };
 
 }
-
-#endif  // NADNES_APPLY_CHEAT_H

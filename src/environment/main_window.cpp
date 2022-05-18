@@ -1,7 +1,9 @@
 #include "environment/main_window.h"
-#include <QList>
+#include <QFileDialog>
+#include <QMap>
 #include <QMenuBar>
-#include <QUiLoader>
+#include <QMessageBox>
+#include <QTimer>
 #include <bitset>
 #include <iostream>
 #include "nes_exceptions.h"
@@ -183,9 +185,9 @@ void MainWindow::create_actions() {
 
 void MainWindow::create_search_window() {
     QUiLoader loader;
-    QFile fileMain("../uis/cheat_window.ui");  // just uis/... doesn't work
-    QFile fileSearch("../uis/search_cheat.ui");
-    QFile fileApply("../uis/apply_cheat.ui");
+    QFile fileMain("../uis/cheating/cheat_window.ui");  // just uis/... doesn't work
+    QFile fileSearch("../uis/cheating/search_cheat.ui");
+    QFile fileApply("../uis/cheating/apply_cheat.ui");
     fileMain.open(QIODevice::ReadOnly| QIODevice::Text);
     cheat_window = new Cheating::CheatWindow(nullptr);
     loader.load(&fileMain, cheat_window);
@@ -231,10 +233,7 @@ void MainWindow::create_search_window() {
     apply_cheat->cheatTable = cheat_window->findChild<QTableWidget *>("cheatTable");
 
     apply_cheat->init();
-//    qDebug() << search_cheat->oneByte << ' ' << search_cheat->leRadio << '\n';
     search_cheat->onNewButtonClick();
-//    qDebug() << cheat_window->findChild<QTableWidget *>("tableWidget") << '\n';
-//    qDebug() << cheat_window->findChild<QTableWidget *>("tableWidget")->rowCount() << '\n';
     cheat_window->show();
 }
 

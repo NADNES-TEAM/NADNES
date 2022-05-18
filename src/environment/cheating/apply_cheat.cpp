@@ -1,5 +1,4 @@
-#include "environment/apply_cheat.h"
-#include "cheating/cheat_format.h"
+#include "environment/cheating/apply_cheat.h"
 
 namespace NES::Cheating {
 

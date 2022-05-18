@@ -1,5 +1,4 @@
-#ifndef NADNES_SEARCH_CHEAT_H
-#define NADNES_SEARCH_CHEAT_H
+#pragma once
 
 #include <QLineEdit>
 #include <QObject>
@@ -8,7 +7,6 @@
 #include <QTableWidget>
 #include <QWidget>
 #include <QCheckBox>
-#include "cheating/cheat_format.h"
 
 namespace NES::Cheating {
 
@@ -20,7 +18,6 @@ public:
     explicit SearchCheat(QWidget *parent = nullptr);
     ~SearchCheat() override = default;
 
-    Filter create_filter() const;
 public slots:
     void onNewButtonClick();
 
@@ -50,4 +47,3 @@ public:
 
 }  // namespace NES::Cheating
 
-#endif  // NADNES_SEARCH_CHEAT_H
