@@ -15,7 +15,9 @@ find_package(Qt6 COMPONENTS
         REQUIRED)
 
 add_executable( NADNES
-        src/environment/gamepad.cpp
+        src/gamepad.cpp
+        include/gamepad.h
+        include/main_controller.h
         include/environment/keymap_window.h
         src/environment/keymap_window.cpp
         include/environment/main_window.h
@@ -28,8 +30,11 @@ add_executable( NADNES
         src/mappers/UNROM.cpp
         src/nes_devices/bus.cpp
         src/nes_devices/controller.cpp
+        src/main_controller.cpp
         src/nes_devices/R6502.cpp
-        src/nes_devices/dma.cpp)
+        src/nes_devices/dma.cpp
+        src/local_emulator.cpp
+        include/local_emulator.h)
 
 target_link_libraries(NADNES
         Qt::Core

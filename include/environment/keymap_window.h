@@ -7,8 +7,6 @@
 #include <QWidget>
 #include "default_keymaps.h"
 
-namespace NES {
-
 class KeymapWindow : public QWidget {
     Q_OBJECT
 
@@ -18,7 +16,7 @@ public:
     ~KeymapWindow() override = default;
     void update_table();
 
-    Players m_player = Players::None;
+    NES::Players m_player = NES::Players::None;
 
 private slots:
     void on_restore_btn_clicked();
@@ -34,5 +32,3 @@ private:
     QMap<NES::Keys, Qt::Key> &m_btn_to_key;
     QKeySequenceEdit *m_sequence;
 };
-
-}  // namespace NES

@@ -1,9 +1,8 @@
 #include <QApplication>
-#include "environment/main_window.h"
+#include "main_controller.h"
 
 int main(int argc, char *argv[]) {
     QApplication application(argc, argv);
-    NES::MainWindow main_window;
-    main_window.show();
+    MainController controller;
     return QApplication::exec();
 }

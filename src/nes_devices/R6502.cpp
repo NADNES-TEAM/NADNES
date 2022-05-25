@@ -833,7 +833,7 @@ void Cpu::NMI() {
     PC = temp;
     temp = cpu_read(0xFFFB);
     PC |= temp << 8;
-    cycles = 7;
+    cycles = 8;
 }
 
 void Cpu::IRQ() {

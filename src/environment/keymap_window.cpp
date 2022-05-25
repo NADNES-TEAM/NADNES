@@ -1,8 +1,6 @@
 #include "environment/keymap_window.h"
 #include <QtUiTools>
 
-namespace NES {
-
 KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
                            QMap<NES::Keys, Qt::Key> &btn_to_key_)
     : m_key_to_btn(key_to_btn_), m_btn_to_key(btn_to_key_){
@@ -19,8 +17,8 @@ KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
 }
 
 void KeymapWindow::on_restore_btn_clicked() {
-    for (int i = 0; i < BTN_COUNT; i++) {
-        auto cur = QKeySequence(default_keymap[m_player][NES::Keys(i)]).toString();
+    for (int i = 0; i < NES::BTN_COUNT; i++) {
+        auto cur = QKeySequence(NES::default_keymap[m_player][NES::Keys(i)]).toString();
         m_table->item(i, 1)->setText(cur);
     }
 }
@@ -31,7 +29,7 @@ void KeymapWindow::on_cancel_btn_clicked() {
 }
 
 void KeymapWindow::on_apply_btn_clicked() {
-    for (int i = 0; i < BTN_COUNT; i++) {
+    for (int i = 0; i < NES::BTN_COUNT; i++) {
         auto seq = QKeySequence(m_table->item(i, 1)->text());
         if (seq[0].key() == m_btn_to_key[NES::Keys(i)]) {
             continue;
@@ -70,9 +68,7 @@ void KeymapWindow::on_table_widget_itemDoubleClicked() {
 }
 
 void KeymapWindow::update_table() {
-    for (int i = 0; i < BTN_COUNT; i++) {
+    for (int i = 0; i < NES::BTN_COUNT; i++) {
         m_table->item(i, 1)->setText(QKeySequence(m_btn_to_key[NES::Keys(i)]).toString());
     }
 }
-
-}  // namespace NES
