@@ -22,7 +22,6 @@ NES::ScreenInterface *MainWindow::get_screen_interface() {
     return dynamic_cast<ScreenInterface *>(this);
 }
 
-
 MainWindow::MainWindow()
     : QMainWindow(),
       m_screen_image(NES::SCREEN_WIDTH, NES::SCREEN_HEIGHT, QImage::Format_RGB888),
@@ -44,7 +43,7 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-   emit closed();
+    emit closed();
 }
 
 void MainWindow::refresh_screen() {
@@ -108,5 +107,4 @@ void MainWindow::create_actions() {
     m_open_pl2_keymap_act = new QAction("Player 2", this);
     m_open_pl2_keymap_act->setShortcut(QKeySequence("Ctrl+2"));
     m_open_pl2_keymap_act->setStatusTip("Open player 2 keymap settings");
-
 }

@@ -14,6 +14,8 @@ public:
                   NES::KeyboardInterface *gp2);
     ~LocalEmulator() override = default;
 
+    void close();
+
 public slots:
     void load_rom(QString path = "");
     void reset_nes();
@@ -22,7 +24,6 @@ public slots:
     void load_game_from();
     void quicksave();
     void quickload();
-    void close();
 
 private:
     void read_settings();

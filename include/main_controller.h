@@ -12,7 +12,8 @@ public:
     MainController();
     ~MainController() override = default;
 
-private slots:
+public slots:
+    void close();
 
 private:
     void make_connections();

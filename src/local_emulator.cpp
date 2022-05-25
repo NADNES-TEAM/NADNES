@@ -53,7 +53,6 @@ LocalEmulator::LocalEmulator(NES::ScreenInterface *screen,
     if (!m_last_save_path.isEmpty()) {
         quickload();
     }
-
 }
 
 void LocalEmulator::write_settings() {

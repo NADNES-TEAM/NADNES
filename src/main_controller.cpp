@@ -5,11 +5,9 @@ MainController::MainController()
     : m_local_emulator(m_main_window.get_screen_interface(),
                        m_player1.get_keyboard_interface(),
                        m_player2.get_keyboard_interface()) {
-
     make_connections();
     m_player1.load_player(NES::Players::SinglePlayer);
     m_main_window.show();
-
 }
 
 void MainController::make_connections() {
@@ -52,5 +50,11 @@ void MainController::make_connections() {
     connect(&m_main_window, &MainWindow::key_pressed, &m_player2, &Gamepad::key_pressed);
     connect(&m_main_window, &MainWindow::key_released, &m_player1, &Gamepad::key_released);
     connect(&m_main_window, &MainWindow::key_released, &m_player2, &Gamepad::key_released);
-    connect(&m_main_window, &MainWindow::closed, &m_local_emulator, &LocalEmulator::close);
+    connect(&m_main_window, &MainWindow::closed, this, &MainController::close);
+}
+
+void MainController::close() {
+    m_local_emulator.close();
+    m_player1.load_player(NES::Players::None);
+    m_player2.load_player(NES::Players::None);
 }

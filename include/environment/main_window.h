@@ -55,12 +55,9 @@ private:
 
     QMenu *m_nes_menu;
 
-
     QMenu *m_saves_menu;
-
 
     QMenu *m_settings_menu;
     QActionGroup *m_profile_group;
     QMenu *m_profile_menu;
-
 };
