@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <iostream>
+#include "environment/player_select_window.h"
 #include "nes_properties.h"
 
 void handle_exception(std::exception &e) {
@@ -35,8 +36,9 @@ LocalEmulator::LocalEmulator(NES::ScreenInterface *screen,
     m_clock.setInterval(
         std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
 
-    read_settings();
+    m_player_select_window = new PlayerSelectWindow();
 
+    read_settings();
     QString tmp = m_last_save_path;
     if (!m_last_rom_path.isEmpty() &&
         QMessageBox::Yes ==
@@ -158,5 +160,10 @@ void LocalEmulator::quickload() {
 }
 
 void LocalEmulator::close() {
+    m_player_select_window->close();
     write_settings();
+}
+
+void LocalEmulator::show_player_select() {
+    m_player_select_window->show();
 }

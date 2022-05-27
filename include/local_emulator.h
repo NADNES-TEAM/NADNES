@@ -1,8 +1,9 @@
 #pragma once
 
-#include "QObject"
-#include "QTimer"
-#include "environment/main_window.h"
+#include <QObject>
+#include <QTimer>
+#include <QString>
+#include <QWidget>
 #include "nes.h"
 
 class LocalEmulator : public QObject {
@@ -24,6 +25,7 @@ public slots:
     void load_game_from();
     void quicksave();
     void quickload();
+    void show_player_select();
 
 private:
     void read_settings();
@@ -36,6 +38,8 @@ private:
     NES::ScreenInterface *m_screen;
     NES::KeyboardInterface *m_gamepad_1;
     NES::KeyboardInterface *m_gamepad_2;
+
+    QWidget *m_player_select_window;
 
     QString m_last_rom_path;
     QString m_last_save_path;

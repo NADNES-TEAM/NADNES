@@ -43,8 +43,7 @@ public:
 
     QAction *m_open_pl1_keymap_act;
     QAction *m_open_pl2_keymap_act;
-    QAction *m_single_player_act;
-    QAction *m_coop_player_act;
+    QAction *m_open_player_select_act;
 
 private:
     void create_menus();
@@ -58,6 +57,4 @@ private:
     QMenu *m_saves_menu;
 
     QMenu *m_settings_menu;
-    QActionGroup *m_profile_group;
-    QMenu *m_profile_menu;
 };

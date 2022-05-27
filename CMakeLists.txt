@@ -17,6 +17,8 @@ find_package(Qt6 COMPONENTS
 add_executable( NADNES
         src/gamepad.cpp
         include/gamepad.h
+        include/environment/player_select_window.h
+        src/environment/player_select_window.cpp
         include/main_controller.h
         include/environment/keymap_window.h
         src/environment/keymap_window.cpp

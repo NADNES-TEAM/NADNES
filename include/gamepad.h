@@ -7,7 +7,7 @@
 #include "environment/keymap_window.h"
 #include "interfaces/keyboard_interface.h"
 
-struct Gamepad : public QObject,  NES::KeyboardInterface {
+struct Gamepad : public QObject, NES::KeyboardInterface {
     Q_OBJECT
 
 public slots:
@@ -19,6 +19,8 @@ public slots:
 
 public:
     ~Gamepad() override = default;
+
+    void close();
 
     [[nodiscard]] uint8_t get_pressed_keys() const override;
 

@@ -19,6 +19,7 @@ public:
     NES::Players m_player = NES::Players::None;
 
 private slots:
+    void closeEvent(QCloseEvent *event) override;
     void on_restore_btn_clicked();
     void on_cancel_btn_clicked();
     void on_apply_btn_clicked();

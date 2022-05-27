@@ -69,6 +69,7 @@ void MainWindow::create_menus() {
     m_settings_menu = menuBar()->addMenu("Controls");
     m_settings_menu->addAction(m_open_pl1_keymap_act);
     m_settings_menu->addAction(m_open_pl2_keymap_act);
+    m_settings_menu->addAction(m_open_player_select_act);
 }
 
 void MainWindow::create_actions() {
@@ -107,4 +108,8 @@ void MainWindow::create_actions() {
     m_open_pl2_keymap_act = new QAction("Player 2", this);
     m_open_pl2_keymap_act->setShortcut(QKeySequence("Ctrl+2"));
     m_open_pl2_keymap_act->setStatusTip("Open player 2 keymap settings");
+
+    m_open_player_select_act = new QAction("Player select...", this);
+    m_open_player_select_act->setShortcut(QKeySequence("Ctrl+P"));
+    m_open_player_select_act->setStatusTip("Open player select menu");
 }

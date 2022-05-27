@@ -72,3 +72,7 @@ void KeymapWindow::update_table() {
         m_table->item(i, 1)->setText(QKeySequence(m_btn_to_key[NES::Keys(i)]).toString());
     }
 }
+
+void KeymapWindow::closeEvent(QCloseEvent *event) {
+    on_cancel_btn_clicked();
+}
