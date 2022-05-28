@@ -71,9 +71,12 @@ void MainWindow::create_menus() {
     m_settings_menu->addAction(m_open_pl2_keymap_act);
     m_settings_menu->addAction(m_open_player_select_act);
 
-    m_host_guest_menu = menuBar()->addMenu("Regime");
-    m_host_guest_menu->addAction(m_become_host);
-    m_host_guest_menu->addAction(m_become_guest);
+    m_host_guest_menu = menuBar()->addMenu("Mode");
+    m_host_guest_menu->addAction(m_become_host_act);
+    m_host_guest_menu->addAction(m_become_guest_act);
+
+    m_server_menu = menuBar()->addMenu(tr("Server"));
+    m_server_menu->addAction(m_run_server_act);
 }
 
 void MainWindow::create_actions() {
@@ -117,12 +120,15 @@ void MainWindow::create_actions() {
     m_open_player_select_act->setShortcut(QKeySequence("Ctrl+P"));
     m_open_player_select_act->setStatusTip("Open player select menu");
 
-    m_become_host = new QAction(tr("Become host"), this);
-    m_become_host->setStatusTip(tr("Host is the person who runs NES"));
+    m_become_host_act = new QAction(tr("Become host"), this);
+    m_become_host_act->setStatusTip(tr("Host is the person who runs NES"));
 
-    m_become_guest = new QAction(tr("Become guest"), this);
-    m_become_guest->setStatusTip(
+    m_become_guest_act = new QAction(tr("Become guest"), this);
+    m_become_guest_act->setStatusTip(
         tr("Guest is the person who doesn't run NES and just sends/receives data"));
+
+    m_run_server_act = new QAction(tr("Run server"));
+    m_run_server_act->setStatusTip(tr("Runs server"));
 }
 
 void MainWindow::disable_all_actions() {
@@ -136,8 +142,9 @@ void MainWindow::disable_all_actions() {
     m_open_pl1_keymap_act->setEnabled(false);
     m_open_pl2_keymap_act->setEnabled(false);
     m_open_player_select_act->setEnabled(false);
-    m_become_host->setEnabled(false);
-    m_become_guest->setEnabled(false);
+    m_become_host_act->setEnabled(false);
+    m_become_guest_act->setEnabled(false);
+    m_run_server_act->setEnabled(false);
 }
 
 void MainWindow::enable_local_actions() {
@@ -151,10 +158,11 @@ void MainWindow::enable_local_actions() {
     m_open_pl1_keymap_act->setEnabled(true);
     m_open_pl2_keymap_act->setEnabled(true);
     m_open_player_select_act->setEnabled(true);
-    m_become_guest->setEnabled(true);
+    m_become_guest_act->setEnabled(true);
+    m_run_server_act->setEnabled(true);
 }
 
 void MainWindow::enable_remote_actions() {
-    m_become_host->setEnabled(true);
+    m_become_host_act->setEnabled(true);
     m_open_pl1_keymap_act->setEnabled(true);
 }

@@ -6,17 +6,20 @@
 #include "remote_player.h"
 
 class Server : public QDialog {
-
-
 public:
     explicit Server(QWidget *parent = nullptr);
 
 public slots:
-
-private:
     void init_server();
+    void destruct_server();
+    void on_shutdown_clicked();
+    void on_run_clicked();
 
     QLabel *statusLabel = nullptr;
     QTcpServer *tcpServer = nullptr;
-    std::vector<RemotePlayer> players;
+    QPushButton *shutdownButton = nullptr;
+    QPushButton *hideButton = nullptr;
+    QPushButton *runButton = nullptr;
+
+    int nextId{2};
 };

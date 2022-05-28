@@ -49,8 +49,10 @@ public:
     QAction *m_open_pl2_keymap_act;
     QAction *m_open_player_select_act;
 
-    QAction *m_become_host;
-    QAction *m_become_guest;
+    QAction *m_become_host_act;
+    QAction *m_become_guest_act;
+
+    QAction *m_run_server_act;
 
 private:
     void create_menus();
@@ -66,4 +68,6 @@ private:
     QMenu *m_settings_menu;
 
     QMenu *m_host_guest_menu;
+
+    QMenu *m_server_menu;
 };

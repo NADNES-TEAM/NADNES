@@ -33,6 +33,8 @@ LocalEmulator::LocalEmulator(NES::ScreenInterface *screen,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
     : m_screen(screen), m_gamepad_1(gp1), m_gamepad_2(gp2), m_clock(this) {
+    server = new Server();
+    server->hide();
     m_clock.setInterval(
         std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
 
@@ -166,4 +168,8 @@ void LocalEmulator::close() {
 
 void LocalEmulator::show_player_select() {
     m_player_select_window->show();
+}
+
+void LocalEmulator::run_server() {
+    QTimer::singleShot(0, server, SLOT(show()));
 }

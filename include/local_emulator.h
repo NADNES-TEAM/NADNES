@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <QTimer>
 #include <QString>
+#include <QTimer>
 #include <QWidget>
+#include "Server.h"
 #include "nes.h"
 
 class LocalEmulator : public QObject {
@@ -26,6 +27,7 @@ public slots:
     void quicksave();
     void quickload();
     void show_player_select();
+    void run_server();
 
 private:
     void read_settings();
@@ -43,4 +45,6 @@ private:
 
     QString m_last_rom_path;
     QString m_last_save_path;
+
+    Server *server;
 };

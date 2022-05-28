@@ -6,6 +6,8 @@ MainController::MainController()
                        m_player1.get_keyboard_interface(),
                        m_player2.get_keyboard_interface()) {
     make_connections();
+    m_main_window.disable_all_actions();
+    m_main_window.enable_local_actions();
     m_player1.load_player(NES::Players::SinglePlayer);
     m_main_window.show();
 }
@@ -55,7 +57,12 @@ void MainController::make_connections() {
             &QAction::triggered,
             &m_local_emulator,
             &LocalEmulator::show_player_select);
-    connect(&m_main_window, );
+    connect(m_main_window.m_become_host_act, SIGNAL(triggered()), this, SLOT(become_host()));
+    connect(m_main_window.m_become_guest_act, SIGNAL(triggered()), this, SLOT(become_guest()));
+    connect(m_main_window.m_run_server_act,
+            SIGNAL(triggered()),
+            &m_local_emulator,
+            SLOT(run_server()));
 }
 
 void MainController::close() {
