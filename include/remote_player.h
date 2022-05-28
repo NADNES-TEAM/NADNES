@@ -9,15 +9,21 @@ class RemotePlayer : public QObject, public NES::ScreenInterface, public NES::Ke
     Q_OBJECT
 
 signals:
-    void disconnected();
+    void disconnected(size_t id);
 
 public slots:
-    void flush();
+    void data_arrived();
+    void disconnect_wrapper();
 
 public:
-    RemotePlayer(std::unique_ptr<QTcpSocket> &&socket);
+    RemotePlayer(QTcpSocket *socket_, size_t id);
     void set_pixel(int row, int column, NES::Color color) override;
+    uint8_t get_pressed_keys() const override;
+    ~RemotePlayer() override = default;
 
-    // Vars
-    std::unique_ptr<QTcpSocket> m_socket;
+private:
+    QDataStream stream;
+    QTcpSocket *socket;
+    size_t id;
+    uint8_t btn;
 };
