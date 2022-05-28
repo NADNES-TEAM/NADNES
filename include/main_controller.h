@@ -14,6 +14,9 @@ public:
 
 public slots:
     void close();
+    void become_host();
+    void become_guest();
+
 
 private:
     void make_connections();

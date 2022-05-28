@@ -55,10 +55,23 @@ void MainController::make_connections() {
             &QAction::triggered,
             &m_local_emulator,
             &LocalEmulator::show_player_select);
+    connect(&m_main_window, );
 }
 
 void MainController::close() {
     m_local_emulator.close();
     m_player1.close();
     m_player2.close();
+}
+
+void MainController::become_host() {
+    m_main_window.disable_all_actions();
+    m_main_window.enable_local_actions();
+    m_local_emulator.reset_nes();
+}
+
+void MainController::become_guest() {
+    m_main_window.disable_all_actions();
+    m_main_window.enable_remote_actions();
+    m_local_emulator.reset_nes();
 }

@@ -70,6 +70,10 @@ void MainWindow::create_menus() {
     m_settings_menu->addAction(m_open_pl1_keymap_act);
     m_settings_menu->addAction(m_open_pl2_keymap_act);
     m_settings_menu->addAction(m_open_player_select_act);
+
+    m_host_guest_menu = menuBar()->addMenu("Regime");
+    m_host_guest_menu->addAction(m_become_host);
+    m_host_guest_menu->addAction(m_become_guest);
 }
 
 void MainWindow::create_actions() {
@@ -112,4 +116,45 @@ void MainWindow::create_actions() {
     m_open_player_select_act = new QAction("Player select...", this);
     m_open_player_select_act->setShortcut(QKeySequence("Ctrl+P"));
     m_open_player_select_act->setStatusTip("Open player select menu");
+
+    m_become_host = new QAction(tr("Become host"), this);
+    m_become_host->setStatusTip(tr("Host is the person who runs NES"));
+
+    m_become_guest = new QAction(tr("Become guest"), this);
+    m_become_guest->setStatusTip(
+        tr("Guest is the person who doesn't run NES and just sends/receives data"));
+}
+
+void MainWindow::disable_all_actions() {
+    m_load_act->setEnabled(false);
+    m_reset_act->setEnabled(false);
+    m_pause_act->setEnabled(false);
+    m_save_to_act->setEnabled(false);
+    m_quickload_act->setEnabled(false);
+    m_load_from_act->setEnabled(false);
+    m_quicksave_act->setEnabled(false);
+    m_open_pl1_keymap_act->setEnabled(false);
+    m_open_pl2_keymap_act->setEnabled(false);
+    m_open_player_select_act->setEnabled(false);
+    m_become_host->setEnabled(false);
+    m_become_guest->setEnabled(false);
+}
+
+void MainWindow::enable_local_actions() {
+    m_load_act->setEnabled(true);
+    m_reset_act->setEnabled(true);
+    m_pause_act->setEnabled(true);
+    m_save_to_act->setEnabled(true);
+    m_quickload_act->setEnabled(true);
+    m_load_from_act->setEnabled(true);
+    m_quicksave_act->setEnabled(true);
+    m_open_pl1_keymap_act->setEnabled(true);
+    m_open_pl2_keymap_act->setEnabled(true);
+    m_open_player_select_act->setEnabled(true);
+    m_become_guest->setEnabled(true);
+}
+
+void MainWindow::enable_remote_actions() {
+    m_become_host->setEnabled(true);
+    m_open_pl1_keymap_act->setEnabled(true);
 }

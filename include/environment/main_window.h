@@ -32,6 +32,10 @@ public:
     void set_pixel(int row, int column, NES::Color color) override;
     void refresh_screen() override;
 
+    void disable_all_actions();
+    void enable_local_actions();
+    void enable_remote_actions();
+
     QAction *m_load_act;
     QAction *m_reset_act;
     QAction *m_pause_act;
@@ -45,6 +49,9 @@ public:
     QAction *m_open_pl2_keymap_act;
     QAction *m_open_player_select_act;
 
+    QAction *m_become_host;
+    QAction *m_become_guest;
+
 private:
     void create_menus();
     void create_actions();
@@ -57,4 +64,6 @@ private:
     QMenu *m_saves_menu;
 
     QMenu *m_settings_menu;
+
+    QMenu *m_host_guest_menu;
 };
