@@ -16,10 +16,12 @@ public slots:
     void disconnect_wrapper();
 
 public:
-    RemotePlayer(QTcpSocket *socket_, size_t id);
+    RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id);
     void set_pixel(int row, int column, NES::Color color) override;
     uint8_t get_pressed_keys() const override;
+    void refresh_screen() override;
     ~RemotePlayer() override = default;
+
 
 private:
     QDataStream stream;
