@@ -16,6 +16,10 @@ find_package(Qt6 COMPONENTS
         REQUIRED)
 
 add_executable( NADNES
+        src/environment/connection_window.cpp
+        include/environment/connection_window.h
+        include/remote_emulator.h
+        include/remote_player.h
         src/gamepad.cpp
         include/gamepad.h
         include/environment/player_select_window.h
