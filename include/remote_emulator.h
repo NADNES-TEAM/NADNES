@@ -6,7 +6,7 @@
 #include <interfaces/screen_interface.h>
 struct RemoteEmulator: public QObject {
 public:
-    RemoteEmulator(QTcpSocket *socket_,NES::ScreenInterface *screen_);
+    RemoteEmulator(QTcpSocket *socket_, NES::ScreenInterface *screen_);
 public slots:
     void key_changed(uint8_t btn);
 private:

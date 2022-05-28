@@ -1,6 +1,5 @@
 #include "remote_emulator.h"
 #include "colors_map.h"
-#include <string>
 RemoteEmulator::RemoteEmulator(QTcpSocket *socket_, NES::ScreenInterface *screen_) {
     socket = socket_;
     screen = screen_;
