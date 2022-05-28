@@ -2,16 +2,19 @@
 #include <QMessageBox>
 #include "colors_map.h"
 
-RemoteEmulator::RemoteEmulator(QTcpSocket *socket_, NES::ScreenInterface *screen_) {
+RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
+    : QObject(parent), connection_window() {
     socket = new QTcpSocket(this);
     screen = screen_;
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
-    connect(socket, SIGNAL(disconnected()), SLOT(deleteLater));
-    stream.setDevice(socket_);
+    connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
+    stream.setDevice(socket);
     stream.setVersion(QDataStream::Qt_4_0);
     cur_x = cur_y = 0;
-    connection_window = new ConnectionWindow();
-    connect(connection_window, &ConnectionWindow::connect_btn_pressed, this, &RemoteEmulator::try_connect);
+    connect(&connection_window,
+            &ConnectionWindow::connect_btn_pressed,
+            this,
+            &RemoteEmulator::try_connect);
 }
 
 void RemoteEmulator::key_changed(uint8_t btn) {
@@ -34,7 +37,7 @@ void RemoteEmulator::data_arrived() {
 }
 
 void RemoteEmulator::show_connection_window() {
-    connection_window->show();
+    connection_window.show();
 }
 
 void RemoteEmulator::try_connect(const QString &address, int port) {
@@ -43,7 +46,7 @@ void RemoteEmulator::try_connect(const QString &address, int port) {
 }
 
 void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
-    QMessageBox::critical(connection_window,
+    QMessageBox::critical(&connection_window,
                           "Connection error",
                           "Following error occurred:" + socket->errorString(),
                           (QMessageBox::Ok));

@@ -11,7 +11,8 @@ class LocalEmulator : public QObject {
     Q_OBJECT
 
 public:
-    LocalEmulator(NES::ScreenInterface *screen,
+    LocalEmulator(QObject *parent,
+                  NES::ScreenInterface *screen,
                   NES::KeyboardInterface *gp1,
                   NES::KeyboardInterface *gp2);
     ~LocalEmulator() override = default;

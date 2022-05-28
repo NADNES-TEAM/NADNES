@@ -2,7 +2,7 @@
 #include <QtUiTools>
 
 ConnectionWindow::ConnectionWindow() {
-    QFile file("../UI/player_select.ui");
+    QFile file("../UI/connect_window.ui");
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);
@@ -13,14 +13,16 @@ ConnectionWindow::ConnectionWindow() {
 
     m_port_edit = findChild<QLineEdit *>("port_edit");
     connect(m_port_edit, &QLineEdit::textChanged, this, &ConnectionWindow::enable_connect_btn);
+    m_port_edit->setValidator(new QIntValidator(1, 65535, this));
+
 
     m_address_edit = findChild<QLineEdit *>("address_edit");
     connect(m_address_edit, &QLineEdit::textChanged, this, &ConnectionWindow::enable_connect_btn);
-    m_address_edit->setValidator(new QIntValidator(1, 65535, this));
 }
 
 void ConnectionWindow::on_connect_btn_clicked() {
     emit connect_btn_pressed(m_address_edit->text(), m_port_edit->text().toInt());
+    close();
 }
 
 void ConnectionWindow::enable_connect_btn() {

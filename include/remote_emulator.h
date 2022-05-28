@@ -10,13 +10,13 @@
 struct RemoteEmulator: public QObject {
     Q_OBJECT
 public:
-    RemoteEmulator(QTcpSocket *socket_, NES::ScreenInterface *screen_);
+    RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_);
     ~RemoteEmulator() override =default;
 public slots:
     void key_changed(uint8_t btn);
     void show_connection_window();
 private:
-    ConnectionWindow *connection_window;
+    ConnectionWindow connection_window;
     QDataStream stream;
     QTcpSocket *socket;
     NES::ScreenInterface *screen;

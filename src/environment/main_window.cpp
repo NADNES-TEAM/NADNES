@@ -71,12 +71,12 @@ void MainWindow::create_menus() {
     m_settings_menu->addAction(m_open_pl2_keymap_act);
     m_settings_menu->addAction(m_open_player_select_act);
 
-    m_host_guest_menu = menuBar()->addMenu("Mode");
-    m_host_guest_menu->addAction(m_become_host_act);
-    m_host_guest_menu->addAction(m_become_guest_act);
-
-    m_server_menu = menuBar()->addMenu(tr("Server"));
-    m_server_menu->addAction(m_run_server_act);
+    m_network_menu = menuBar()->addMenu("Network");
+    m_network_menu->addAction(m_become_host_act);
+    m_network_menu->addAction(m_run_server_act);
+    m_network_menu->addSeparator();
+    m_network_menu->addAction(m_become_guest_act);
+    m_network_menu->addAction(m_connect_to_host_act);
 }
 
 void MainWindow::create_actions() {
@@ -129,9 +129,12 @@ void MainWindow::create_actions() {
 
     m_run_server_act = new QAction(tr("Run server"));
     m_run_server_act->setStatusTip(tr("Runs server"));
+
+    m_connect_to_host_act = new QAction(tr("Join game..."));
+    m_connect_to_host_act->setStatusTip(tr("Connect to host"));
 }
 
-void MainWindow::disable_all_actions() {
+void MainWindow::disable_all_actions() const {
     m_load_act->setEnabled(false);
     m_reset_act->setEnabled(false);
     m_pause_act->setEnabled(false);
@@ -145,9 +148,10 @@ void MainWindow::disable_all_actions() {
     m_become_host_act->setEnabled(false);
     m_become_guest_act->setEnabled(false);
     m_run_server_act->setEnabled(false);
+    m_connect_to_host_act->setEnabled(false);
 }
 
-void MainWindow::enable_local_actions() {
+void MainWindow::enable_host_actions() const {
     m_load_act->setEnabled(true);
     m_reset_act->setEnabled(true);
     m_pause_act->setEnabled(true);
@@ -162,7 +166,8 @@ void MainWindow::enable_local_actions() {
     m_run_server_act->setEnabled(true);
 }
 
-void MainWindow::enable_remote_actions() {
+void MainWindow::enable_guest_actions() const {
     m_become_host_act->setEnabled(true);
     m_open_pl1_keymap_act->setEnabled(true);
+    m_connect_to_host_act->setEnabled(true);
 }

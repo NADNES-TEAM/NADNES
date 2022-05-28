@@ -29,10 +29,11 @@ struct PauseHolder {
     }
 };
 
-LocalEmulator::LocalEmulator(NES::ScreenInterface *screen,
+LocalEmulator::LocalEmulator(QObject *parent,
+                             NES::ScreenInterface *screen,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
-    : m_screen(screen), m_gamepad_1(gp1), m_gamepad_2(gp2), m_clock(this) {
+    : QObject(parent), m_screen(screen), m_gamepad_1(gp1), m_gamepad_2(gp2), m_clock(this) {
     server = new Server();
     server->hide();
     m_clock.setInterval(

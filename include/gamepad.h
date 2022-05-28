@@ -17,6 +17,9 @@ public slots:
 
     void show_editor() const;
 
+signals:
+    void state_changed(uint8_t);
+
 public:
     ~Gamepad() override = default;
 
