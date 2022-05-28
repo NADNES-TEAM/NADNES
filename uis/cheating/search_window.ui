@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>540</width>
-    <height>847</height>
+    <height>838</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -17,7 +23,14 @@
    <item>
     <layout class="QVBoxLayout" name="mainLayout">
      <item>
-      <widget class="QTabWidget" name="tabWidget"/>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

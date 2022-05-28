@@ -10,6 +10,12 @@
     <height>518</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -18,6 +24,12 @@
     <layout class="QVBoxLayout" name="verticalLayout_9">
      <item>
       <widget class="QTableWidget" name="cheatTable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <column>
         <property name="text">
          <string>Cheat Name</string>

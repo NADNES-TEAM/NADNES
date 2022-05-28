@@ -1,7 +1,6 @@
 #include "environment/cheating/search_cheat.h"
 #include <QDialogButtonBox>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QUiLoader>
 #include <fstream>
 #include <iostream>
