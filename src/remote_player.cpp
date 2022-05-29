@@ -1,15 +1,14 @@
 #include "remote_player.h"
 #include "colors_map.h"
 
-RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
-    : QObject(parent), btn(0) {
+RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_): QObject(parent), btn(0) {
     socket = socket_;
     id = id_;
     image.resize((NES::SCREEN_HEIGHT-1)*NES::SCREEN_WIDTH);
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
     connect(socket, SIGNAL(disconnected()), SLOT(disconnect_wrapper()));
     stream.setDevice(socket_);
-    stream.setVersion(QDataStream::Qt_4_0);
+    stream.setVersion(QDataStream::Qt_4_6);
 }
 
 void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
