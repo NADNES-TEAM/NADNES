@@ -20,10 +20,11 @@ private:
     QDataStream stream;
     QTcpSocket *socket;
     NES::ScreenInterface *screen;
-    uint8_t cur_x,cur_y;
+    uint8_t cur_x, cur_y;
+public slots:
+    void handle_error(QAbstractSocket::SocketError error);
 private slots:
     void try_connect(const QString &address, int port);
-    void handle_error(QAbstractSocket::SocketError error);
     void data_arrived();
 
 };

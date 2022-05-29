@@ -112,11 +112,14 @@ void Server::open_connections() const {
 
 void Server::new_connection() {
     while (tcpServer->hasPendingConnections()) {
+        qDebug() << "New connection!\n";
         QTcpSocket *socket = tcpServer->nextPendingConnection();
+        qDebug() << "Socket state: " << socket->state() << "\n";
         int id = m_next_id++;
         auto player = new RemotePlayer(tcpServer, socket, id);
         m_player_manager->add_keyboard(id, player->get_keyboard());
         m_player_manager->add_screen(id, player->get_screen());
-        connect(player, SIGNAL(disconnected(int)), m_player_manager, SLOT(remove_player(int)));
+        connect(player, &RemotePlayer::disconnected, m_player_manager, &PlayerManager::remove_player);
+
     }
 }

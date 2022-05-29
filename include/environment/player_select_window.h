@@ -29,12 +29,12 @@ public:
     NES::ScreenInterface *get_screen();
 
 public slots:
+    void remove_player(int index);
     void on_cancel_btn_clicked();
     void update_view_and_indexes();
 private slots:
     void on_ok_btn_clicked();
     void show_settings();
-    void remove_player(int index);
 
 private:
 //    std::mutex m_mutex;
