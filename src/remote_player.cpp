@@ -7,27 +7,28 @@ RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_): QO
     connect(socket,SIGNAL(readyRead()),SLOT(data_arrived()));
     connect(socket,SIGNAL(disconnected()),SLOT(disconnect_wrapper()));
     stream.setDevice(socket_);
-    stream.setVersion(QDataStream::Qt_4_0);
+    stream.setVersion(QDataStream::Qt_4_6);
 }
 
 
 void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
     uint8_t byte = bytes.at(color);
-    stream<<byte;
+    stream << quint8(byte);
 }
 
 uint8_t RemotePlayer::get_pressed_keys() const {
     return btn;
 }
 void RemotePlayer::data_arrived() {
-    stream>>btn;
+    quint8 btn_qt;
+    stream >> btn_qt;
+    btn = btn_qt;
 }
 void RemotePlayer::disconnect_wrapper() {
-    emit(disconnected(id));
+    emit disconnected(id);
 }
 void RemotePlayer::refresh_screen() {
-    uint8_t data = 0xFF;
-    stream>>data;
+    stream << quint8(0xFF);
 }
 NES::ScreenInterface *RemotePlayer::get_screen(){
     return dynamic_cast<NES::ScreenInterface *>(this);

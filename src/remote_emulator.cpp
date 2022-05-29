@@ -9,7 +9,7 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
     connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
     stream.setDevice(socket);
-    stream.setVersion(QDataStream::Qt_4_0);
+    stream.setVersion(QDataStream::Qt_4_6);
     cur_x = cur_y = 0;
     connect(&connection_window,
             &ConnectionWindow::connect_btn_pressed,
@@ -18,18 +18,19 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
 }
 
 void RemoteEmulator::key_changed(uint8_t btn) {
-    stream << btn;
+    stream << quint8(btn);
 }
 
 void RemoteEmulator::data_arrived() {
-    QString data;
-    stream >> data;
-    for (const auto &byte : data) {
-        if (byte == char(0xFF)) {
-            (*screen).refresh_screen();
+    while (!stream.atEnd()) {
+        quint8 byte_qt;
+        stream >> byte_qt;
+        uint8_t byte = byte_qt;
+        if (byte == 0xFF) {
+            screen->refresh_screen();
             cur_x = cur_y = 0;
         } else {
-            (*screen).set_pixel(cur_y, cur_x, colors[byte.unicode()]);
+            screen->set_pixel(cur_y, cur_x, colors[byte]);
             cur_x++;
             cur_y += (cur_x == 0);
         }
