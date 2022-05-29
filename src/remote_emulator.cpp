@@ -8,6 +8,8 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
     screen = screen_;
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
     connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
+    connect(socket, &QAbstractSocket::errorOccurred,
+            this, &RemoteEmulator::handle_error);
     stream.setDevice(socket);
     stream.setVersion(QDataStream::Qt_4_6);
     cur_x = cur_y = 0;
@@ -44,6 +46,7 @@ void RemoteEmulator::show_connection_window() {
 void RemoteEmulator::try_connect(const QString &address, int port) {
     socket->abort();
     socket->connectToHost(address, port);
+    qDebug() << "Try connect: status = " << socket->state() << "\n";
 }
 
 void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
