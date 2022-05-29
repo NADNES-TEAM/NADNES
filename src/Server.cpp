@@ -120,5 +120,6 @@ void Server::new_connection() {
         m_player_manager->add_keyboard(id, player->get_keyboard());
         m_player_manager->add_screen(id, player->get_screen());
         connect(player, &RemotePlayer::disconnected, m_player_manager, &PlayerManager::remove_player);
+
     }
 }
