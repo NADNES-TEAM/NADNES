@@ -14,7 +14,7 @@ public:
     PlayerManager();
     ~PlayerManager() override = default;
 
-    void add_player(int index, const QString &name);
+    void add_pseudonym(int index, const QString &name);
     void add_screen(int id, NES::ScreenInterface *screen);
     void add_keyboard(int id, NES::KeyboardInterface *gamepad);
     void update_gamepads();
@@ -38,8 +38,8 @@ private slots:
 
 private:
 //    std::mutex m_mutex;
-    int m_player1_id = 0;  // whatever
-    int m_player2_id = 1;  // whatever
+    int m_player1_id = 0;
+    int m_player2_id = 1;
     QComboBox *m_player1_select;
     QComboBox *m_player2_select;
     std::vector<int> m_view_ids;
