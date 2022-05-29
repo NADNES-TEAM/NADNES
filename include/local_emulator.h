@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QWidget>
 #include "Server.h"
+#include "environment/player_select_window.h"
 #include "nes.h"
 
 class LocalEmulator : public QObject {
@@ -42,7 +43,7 @@ private:
     NES::KeyboardInterface *m_gamepad_1;
     NES::KeyboardInterface *m_gamepad_2;
 
-    QWidget *m_player_select_window;
+    PlayerManager *m_player_manager;
 
     QString m_last_rom_path;
     QString m_last_save_path;

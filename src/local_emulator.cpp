@@ -39,7 +39,14 @@ LocalEmulator::LocalEmulator(QObject *parent,
     m_clock.setInterval(
         std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
 
-    m_player_select_window = new PlayerSelectWindow();
+    m_player_manager = new PlayerManager();
+    m_player_manager->add_screen(0, screen);
+    m_player_manager->add_keyboard(0, gp1);
+    m_player_manager->add_keyboard(1, gp2);
+    m_player_manager->add_player(0, tr("Local"));
+    m_player_manager->add_player(1, tr("Second player"));
+    m_player_manager->update_view_and_indexes();
+    m_player_manager->on_cancel_btn_clicked();
 
     read_settings();
     QString tmp = m_last_save_path;
@@ -80,16 +87,23 @@ void LocalEmulator::load_rom(QString path) {
         return;
     try {
         m_clock.stop();
-        m_nes = std::make_unique<NES::Nes>(path.toStdString(), m_screen, m_gamepad_1, m_gamepad_2);
+        m_nes = std::make_unique<NES::Nes>(path.toStdString(),
+                                           m_player_manager->get_screen(),
+                                           m_player_manager->get_gamepad_wrapper1(),
+                                           m_player_manager->get_gamepad_wrapper2());
         m_clock.callOnTimeout([&]() {
             try {
                 this->m_nes->tick();
-            } catch (NES::NesError &e) { handle_exception(e); }
+            } catch (NES::NesError &e) {
+                handle_exception(e);
+            }
         });
         m_last_rom_path = path;
         m_last_save_path = "";
         m_clock.start();
-    } catch (NES::NesError &e) { handle_exception(e); }
+    } catch (NES::NesError &e) {
+        handle_exception(e);
+    }
 }
 
 void LocalEmulator::pause_nes() {
@@ -163,12 +177,13 @@ void LocalEmulator::quickload() {
 }
 
 void LocalEmulator::close() {
-    m_player_select_window->close();
+    m_player_manager->close();  // TODO isn't it deleteLater?
+                                //    m_player_manager->deleteLater();
     write_settings();
 }
 
 void LocalEmulator::show_player_select() {
-    m_player_select_window->show();
+    m_player_manager->show();
 }
 
 void LocalEmulator::run_server() {
