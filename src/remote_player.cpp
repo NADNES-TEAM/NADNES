@@ -9,7 +9,7 @@ RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
     connect(socket, SIGNAL(disconnected()), SLOT(disconnect_wrapper()));
     stream.setDevice(socket_);
-    stream.setVersion(QDataStream::Qt_4_6);
+    stream.setVersion(QDataStream::Qt_4_0);
 }
 
 void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
