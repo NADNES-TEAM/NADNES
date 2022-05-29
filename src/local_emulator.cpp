@@ -44,7 +44,6 @@ LocalEmulator::LocalEmulator(QObject *parent,
     m_player_manager->add_keyboard(1, gp2);
     m_player_manager->add_player(0, tr("Local"));
     m_player_manager->add_player(1, tr("Second player"));
-    m_player_manager->update_view_and_indexes();
     m_player_manager->on_cancel_btn_clicked();
 
     server = new Server(m_player_manager);

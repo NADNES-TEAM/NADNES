@@ -25,6 +25,7 @@ void PlayerManager::on_ok_btn_clicked() {
     }
     m_player1_id = player1_cur;
     m_player2_id = player2_cur;
+    update_gamepads();
     close();
 }
 
@@ -43,6 +44,7 @@ void PlayerManager::on_cancel_btn_clicked() {
 void PlayerManager::add_player(int index, const QString &name) {
 //    std::unique_lock lock(m_mutex);
     m_name_by_id[index] = name;
+    update_view_and_indexes();
 }
 
 void PlayerManager::remove_player(int index) {
@@ -60,6 +62,7 @@ void PlayerManager::remove_player(int index) {
     m_screens_map.erase(index);
     m_gamepads_map.erase(index);
     m_screens_map.erase(index);
+    update_view_and_indexes();
 }
 
 void PlayerManager::show_settings() {
@@ -78,7 +81,6 @@ void PlayerManager::add_keyboard(int id, NES::KeyboardInterface *gamepad) {
 
 void PlayerManager::update_view_and_indexes() {
 //    std::unique_lock lock(m_mutex);
-    update_gamepads();
     m_view_ids.clear();
     for (const auto &id_ptr : m_gamepads_map) {
         m_view_ids.push_back(id_ptr.first);

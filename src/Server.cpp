@@ -117,6 +117,6 @@ void Server::new_connection() {
         auto player = new RemotePlayer(tcpServer, socket, id);
         m_player_manager->add_keyboard(id, player->get_keyboard());
         m_player_manager->add_screen(id, player->get_screen());
-        connect(player, SIGNAL(disconnected(int)), m_player_manager, SLOT(remove_player(int)));
+        connect(player, &RemotePlayer::disconnected, m_player_manager, &PlayerManager::remove_player);
     }
 }
