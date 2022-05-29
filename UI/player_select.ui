@@ -33,7 +33,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="player1_cb">
+       <widget class="QComboBox" name="player1_select">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>

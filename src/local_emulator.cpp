@@ -34,8 +34,7 @@ LocalEmulator::LocalEmulator(QObject *parent,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
     : QObject(parent), m_screen(screen), m_gamepad_1(gp1), m_gamepad_2(gp2), m_clock(this) {
-    server = new Server();
-    server->hide();
+
     m_clock.setInterval(
         std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
 
@@ -47,6 +46,9 @@ LocalEmulator::LocalEmulator(QObject *parent,
     m_player_manager->add_player(1, tr("Second player"));
     m_player_manager->update_view_and_indexes();
     m_player_manager->on_cancel_btn_clicked();
+
+    server = new Server(m_player_manager);
+    server->hide();
 
     read_settings();
     QString tmp = m_last_save_path;

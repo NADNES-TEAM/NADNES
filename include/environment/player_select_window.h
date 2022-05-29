@@ -15,7 +15,6 @@ public:
     ~PlayerManager() override = default;
 
     void add_player(int index, const QString &name);
-    void remove_player(int index);
     void add_screen(int id, NES::ScreenInterface *screen);
     void add_keyboard(int id, NES::KeyboardInterface *gamepad);
     void update_gamepads();
@@ -35,6 +34,7 @@ public slots:
 private slots:
     void on_ok_btn_clicked();
     void show_settings();
+    void remove_player(int index);
 
 private:
 //    std::mutex m_mutex;

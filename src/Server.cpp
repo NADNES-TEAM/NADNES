@@ -7,11 +7,12 @@
 #include <QPushButton>
 #include <QStyleHints>
 
-Server::Server(QWidget *parent) : QDialog(parent), statusLabel(new QLabel) {
+Server::Server(PlayerManager *player_manager, QWidget *parent)
+    : QDialog(parent), statusLabel(new QLabel), m_player_manager(player_manager) {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     statusLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
-//    init_server();
+    //    init_server();
 
     statusLabel->setText(tr("Server is not running"));
     shutdownButton = new QPushButton(tr("Shutdown"));
@@ -60,7 +61,7 @@ Server::Server(QWidget *parent) : QDialog(parent), statusLabel(new QLabel) {
 }
 
 void Server::init_server() {
-    nextId = 2;
+    m_next_id = 2;
     tcpServer = new QTcpServer(this);
     open_connections();
     if (!tcpServer->listen()) {
@@ -105,14 +106,17 @@ void Server::on_run_clicked() {
     shutdownButton->setEnabled(true);
 }
 
-void Server::open_connections() {
-    connect(tcpServer, SIGNAL(newConnection()), SLOT(new_connection()));
+void Server::open_connections() const {
+    connect(tcpServer, &QTcpServer::newConnection, this, &Server::new_connection);
 }
 
 void Server::new_connection() {
     while (tcpServer->hasPendingConnections()) {
         QTcpSocket *socket = tcpServer->nextPendingConnection();
-        auto player = new RemotePlayer(tcpServer, socket, nextId++);
-        // TODO
+        int id = m_next_id++;
+        auto player = new RemotePlayer(tcpServer, socket, id);
+        m_player_manager->add_keyboard(id, player->get_keyboard());
+        m_player_manager->add_screen(id, player->get_screen());
+        connect(player, SIGNAL(disconnected(int)), m_player_manager, SLOT(remove_player(int)));
     }
 }

@@ -15,6 +15,7 @@ void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
     uint8_t byte = bytes.at(color);
     stream<<byte;
 }
+
 uint8_t RemotePlayer::get_pressed_keys() const {
     return btn;
 }
