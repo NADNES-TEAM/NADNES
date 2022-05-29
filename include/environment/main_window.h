@@ -9,6 +9,8 @@
 #include "gamepad.h"
 #include "interfaces/screen_interface.h"
 
+enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
+
 class MainWindow : public QMainWindow, public NES::ScreenInterface {
     Q_OBJECT
 
@@ -32,9 +34,7 @@ public:
     void set_pixel(int row, int column, NES::Color color) override;
     void refresh_screen() override;
 
-    void disable_all_actions() const;
-    void enable_host_actions() const;
-    void enable_guest_actions() const;
+    void enable_actions(ActionRole) const;
 
     QAction *m_load_act;
     QAction *m_reset_act;
@@ -51,10 +51,12 @@ public:
 
     QAction *m_become_host_act;
     QAction *m_become_guest_act;
-
     QAction *m_run_server_act;
-
     QAction *m_connect_to_host_act;
+
+    QAction *m_player1_single_act;
+    QAction *m_player2_single_act;
+    QAction *m_coop_player_act;
 
 private:
     void create_menus();
@@ -66,6 +68,8 @@ private:
     QMenu *m_nes_menu;
     QMenu *m_saves_menu;
     QMenu *m_settings_menu;
+    QMenu *m_profile_menu;
     QMenu *m_network_menu;
-    QMenu *m_server_menu;
+    QActionGroup *m_profile_group;
+    std::vector<std::pair<QAction *, int>> m_all_actions;
 };

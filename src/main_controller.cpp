@@ -24,6 +24,18 @@ void MainController::make_common_connections() {
             &QAction::triggered,
             &m_player2,
             &Gamepad::show_editor);
+    connect(m_main_window.m_player1_single_act, &QAction::triggered, this, [this]() {
+        m_player1.load_player(NES::Players::SinglePlayer);
+        m_player2.load_player(NES::Players::None);
+    });
+    connect(m_main_window.m_player2_single_act, &QAction::triggered, this, [this]() {
+        m_player1.load_player(NES::Players::None);
+        m_player2.load_player(NES::Players::SinglePlayer);
+    });
+    connect(m_main_window.m_coop_player_act, &QAction::triggered, this, [this]() {
+        m_player1.load_player(NES::Players::Player1);
+        m_player2.load_player(NES::Players::Player2);
+    });
 }
 
 void MainController::make_host_connections() {
@@ -65,7 +77,10 @@ void MainController::make_host_connections() {
 }
 
 void MainController::make_guest_connections() {
-    connect(m_main_window.m_connect_to_host_act, &QAction::triggered, m_remote_emulator, &RemoteEmulator::show_connection_window);
+    connect(m_main_window.m_connect_to_host_act,
+            &QAction::triggered,
+            m_remote_emulator,
+            &RemoteEmulator::show_connection_window);
     connect(&m_player1, &Gamepad::state_changed, m_remote_emulator, &RemoteEmulator::key_changed);
 }
 
@@ -76,8 +91,7 @@ void MainController::close() {
 }
 
 void MainController::become_host() {
-    m_main_window.disable_all_actions();
-    m_main_window.enable_host_actions();
+    m_main_window.enable_actions(ActionRole::Host);
     m_remote_emulator->deleteLater();
     m_local_emulator = new LocalEmulator(this,
                                          m_main_window.get_screen_interface(),
@@ -87,8 +101,7 @@ void MainController::become_host() {
 }
 
 void MainController::become_guest() {
-    m_main_window.disable_all_actions();
-    m_main_window.enable_guest_actions();
+    m_main_window.enable_actions(ActionRole::Guest);
     m_local_emulator->deleteLater();
     m_remote_emulator = new RemoteEmulator(this, m_main_window.get_screen_interface());
     make_guest_connections();
