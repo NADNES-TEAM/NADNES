@@ -16,6 +16,8 @@ public slots:
     void disconnect_wrapper();
 
 public:
+    NES::ScreenInterface * get_screen();
+    NES::KeyboardInterface * get_keyboard();
     RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id);
     void set_pixel(int row, int column, NES::Color color) override;
     uint8_t get_pressed_keys() const override;

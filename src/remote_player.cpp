@@ -28,3 +28,9 @@ void RemotePlayer::refresh_screen() {
     uint8_t data = 0xFF;
     stream>>data;
 }
+NES::ScreenInterface *RemotePlayer::get_screen(){
+    return dynamic_cast<NES::ScreenInterface *>(this);
+}
+NES::KeyboardInterface *RemotePlayer::get_keyboard() {
+    return dynamic_cast<NES::KeyboardInterface *>(this);
+}
