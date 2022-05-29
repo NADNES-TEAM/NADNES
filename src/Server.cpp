@@ -62,6 +62,7 @@ Server::Server(QWidget *parent) : QDialog(parent), statusLabel(new QLabel) {
 void Server::init_server() {
     nextId = 2;
     tcpServer = new QTcpServer(this);
+    open_connections();
     if (!tcpServer->listen()) {
         QMessageBox::critical(this,
                               tr("Server error"),
@@ -102,4 +103,16 @@ void Server::on_run_clicked() {
     init_server();
     runButton->setEnabled(false);
     shutdownButton->setEnabled(true);
+}
+
+void Server::open_connections() {
+    connect(tcpServer, SIGNAL(newConnection()), SLOT(new_connection()));
+}
+
+void Server::new_connection() {
+    while (tcpServer->hasPendingConnections()) {
+        QTcpSocket *socket = tcpServer->nextPendingConnection();
+        auto player = new RemotePlayer(tcpServer, socket, nextId++);
+        // TODO
+    }
 }

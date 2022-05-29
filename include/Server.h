@@ -9,11 +9,14 @@ class Server : public QDialog {
 public:
     explicit Server(QWidget *parent = nullptr);
 
+    void open_connections();
+
 public slots:
     void init_server();
     void destruct_server();
     void on_shutdown_clicked();
     void on_run_clicked();
+    void new_connection();
 
     QLabel *statusLabel = nullptr;
     QTcpServer *tcpServer = nullptr;
@@ -21,5 +24,5 @@ public slots:
     QPushButton *hideButton = nullptr;
     QPushButton *runButton = nullptr;
 
-    int nextId{2};
+    std::atomic<int> nextId{2};
 };
