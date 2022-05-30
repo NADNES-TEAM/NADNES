@@ -21,22 +21,18 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) :
 }
 
 void RemoteEmulator::key_changed(uint8_t btn) {
-    stream << quint8(btn);
+    socket->write(reinterpret_cast<char *>(&btn),sizeof(uint8_t));
 }
 
 void RemoteEmulator::data_arrived() {
-    while (!stream.atEnd()) {
-        quint8 byte_qt;
-        stream >> byte_qt;
-        uint8_t byte = byte_qt;
-        if (byte == 0xFF) {
-            screen->refresh_screen();
-            cur_x = cur_y = 0;
-        } else {
-            screen->set_pixel(cur_y + 1, cur_x + 1, colors[byte]);
-            cur_x++;
-            cur_y += (cur_x == 0);
+    QByteArray data = socket->read((NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH);
+    if (data.size() == (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH) {
+        for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {
+            for (int j = 0; j < NES::SCREEN_WIDTH; j++) {
+                screen->set_pixel(i + 1, j + 1, colors[data[i * NES::SCREEN_WIDTH + j]]);
+            }
         }
+        screen->refresh_screen();
     }
 }
 

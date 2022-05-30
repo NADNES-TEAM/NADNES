@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QBuffer>
 #include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
 #include <QImage>
@@ -28,7 +29,7 @@ public:
 
 
 private:
-    QImage image;
+    QByteArray image;
     QDataStream stream;
     QTcpSocket *socket;
     size_t id;
