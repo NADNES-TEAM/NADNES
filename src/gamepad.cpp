@@ -10,7 +10,7 @@ void Gamepad::key_pressed(Qt::Key key) {
     int value = static_cast<int>(key_to_btn.value(key, NES::Keys::None));
     std::atomic<uint8_t> mask = (1u << value);  // (1 << 8) == 0
     pressed_keys_bitset |= mask;                // 2 operations but still ok
-    if(value) {
+    if(NES::Keys(value) != NES::Keys::None) {
         emit state_changed(pressed_keys_bitset);
     }
 }
@@ -19,7 +19,7 @@ void Gamepad::key_released(Qt::Key key) {
     int value = static_cast<int>(key_to_btn.value(key, NES::Keys::None));
     std::atomic<uint8_t> mask = ~(1u << value);  // ~(1 << 8) == 0xFF
     pressed_keys_bitset &= mask;                 // 2 operations but still ok
-    if(value) {
+    if(NES::Keys(value) != NES::Keys::None) {
         emit state_changed(pressed_keys_bitset);
     }
 }

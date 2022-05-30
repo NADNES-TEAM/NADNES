@@ -15,7 +15,7 @@ find_package(Qt6 COMPONENTS
         Network
         REQUIRED)
 
-add_executable( NADNES
+add_executable(NADNES
         src/environment/connection_window.cpp
         include/environment/connection_window.h
         include/remote_emulator.h
@@ -41,7 +41,7 @@ add_executable( NADNES
         src/nes_devices/R6502.cpp
         src/nes_devices/dma.cpp
         src/local_emulator.cpp
-        include/local_emulator.h src/remote_emulator.cpp include/remote_player.h src/remote_player.cpp include/colors_map.h src/colors_map.cpp include/Server.h src/Server.cpp include/player_manager.h)
+        include/local_emulator.h src/remote_emulator.cpp include/remote_player.h src/remote_player.cpp include/colors_map.h src/colors_map.cpp include/Server.h src/Server.cpp)
 
 target_link_libraries(NADNES
         Qt::Core
