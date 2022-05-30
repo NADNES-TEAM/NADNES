@@ -34,6 +34,8 @@ public:
     void set_pixel(int row, int column, NES::Color color) override;
     void refresh_screen() override;
 
+    void clear();
+
     void enable_actions(ActionRole) const;
 
     QAction *m_load_act;

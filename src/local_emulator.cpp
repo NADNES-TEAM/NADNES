@@ -33,8 +33,7 @@ LocalEmulator::LocalEmulator(QObject *parent,
                              NES::ScreenInterface *screen,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
-    : QObject(parent), m_screen(screen), m_gamepad_1(gp1), m_gamepad_2(gp2), m_clock(this) {
-
+    : QObject(parent), m_clock(this) {
     m_clock.setInterval(
         std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
 
@@ -46,8 +45,8 @@ LocalEmulator::LocalEmulator(QObject *parent,
     m_player_manager->add_pseudonym(1, tr("Second player"));
     m_player_manager->on_cancel_btn_clicked();
 
-    server = new Server(m_player_manager);
-    server->hide();
+    m_server = new Server(m_player_manager);
+    m_server->hide();
 
     read_settings();
     QString tmp = m_last_save_path;
@@ -95,16 +94,12 @@ void LocalEmulator::load_rom(QString path) {
         m_clock.callOnTimeout([&]() {
             try {
                 this->m_nes->tick();
-            } catch (NES::NesError &e) {
-                handle_exception(e);
-            }
+            } catch (NES::NesError &e) { handle_exception(e); }
         });
         m_last_rom_path = path;
         m_last_save_path = "";
         m_clock.start();
-    } catch (NES::NesError &e) {
-        handle_exception(e);
-    }
+    } catch (NES::NesError &e) { handle_exception(e); }
 }
 
 void LocalEmulator::pause_nes() {
@@ -178,8 +173,9 @@ void LocalEmulator::quickload() {
 }
 
 void LocalEmulator::close() {
-    m_player_manager->close();  // TODO isn't it deleteLater?
-                                //    m_player_manager->deleteLater();
+    m_clock.stop();
+    m_player_manager->deleteLater();
+    m_server->deleteLater();
     write_settings();
 }
 
@@ -188,5 +184,5 @@ void LocalEmulator::show_player_select() {
 }
 
 void LocalEmulator::run_server() {
-    QTimer::singleShot(0, server, SLOT(show()));
+    QTimer::singleShot(0, m_server, SLOT(show()));
 }

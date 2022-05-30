@@ -8,6 +8,7 @@ PlayerManager::PlayerManager() {
     QUiLoader loader;
     loader.load(&file, this);
     QMetaObject::connectSlotsByName(this);
+//    setFixedSize(size());
 
     m_player1_select = findChild<QComboBox *>("player1_select");
     m_player2_select = findChild<QComboBox *>("player2_select");

@@ -85,14 +85,26 @@ void MainController::make_guest_connections() {
 }
 
 void MainController::close() {
-    m_local_emulator->close();
+    if(m_local_emulator) {
+        m_local_emulator->close();
+        m_local_emulator->deleteLater();
+    }
+    if(m_remote_emulator) {
+        m_remote_emulator->close();
+        m_local_emulator->deleteLater();
+    }
     m_player1.close();
     m_player2.close();
 }
 
 void MainController::become_host() {
     m_main_window.enable_actions(ActionRole::Host);
-    m_remote_emulator->deleteLater();
+    m_main_window.clear();
+    if(m_remote_emulator) {
+        m_remote_emulator->close();
+        m_remote_emulator->deleteLater();
+        m_remote_emulator = nullptr;
+    }
     m_local_emulator = new LocalEmulator(this,
                                          m_main_window.get_screen_interface(),
                                          m_player1.get_keyboard_interface(),
@@ -102,7 +114,12 @@ void MainController::become_host() {
 
 void MainController::become_guest() {
     m_main_window.enable_actions(ActionRole::Guest);
-    m_local_emulator->deleteLater();
+    m_main_window.clear();
+    if(m_local_emulator) {
+        m_local_emulator->close();
+        m_local_emulator->deleteLater();
+        m_local_emulator = nullptr;
+    }
     m_remote_emulator = new RemoteEmulator(this, m_main_window.get_screen_interface());
     make_guest_connections();
 }

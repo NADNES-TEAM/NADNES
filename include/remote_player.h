@@ -4,6 +4,8 @@
 #include <QTcpSocket>
 #include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
+#include <QImage>
+#include "nes_properties.h"
 
 class RemotePlayer : public QObject, public NES::ScreenInterface, public NES::KeyboardInterface {
     Q_OBJECT
@@ -26,6 +28,7 @@ public:
 
 
 private:
+    QImage image;
     QDataStream stream;
     QTcpSocket *socket;
     size_t id;

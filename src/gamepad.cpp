@@ -56,7 +56,9 @@ void Gamepad::load_player(NES::Players new_player) {
 NES::KeyboardInterface *Gamepad::get_keyboard_interface() {
     return dynamic_cast<NES::KeyboardInterface *>(this);
 }
+
 void Gamepad::close() {
     load_player(NES::Players::None);
     keymap_editor->close();
+    keymap_editor->deleteLater();
 }

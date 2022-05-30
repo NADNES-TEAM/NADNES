@@ -1,9 +1,10 @@
 #include "remote_emulator.h"
 #include <QMessageBox>
 #include "colors_map.h"
+#include "nes_properties.h"
 
 RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
-    : QObject(parent), connection_window() {
+    : QObject(parent) {
     socket = new QTcpSocket(this);
     screen = screen_;
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
@@ -12,7 +13,7 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
             this, &RemoteEmulator::handle_error);
     stream.setDevice(socket);
     stream.setVersion(QDataStream::Qt_4_6);
-    cur_x = cur_y = 0;
+    cur_x = cur_y = 1;
     connect(&connection_window,
             &ConnectionWindow::connect_btn_pressed,
             this,
@@ -32,7 +33,7 @@ void RemoteEmulator::data_arrived() {
             screen->refresh_screen();
             cur_x = cur_y = 0;
         } else {
-            screen->set_pixel(cur_y, cur_x, colors[byte]);
+            screen->set_pixel(cur_y + 1, cur_x + 1, colors[byte]);
             cur_x++;
             cur_y += (cur_x == 0);
         }
@@ -54,4 +55,8 @@ void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
                           "Connection error",
                           "Following error occurred:" + socket->errorString(),
                           (QMessageBox::Ok));
+}
+
+void RemoteEmulator::close() {
+    connection_window.close();
 }

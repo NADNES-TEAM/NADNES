@@ -39,14 +39,10 @@ private:
     std::unique_ptr<NES::Nes> m_nes = nullptr;
     bool m_pause_flag = false;
 
-    NES::ScreenInterface *m_screen;
-    NES::KeyboardInterface *m_gamepad_1;
-    NES::KeyboardInterface *m_gamepad_2;
-
     PlayerManager *m_player_manager;
 
     QString m_last_rom_path;
     QString m_last_save_path;
 
-    Server *server;
+    Server *m_server;
 };

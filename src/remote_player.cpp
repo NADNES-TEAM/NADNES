@@ -2,7 +2,7 @@
 #include "colors_map.h"
 
 RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
-    : QObject(parent), btn(0) {
+    : QObject(parent), image(NES::SCREEN_WIDTH, NES::SCREEN_HEIGHT, QImage::Format_RGB888), btn(0) {
     socket = socket_;
     id = id_;
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
@@ -12,8 +12,11 @@ RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
 }
 
 void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
-    uint8_t byte = bytes.at(color);
-    stream << quint8(byte);
+    if (0 < row && row < NES::SCREEN_HEIGHT && 0 < column && column <= NES::SCREEN_WIDTH) {
+//        image.setPixelColor(column, row, QColor(color.r, color.g, color.b));
+                uint8_t byte = bytes.at(color);
+                stream << quint8(byte);
+    }
 }
 
 uint8_t RemotePlayer::get_pressed_keys() const {

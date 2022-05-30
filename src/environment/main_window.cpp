@@ -13,8 +13,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void MainWindow::set_pixel(int row, int column, NES::Color color) {
-    if (0 <= row && row < NES::SCREEN_HEIGHT && 0 <= column && column < NES::SCREEN_WIDTH) {
-        m_screen_image.setPixelColor(column, row, QColor(color.r, color.g, color.b));
+    if (0 < row && row < NES::SCREEN_HEIGHT && 0 < column && column <= NES::SCREEN_WIDTH) {
+        m_screen_image.setPixelColor(column - 1, row -1 , QColor(color.r, color.g, color.b));
     }
 }
 
@@ -181,4 +181,12 @@ void MainWindow::enable_actions(ActionRole role) const {
     for (auto &[act, act_role] : m_all_actions) {
         act->setEnabled(role & act_role);
     }
+}
+
+void MainWindow::clear() {
+    m_screen_image.fill(QColor("black"));
+    QSize qSize(NES::SCREEN_WIDTH * 5, NES::SCREEN_HEIGHT * 5);
+    m_image_label->setPixmap(
+        QPixmap::fromImage(m_screen_image.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));
+    m_image_label->update();
 }
