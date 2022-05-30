@@ -6,7 +6,7 @@
 #include <QTimer>
 #include "environment/connection_window.h"
 #include "nes.h"
-
+#include "nes_properties.h"
 struct RemoteEmulator : public QObject {
     Q_OBJECT
 
