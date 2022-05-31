@@ -26,7 +26,9 @@ uint8_t RemotePlayer::get_pressed_keys() const {
 
 void RemotePlayer::data_arrived() {
     quint8 btn_qt = 0;
-    socket->read(reinterpret_cast<char *>(&btn_qt),1);
+    while(socket->bytesAvailable()){
+        socket->read(reinterpret_cast<char *>(&btn_qt),1);
+    }
     btn = btn_qt;
 }
 

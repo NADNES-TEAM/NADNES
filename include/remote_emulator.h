@@ -25,11 +25,10 @@ private:
     void write_settings() const;
     void ask_for_reconnection(const QString &msg = "");
 
-    ConnectionWindow connection_window;
+    ConnectionWindow *connection_window;
     QDataStream stream;
     QTcpSocket *socket;
     NES::ScreenInterface *screen;
-    uint8_t cur_x, cur_y;
     QString last_address;
     int last_port = -1;
 

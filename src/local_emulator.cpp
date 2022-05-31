@@ -174,7 +174,9 @@ void LocalEmulator::quickload() {
 
 void LocalEmulator::close() {
     m_clock.stop();
+    m_player_manager->close();
     m_player_manager->deleteLater();
+    m_server->close();
     m_server->deleteLater();
     write_settings();
 }
