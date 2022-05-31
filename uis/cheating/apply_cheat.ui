@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>422</width>
-    <height>518</height>
+    <width>612</width>
+    <height>714</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,17 @@
        </column>
        <column>
         <property name="text">
-         <string>Selected</string>
+         <string>Set to</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Ok</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Delete</string>
         </property>
        </column>
       </widget>
@@ -51,28 +61,7 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="selectAll">
-         <property name="text">
-          <string>Select all</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="unselectAll">
-         <property name="text">
-          <string>Unselect all</string>
-         </property>
-        </widget>
-       </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QPushButton" name="Apply">
-       <property name="text">
-        <string>Apply</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

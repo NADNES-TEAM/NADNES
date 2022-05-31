@@ -1,48 +1,39 @@
 #pragma once
 
+#include <QCheckBox>
+#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QObject>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSignalMapper>
 #include <QTableWidget>
 #include <QWidget>
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include "search.h"
+#include "cheat_db_handler2.h"
 #include "nes.h"
+#include "search.h"
 
-class QButtonBox;
 namespace NES::Cheating {
-
-//class CheatWindow;
 
 class SearchCheat : public QWidget {
     Q_OBJECT
 public:
-    explicit SearchCheat(QWidget *parent = nullptr);
+    explicit SearchCheat(QWidget *parent, NES::Nes *nes);
     ~SearchCheat() override = default;
 
     void init();
     [[nodiscard]] ParamsOfSearch getParams() const;
     void fillTable();
 
-    void save_cheat(std::ostream &file) {
-        size_t n = result.size();
-        // TODO check correct
-        size_t d = stoi(defaultSaveEdit->text().toStdString());
-        file.write(reinterpret_cast<char *>(&d), sizeof(d));
-        file.write(reinterpret_cast<char *>(&n), sizeof(n));
-        file.write(reinterpret_cast<char *>(&result[0]), n * sizeof(ResultRaw));
-    }
-
 public slots:
     void onNewButtonClicked();
     void onFilterButtonClicked();
     void onExportButtonClicked();
     void onOkButtonClicked();
-    void closeDialog();
+    void closeDialog() const;
     void onCellChanged(int row, int column);
     void some_slot();
+    void handleButton(int id);
 
 public:
     QPushButton *newButton{};
@@ -75,9 +66,11 @@ public:
     QCheckBox *checkRam{};
 
     QTableWidget *tableWidget{};
+    QSignalMapper qSignalMapper;
 
     Nes *nes;
     std::vector<ResultRaw> result;
+    CheatDbHandler *cheatDbHandler{};
 };
 
 }  // namespace NES::Cheating

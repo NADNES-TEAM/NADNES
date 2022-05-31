@@ -6,10 +6,14 @@
 #include <QMenu>
 #include <QWidget>
 #include <QtGui>
+#include <memory>
+#include <mutex>
+#include "cheat_db_handler2.h"
+#include "cheating/cheat_window.h"
+#include "interfaces/keyboard_interface.h"
 #include "gamepad.h"
 #include "interfaces/screen_interface.h"
 #include "nes.h"
-#include "cheating/cheat_window.h"
 
 enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
 
@@ -79,6 +83,7 @@ private:
     QMenu *m_network_menu;
     QActionGroup *m_profile_group;
     std::vector<std::pair<QAction *, int>> m_all_actions;
+    CheatDbHandler cheatDbHandler;
 
     QTimer m_clock;
     std::unique_ptr<NES::Nes> m_nes = nullptr;

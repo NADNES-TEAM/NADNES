@@ -184,67 +184,18 @@ void MainWindow::create_actions() {
 }
 
 void MainWindow::create_search_window() {
-    QUiLoader loader;
-    QFile fileMain("../uis/cheating/cheat_window.ui");  // just uis/... doesn't work
-    QFile fileSearch("../uis/cheating/search_cheat.ui");
-    QFile fileApply("../uis/cheating/apply_cheat.ui");
-    fileMain.open(QIODevice::ReadOnly| QIODevice::Text);
-    cheat_window = new Cheating::CheatWindow(nullptr);
-    loader.load(&fileMain, cheat_window);
-    cheat_window->tabWidget = cheat_window->findChild<QTabWidget *>("tabWidget");
-    fileMain.close();
-    fileSearch.open(QIODevice::ReadOnly| QIODevice::Text);
-    auto *search_cheat = new Cheating::SearchCheat();
-    loader.load(&fileSearch, search_cheat);
-    fileSearch.close();
-    fileApply.open(QIODevice::ReadOnly| QIODevice::Text);
-    auto *apply_cheat = new Cheating::ApplyCheat();
-    loader.load(&fileApply, apply_cheat);
-    fileApply.close();
+    if (m_nes == nullptr) {
+        return;
+    }
+    auto *search_cheat = new Cheating::SearchCheat(nullptr, m_nes.get());
+    auto *apply_cheat = new Cheating::ApplyCheat(nullptr, m_nes.get());
 
-    cheat_window->tabWidget->clear();
-    cheat_window->tabWidget->addTab(search_cheat, "searchTab");
-    cheat_window->tabWidget->addTab(apply_cheat, "applyTab");
-
-    search_cheat->newButton = cheat_window->findChild<QPushButton *>("newButton");
-    search_cheat->filterButton = cheat_window->findChild<QPushButton *>("filterButton");
-    search_cheat->exportButton = cheat_window->findChild<QPushButton *>("exportButton");
-
-    search_cheat->hexRadio = cheat_window->findChild<QRadioButton *>("hexRadio");
-    search_cheat->decRadio = cheat_window->findChild<QRadioButton *>("decRadio");
-    search_cheat->twoBytes = cheat_window->findChild<QRadioButton *>("twoBytes");
-    search_cheat->oneByte = cheat_window->findChild<QRadioButton *>("oneByte");
-    search_cheat->eqRadio = cheat_window->findChild<QRadioButton *>("eqRadio");
-    search_cheat->all = cheat_window->findChild<QRadioButton *>("all");
-    search_cheat->leRadio = cheat_window->findChild<QRadioButton *>("leRadio");
-    search_cheat->leeqRadio = cheat_window->findChild<QRadioButton *>("leeqRadio");
-    search_cheat->grRadio = cheat_window->findChild<QRadioButton *>("grRadio");
-    search_cheat->greqRadio = cheat_window->findChild<QRadioButton *>("greqRadio");
-    search_cheat->decreased = cheat_window->findChild<QRadioButton *>("decreased");
-    search_cheat->increased = cheat_window->findChild<QRadioButton *>("increased");
-    search_cheat->decreased_or_save = cheat_window->findChild<QRadioButton *>("decreased_save");
-    search_cheat->increased_or_save = cheat_window->findChild<QRadioButton *>("increased_save");
-    search_cheat->save = cheat_window->findChild<QRadioButton *>("save");
-    search_cheat->changed = cheat_window->findChild<QRadioButton *>("changed");
-
-
-
-    search_cheat->checkRam = cheat_window->findChild<QCheckBox *>("checkRAM");
-    search_cheat->checkRom = cheat_window->findChild<QCheckBox *>("checkROM");
-
-    search_cheat->tableWidget = cheat_window->findChild<QTableWidget *>("tableWidget");
-    search_cheat->nes = m_nes.get();
-    search_cheat->compareWith = cheat_window->findChild<QLineEdit *>("compareWith");
-
-    apply_cheat->selectAll = cheat_window->findChild<QPushButton *>("selectAll");
-    apply_cheat->unselectAll = cheat_window->findChild<QPushButton *>("unselectAll");
-    apply_cheat->applyButton = cheat_window->findChild<QPushButton *>("applyButton");
-
-    apply_cheat->cheatTable = cheat_window->findChild<QTableWidget *>("cheatTable");
-    apply_cheat->loadCheatsButton = cheat_window->findChild<QPushButton *>("loadCheats");
-
+        search_cheat->cheatDbHandler = &cheatDbHandler;
+        apply_cheat->cheatDbHandler = &cheatDbHandler;
     search_cheat->init();
     apply_cheat->init();
+    cheat_window = new Cheating::CheatWindow(nullptr, search_cheat, apply_cheat);
+
     cheat_window->show();
 }
 

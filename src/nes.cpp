@@ -35,6 +35,10 @@ Nes::Nes(const std::string &filename,
 
     cpu.connect(&bus, ConnectToken());
     cpu.reset(ResetToken());
+
+    Cheating::Place::rom_size = cartridge.get_ROM_size();
+    Cheating::Place::ram_mem = bus.get_RAM();
+    Cheating::Place::rom_mem = cartridge.get_ROM();
 }
 
 void Nes::reset() {
@@ -60,9 +64,6 @@ void print_counter(uint8_t *data, size_t len) {
 std::vector<Cheating::ResultRaw> Nes::search(
     const Cheating::ParamsOfSearch &params,
     const std::vector<Cheating::ResultRaw> &old_result_data) {
-    Cheating::Place::rom_size = cartridge.get_ROM_size();
-    Cheating::Place::ram_mem = bus.get_RAM();
-    Cheating::Place::rom_mem = cartridge.get_ROM();
 //    print_counter(bus.get_RAM(), (1 << 11));
 //    print_counter(cartridge.get_ROM(), cartridge.get_ROM_size());
     std::vector<Cheating::ResultRaw> new_result_data;
@@ -102,6 +103,9 @@ bool Nes::change_memory_value(const Cheating::ParamsOfChange &params) {
         d >>= 8;
     }
     return true;
+}
+uint64_t Nes::get_hash() const {
+    return cartridge.get_hash();
 }
 
 void Nes::save(const std::string &filename) {

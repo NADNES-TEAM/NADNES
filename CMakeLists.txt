@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 project(NADNES)
 
 set(CMAKE_AUTOMOC ON)
@@ -15,6 +15,7 @@ find_package(Qt6 COMPONENTS
         UiTools
         Network
         REQUIRED)
+find_package(SQLite3)
 
 add_executable(NADNES
         src/environment/connection_window.cpp
@@ -63,7 +64,15 @@ add_executable(NADNES
         include/cheating/cheat_format.h
         src/cheating/cheat_format.cpp
         src/nes_devices/search.cpp
-        )
+#        include/cheat_db_handler.h src/cheat_db_handler.cpp
+        include/environment/cheating/cheat_fwd.h
+        include/cheat_db_handler2.h src/cheat_db_handler2.cpp)
+
+if (SQLITE3_FOUND)
+    message("Found sqlite3!")
+    include_directories(${SQLite3_INCLUDE_DIR})
+    target_link_libraries (NADNES ${SQLite3_LIBRARY})
+endif()
 
 target_link_libraries(NADNES
         Qt::Core

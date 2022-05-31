@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>186</width>
+    <height>148</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -11,14 +19,17 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Default set to ?</string>
+        <string>Name the cheat</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit">
        <property name="text">
-        <string>0</string>
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>e.g. Mario_tries</string>
        </property>
       </widget>
      </item>

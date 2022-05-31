@@ -1,8 +1,7 @@
-//
-// Created by dan on 30.05.22.
-//
+#pragma once
 
-#ifndef NADNES_CHEAT_FWD_H
-#define NADNES_CHEAT_FWD_H
-
-#endif  // NADNES_CHEAT_FWD_H
+namespace NES::Cheating {
+class CheatWindow;
+class SearchCheat;
+class ApplyCheat;
+}

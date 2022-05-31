@@ -23,12 +23,16 @@ public:
 
     void reset();
 
-    std::vector<Cheating::ResultRaw> search(const Cheating::ParamsOfSearch &params,
-                                            const std::vector<Cheating::ResultRaw> &old_result_data);
+    std::vector<Cheating::ResultRaw> search(
+        const Cheating::ParamsOfSearch &params,
+        const std::vector<Cheating::ResultRaw> &old_result_data);
     static bool change_memory_value(const Cheating::ParamsOfChange &params);
-void save(const std::string &filename);
+    void save(const std::string &filename);
+
+    [[nodiscard]] uint64_t get_hash() const;
 
     void load(const std::string &filename);
+
 private:
     Cartridge cartridge;
     Ppu ppu;
