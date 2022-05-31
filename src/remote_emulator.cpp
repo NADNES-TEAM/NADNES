@@ -31,7 +31,7 @@ void RemoteEmulator::key_changed(uint8_t btn) {
 void RemoteEmulator::data_arrived() {
     int size_of_screen = (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH;
     while(socket->bytesAvailable() >= size_of_screen) {
-        QByteArray data = socket->readAll();
+        QByteArray data = socket->read(size_of_screen);
         for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {
             for (int j = 0; j < NES::SCREEN_WIDTH; j++) {
                 screen->set_pixel(i + 1, j + 1, colors[data[i * NES::SCREEN_WIDTH + j]]);
