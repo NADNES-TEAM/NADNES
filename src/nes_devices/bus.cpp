@@ -79,6 +79,12 @@ void Bus::connect(Controller *controller_, ConnectToken) noexcept {
     controller = controller_;
 }
 
+uint8_t *Bus::get_RAM() {
+    return &RAM[0];
+}
+
+Bus::Bus(): RAM(1 << 11) {}
+
 void Bus::save(std::ostream &file) {
     file.write(reinterpret_cast<char *>(&RAM[0]), RAM.size());
 }

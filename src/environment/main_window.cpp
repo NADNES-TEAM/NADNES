@@ -1,7 +1,5 @@
 #include "environment/main_window.h"
-#include <QList>
 #include <QMenuBar>
-#include <bitset>
 #include "nes_properties.h"
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
@@ -14,7 +12,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
 
 void MainWindow::set_pixel(int row, int column, NES::Color color) {
     if (0 < row && row < NES::SCREEN_HEIGHT && 0 < column && column <= NES::SCREEN_WIDTH) {
-        m_screen_image.setPixelColor(column - 1, row -1 , QColor(color.r, color.g, color.b));
+        m_screen_image.setPixelColor(column - 1, row - 1, QColor(color.r, color.g, color.b));
     }
 }
 
@@ -33,10 +31,6 @@ MainWindow::MainWindow()
 
     setCentralWidget(m_image_label);
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
-
-    // 17 ms = (58.8235 Hz) ^ -1, ideal is 16.6393 ms = (60.0988 Hz) ^ -1
-    // APU_FRAME_COUNTER_FREQ_HZ = 60
-    // PPU_VERTICAL_FRAME_RATE_FREQ_HZ = 60.0988
 
     create_actions();
     create_menus();
@@ -58,6 +52,7 @@ void MainWindow::create_menus() {
     m_nes_menu->addAction(m_load_act);
     m_nes_menu->addAction(m_reset_act);
     m_nes_menu->addAction(m_pause_act);
+    m_nes_menu->addAction(m_mem_search_act);
 
     m_saves_menu = menuBar()->addMenu("Saves");
     m_saves_menu->addAction(m_quicksave_act);
@@ -175,6 +170,10 @@ void MainWindow::create_actions() {
     m_profile_group->addAction(m_player2_single_act);
     m_profile_group->addAction(m_coop_player_act);
     m_player1_single_act->setChecked(true);
+
+    m_mem_search_act = new QAction("Cheat", this);
+    m_mem_search_act->setStatusTip("Open a window with cheat options");
+    m_all_actions.emplace_back(m_mem_search_act, ActionRole::Host);
 }
 
 void MainWindow::enable_actions(ActionRole role) const {

@@ -74,6 +74,8 @@ void MainController::make_host_connections() {
             SIGNAL(triggered()),
             m_local_emulator,
             SLOT(run_server()));
+
+    connect(m_main_window.m_mem_search_act, SIGNAL(triggered()), m_local_emulator, SLOT(create_search_window()));
 }
 
 void MainController::make_guest_connections() {

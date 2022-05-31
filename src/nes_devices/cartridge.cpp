@@ -57,6 +57,14 @@ Cartridge::Cartridge(const std::string &filename) : CHR_RAM(CHR_RAM_size) {
         CHR_ROM.resize(CHR_ROM_BANK_SIZE * CHR_banks_count);
     }
     rom_file.read(reinterpret_cast<char *>(&CHR_ROM.front()), CHR_ROM_BANK_SIZE * CHR_banks_count);
+
+    m_hash = 0;
+    for (auto i : PRG_ROM) {
+        m_hash = (m_hash ^ i) * 239;
+    }
+    for (auto i : CHR_ROM) {
+        m_hash = (m_hash ^ i) * 239;
+    }
 }
 
 uint8_t Cartridge::CPU_read(uint16_t address) const {
@@ -85,6 +93,15 @@ void Cartridge::PPU_write(uint16_t address, uint8_t data) {
     } else {
         throw WritingToRomError();
     }
+}
+uint8_t *Cartridge::get_ROM() {
+    return &PRG_ROM[0];
+}
+size_t Cartridge::get_ROM_size() {
+    return  PRG_ROM.size();
+}
+uint64_t Cartridge::get_hash() const {
+    return m_hash;
 }
 
 void Cartridge::save(std::ostream &file) {

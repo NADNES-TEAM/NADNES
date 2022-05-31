@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QWidget>
 #include "Server.h"
+#include "cheat_db_handler2.h"
+#include "environment/cheating/cheat_window.h"
 #include "environment/player_select_window.h"
 #include "nes.h"
 
@@ -30,6 +32,7 @@ public slots:
     void quickload();
     void show_player_select();
     void run_server();
+    void create_search_window();
 
 private:
     void read_settings();
@@ -45,4 +48,6 @@ private:
     QString m_last_save_path;
 
     Server *m_server;
+    CheatDbHandler cheatDbHandler;
+    NES::Cheating::CheatWindow *cheat_window{};
 };

@@ -6,7 +6,6 @@
 #include <QMenu>
 #include <QWidget>
 #include <QtGui>
-#include "gamepad.h"
 #include "interfaces/screen_interface.h"
 
 enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
@@ -59,11 +58,11 @@ public:
     QAction *m_player1_single_act;
     QAction *m_player2_single_act;
     QAction *m_coop_player_act;
+    QAction *m_mem_search_act;
 
 private:
     void create_menus();
     void create_actions();
-
     QLabel *m_image_label;
     QImage m_screen_image;
 
