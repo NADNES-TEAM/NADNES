@@ -31,8 +31,8 @@ add_executable(NADNES
         src/environment/keymap_window.cpp
         include/environment/main_window.h
         src/environment/main_window.cpp
-        include/environment/cheat_window.h
-        src/environment/cheat_window.cpp
+        include/environment/cheating/cheat_window.h
+        src/environment/cheating/cheat_window.cpp
         include/nes.h
         src/nes.cpp
         src/main.cpp
@@ -56,17 +56,15 @@ add_executable(NADNES
         src/colors_map.cpp
         include/Server.h
         src/Server.cpp
-        src/environment/cheat_window.cpp
-        include/environment/search_cheat.h
-        src/environment/search_cheat.cpp
-        include/environment/apply_cheat.h
-        src/environment/apply_cheat.cpp
-        include/cheating/cheat_format.h
-        src/cheating/cheat_format.cpp
-        src/nes_devices/search.cpp
 #        include/cheat_db_handler.h src/cheat_db_handler.cpp
         include/environment/cheating/cheat_fwd.h
-        include/cheat_db_handler2.h src/cheat_db_handler2.cpp)
+        include/cheat_db_handler2.h src/cheat_db_handler2.cpp
+        include/environment/cheating/apply_cheat.h
+        include/environment/cheating/cheat_window.h
+        include/environment/cheating/search_cheat.h
+        src/environment/cheating/apply_cheat.cpp
+        src/environment/cheating/cheat_window.cpp
+        src/environment/cheating/search_cheat.cpp)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")

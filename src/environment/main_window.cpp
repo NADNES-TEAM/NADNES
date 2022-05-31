@@ -19,7 +19,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
 
 void MainWindow::set_pixel(int row, int column, NES::Color color) {
     if (0 < row && row < NES::SCREEN_HEIGHT && 0 < column && column <= NES::SCREEN_WIDTH) {
-        m_screen_image.setPixelColor(column - 1, row -1 , QColor(color.r, color.g, color.b));
+        m_screen_image.setPixelColor(column - 1, row - 1, QColor(color.r, color.g, color.b));
     }
 }
 
@@ -180,23 +180,7 @@ void MainWindow::create_actions() {
 
     m_mem_search_act = new QAction("Cheat", this);
     m_mem_search_act->setStatusTip("Open a window with cheat options");
-    connect(m_mem_search_act, SIGNAL(triggered()), this, SLOT(create_search_window()));
-}
-
-void MainWindow::create_search_window() {
-    if (m_nes == nullptr) {
-        return;
-    }
-    auto *search_cheat = new Cheating::SearchCheat(nullptr, m_nes.get());
-    auto *apply_cheat = new Cheating::ApplyCheat(nullptr, m_nes.get());
-
-        search_cheat->cheatDbHandler = &cheatDbHandler;
-        apply_cheat->cheatDbHandler = &cheatDbHandler;
-    search_cheat->init();
-    apply_cheat->init();
-    cheat_window = new Cheating::CheatWindow(nullptr, search_cheat, apply_cheat);
-
-    cheat_window->show();
+    m_all_actions.emplace_back(m_mem_search_act, ActionRole::Host);
 }
 
 void MainWindow::enable_actions(ActionRole role) const {

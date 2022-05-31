@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <iostream>
+#include "environment/cheating/apply_cheat.h"
+#include "environment/cheating/search_cheat.h"
 #include "environment/player_select_window.h"
 #include "nes_properties.h"
 
@@ -188,3 +190,21 @@ void LocalEmulator::show_player_select() {
 void LocalEmulator::run_server() {
     QTimer::singleShot(0, m_server, SLOT(show()));
 }
+
+
+void LocalEmulator::create_search_window() {
+    if (m_nes == nullptr) {
+        return;
+    }
+    auto *search_cheat = new NES::Cheating::SearchCheat(nullptr, m_nes.get());
+    auto *apply_cheat = new NES::Cheating::ApplyCheat(nullptr, m_nes.get());
+
+    search_cheat->cheatDbHandler = &cheatDbHandler;
+    apply_cheat->cheatDbHandler = &cheatDbHandler;
+    search_cheat->init();
+    apply_cheat->init();
+    cheat_window = new NES::Cheating::CheatWindow(nullptr, search_cheat, apply_cheat);
+
+    cheat_window->show();
+}
+

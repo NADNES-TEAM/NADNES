@@ -10,8 +10,8 @@
 #include <mutex>
 #include "cheat_db_handler2.h"
 #include "cheating/cheat_window.h"
-#include "interfaces/keyboard_interface.h"
 #include "gamepad.h"
+#include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
 #include "nes.h"
 
@@ -67,8 +67,6 @@ public:
     QAction *m_coop_player_act;
     QAction *m_mem_search_act;
 
-    void create_search_window();
-
 private:
     void create_menus();
     void create_actions();
@@ -83,10 +81,8 @@ private:
     QMenu *m_network_menu;
     QActionGroup *m_profile_group;
     std::vector<std::pair<QAction *, int>> m_all_actions;
-    CheatDbHandler cheatDbHandler;
 
     QTimer m_clock;
-    std::unique_ptr<NES::Nes> m_nes = nullptr;
     bool pause = false;
 
     static QMap<Qt::Key, int> m_index_by_key;
