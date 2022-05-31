@@ -3,16 +3,19 @@
 #include <QSettings>
 #include "colors_map.h"
 
-RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent) {
+RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent),timer(this) {
     socket = new QTcpSocket(this);
     screen = screen_;
-    connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
+    timer.setInterval(
+        std::chrono::milliseconds(lround(250.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
+    timer.callOnTimeout([this](){this->data_arrived();});
+    timer.start();
+    //connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
     connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
     connect(socket, &QAbstractSocket::errorOccurred, this, &RemoteEmulator::handle_error);
     stream.setDevice(socket);
     stream.setVersion(QDataStream::Qt_4_6);
-    cur_x = cur_y = 1;
-    connection_window = new ConnectionWindow();
+      connection_window = new ConnectionWindow();
     connect(connection_window,
             &ConnectionWindow::connect_btn_pressed,
             this,
@@ -26,15 +29,16 @@ void RemoteEmulator::key_changed(uint8_t btn) {
 }
 
 void RemoteEmulator::data_arrived() {
-    QByteArray data = socket->read((NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH);
-    if (data.size() == (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH) {
+    int size_of_screen = (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH;
+    while(socket->bytesAvailable() >= size_of_screen) {
+        QByteArray data = socket->readAll();
         for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {
             for (int j = 0; j < NES::SCREEN_WIDTH; j++) {
                 screen->set_pixel(i + 1, j + 1, colors[data[i * NES::SCREEN_WIDTH + j]]);
             }
         }
-        screen->refresh_screen();
     }
+    screen->refresh_screen();
 }
 
 void RemoteEmulator::show_connection_window() {

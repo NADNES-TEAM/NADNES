@@ -24,7 +24,7 @@ private:
     void read_settings();
     void write_settings() const;
     void ask_for_reconnection(const QString &msg = "");
-
+    QTimer timer;
     ConnectionWindow *connection_window;
     QDataStream stream;
     QTcpSocket *socket;
