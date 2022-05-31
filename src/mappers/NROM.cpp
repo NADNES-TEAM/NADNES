@@ -1,5 +1,5 @@
 #include "mappers/NROM.h"
-
+#include<iostream>
 namespace NES {
 NromMapper::NromMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
     : mirror_type(mirror_type_), PRG_banks_count(prg), CHR_banks_count(chr) {
@@ -10,7 +10,7 @@ NromMapper::NromMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
 
 uint32_t NromMapper::map_read_from_CPU(uint16_t address) const {
     if (address >= 0x8000) {
-        return (address % (PRG_banks_count == 1 ? 0x4000 : 0x8000));
+        return (address & uint32_t(PRG_banks_count == 1 ? 0x3FFF : 0x7FFF));
     } else {
         throw AddressOutOfBoundsError(address, "CPU");
     }
