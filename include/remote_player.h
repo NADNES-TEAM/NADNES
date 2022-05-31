@@ -34,4 +34,5 @@ private:
     QTcpSocket *socket;
     size_t id;
     uint8_t btn;
+    uint64_t frame_count = 0;
 };

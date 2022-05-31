@@ -36,7 +36,11 @@ void RemotePlayer::disconnect_wrapper() {
 }
 
 void RemotePlayer::refresh_screen() {
-    socket->write(image);
+    if(frame_count++ % 3 == 0) {
+        socket->flush();
+        socket->write(image);
+    }
+//socket->write(image);
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {
