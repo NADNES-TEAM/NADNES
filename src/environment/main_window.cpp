@@ -1,12 +1,5 @@
 #include "environment/main_window.h"
-#include <QFileDialog>
-#include <QMap>
 #include <QMenuBar>
-#include <QMessageBox>
-#include <QTimer>
-#include <bitset>
-#include <iostream>
-#include "nes_exceptions.h"
 #include "nes_properties.h"
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

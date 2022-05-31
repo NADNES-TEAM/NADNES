@@ -6,14 +6,7 @@
 #include <QMenu>
 #include <QWidget>
 #include <QtGui>
-#include <memory>
-#include <mutex>
-#include "cheat_db_handler2.h"
-#include "cheating/cheat_window.h"
-#include "gamepad.h"
-#include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
-#include "nes.h"
 
 enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
 
@@ -70,7 +63,6 @@ public:
 private:
     void create_menus();
     void create_actions();
-    QMenu *nes_menu;
     QLabel *m_image_label;
     QImage m_screen_image;
 
@@ -81,10 +73,4 @@ private:
     QMenu *m_network_menu;
     QActionGroup *m_profile_group;
     std::vector<std::pair<QAction *, int>> m_all_actions;
-
-    QTimer m_clock;
-    bool pause = false;
-
-    static QMap<Qt::Key, int> m_index_by_key;
-    std::atomic<uint8_t> m_pressed_keys_bitset{};
 };
