@@ -3,6 +3,7 @@
 #include <interfaces/screen_interface.h>
 #include <QObject>
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include <QTimer>
 #include "environment/connection_window.h"
 #include "nes.h"
@@ -27,7 +28,8 @@ private:
     QTimer timer;
     ConnectionWindow *connection_window;
     QDataStream stream;
-    QTcpSocket *socket;
+    QUdpSocket *UDP_socket;
+    QTcpSocket *TCP_socket;
     NES::ScreenInterface *screen;
     QString last_address;
     int last_port = -1;

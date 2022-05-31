@@ -3,11 +3,13 @@
 
 RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
     : QObject(parent), btn(0) {
-    socket = socket_;
+    TCP_socket = socket_;
+    UDP_socket = new QUdpSocket(this);
+    //UDP_socket->connectToHost(TCP_socket->peerAddress(), 10001);
     id = id_;
     image.resize((NES::SCREEN_HEIGHT-1)*NES::SCREEN_WIDTH);
-    connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
-    connect(socket, SIGNAL(disconnected()), SLOT(disconnect_wrapper()));
+    connect(TCP_socket, SIGNAL(readyRead()), SLOT(data_arrived()));
+    connect(TCP_socket, SIGNAL(disconnected()), SLOT(disconnect_wrapper()));
     stream.setDevice(socket_);
     stream.setVersion(QDataStream::Qt_4_0);
 }
@@ -26,8 +28,8 @@ uint8_t RemotePlayer::get_pressed_keys() const {
 
 void RemotePlayer::data_arrived() {
     quint8 btn_qt = 0;
-    while(socket->bytesAvailable()){
-        socket->read(reinterpret_cast<char *>(&btn_qt),1);
+    while(TCP_socket->bytesAvailable()){
+        TCP_socket->read(reinterpret_cast<char *>(&btn_qt),1);
     }
     btn = btn_qt;
 }
@@ -37,7 +39,7 @@ void RemotePlayer::disconnect_wrapper() {
 }
 
 void RemotePlayer::refresh_screen() {
-    socket->write(image);
+    UDP_socket->writeDatagram(image.data(),image.size(),TCP_socket->peerAddress(),10001);
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {
