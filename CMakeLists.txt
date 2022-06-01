@@ -71,7 +71,7 @@ add_executable(NADNES
         src/Apu.cpp
         src/ApuExceptions.cpp
         src/Pulse.cpp
-        include/Pulse.h include/apu_frame_counter.h src/apu_frame_counter.cpp)
+        include/Pulse.h include/apu_frame_counter.h src/apu_frame_counter.cpp include/apu_channel.h)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")
