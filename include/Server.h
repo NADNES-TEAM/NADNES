@@ -3,8 +3,10 @@
 #include <QDialog>
 #include <QLabel>
 #include <QTcpServer>
+#include <QListWidget>
 #include "environment/player_select_window.h"
 #include "remote_player.h"
+#include <QVBoxLayout>
 
 class Server : public QDialog {
 public:
@@ -14,17 +16,23 @@ public:
 
 public slots:
     void init_server();
-    void destruct_server();
+    void destruct_server() const;
     void on_shutdown_clicked();
     void on_run_clicked();
     void new_connection();
 
-    QLabel *statusLabel = nullptr;
-    QTcpServer *tcpServer = nullptr;
-    QPushButton *shutdownButton = nullptr;
-    QPushButton *hideButton = nullptr;
-    QPushButton *runButton = nullptr;
-    PlayerManager *m_player_manager = nullptr;
+private:
+    static const int START_ID = 2;
 
-    std::atomic<int> m_next_id{2};
+    QLabel *statusLabel;
+    QLabel *portLabel;
+    QTcpServer *tcpServer{};
+    QPushButton *shutdownButton;
+    QPushButton *hideButton;
+    QPushButton *runButton;
+    PlayerManager *m_player_manager;
+    QVBoxLayout *main_layout;
+    QListWidget *address_list;
+
+    std::atomic<int> m_next_id{START_ID};
 };

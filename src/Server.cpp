@@ -8,16 +8,17 @@
 #include <QStyleHints>
 
 Server::Server(PlayerManager *player_manager, QWidget *parent)
-    : QDialog(parent), statusLabel(new QLabel), m_player_manager(player_manager) {
+    : QDialog(parent), statusLabel(new QLabel(this)), m_player_manager(player_manager) {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     statusLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
     //    init_server();
-
+    portLabel = new QLabel(this);
     statusLabel->setText(tr("Server is not running"));
-    shutdownButton = new QPushButton(tr("Shutdown"));
-    hideButton = new QPushButton(tr("Hide"));
-    runButton = new QPushButton(tr("Run server"));
+    shutdownButton = new QPushButton(tr("Shutdown"), this);
+    hideButton = new QPushButton(tr("Hide"), this);
+    runButton = new QPushButton(tr("Run server"), this);
+    address_list = new QListWidget(this);
     shutdownButton->setEnabled(false);
     shutdownButton->setAutoDefault(false);
     connect(shutdownButton, &QPushButton::clicked, this, &Server::on_shutdown_clicked);
@@ -33,7 +34,6 @@ Server::Server(PlayerManager *player_manager, QWidget *parent)
     buttonLayout->addWidget(hideButton);
     buttonLayout->addStretch(1);
 
-    QVBoxLayout *mainLayout = nullptr;
     if (QGuiApplication::styleHints()->showIsFullScreen() ||
         QGuiApplication::styleHints()->showIsMaximized()) {
         auto outerVerticalLayout = new QVBoxLayout(this);
@@ -43,7 +43,7 @@ Server::Server(PlayerManager *player_manager, QWidget *parent)
         outerHorizontalLayout->addItem(
             new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
         auto groupBox = new QGroupBox(QGuiApplication::applicationDisplayName());
-        mainLayout = new QVBoxLayout(groupBox);
+        main_layout = new QVBoxLayout(groupBox);
         outerHorizontalLayout->addWidget(groupBox);
         outerHorizontalLayout->addItem(
             new QSpacerItem(0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
@@ -51,17 +51,21 @@ Server::Server(PlayerManager *player_manager, QWidget *parent)
         outerVerticalLayout->addItem(
             new QSpacerItem(0, 0, QSizePolicy::Ignored, QSizePolicy::MinimumExpanding));
     } else {
-        mainLayout = new QVBoxLayout(this);
+        main_layout = new QVBoxLayout(this);
     }
-
-    mainLayout->addWidget(statusLabel);
-    mainLayout->addLayout(buttonLayout);
+    
+    main_layout->addWidget(statusLabel);
+    main_layout->addWidget(address_list);
+    main_layout->addWidget(portLabel);
+    main_layout->addLayout(buttonLayout);
+    address_list->hide();
+    portLabel->hide();
 
     setWindowTitle(QGuiApplication::applicationDisplayName());
 }
 
 void Server::init_server() {
-    m_next_id = 2;
+    m_next_id = START_ID;
     tcpServer = new QTcpServer(this);
     open_connections();
     if (!tcpServer->listen()) {
@@ -71,29 +75,28 @@ void Server::init_server() {
         close();
         return;
     }
-    QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
     // use the first non-localhost IPv4 address
     for (const auto &i : ipAddressesList) {
         if (i != QHostAddress::LocalHost && i.toIPv4Address()) {
-            ipAddress = i.toString();
-            break;
+            address_list->addItem(i.toString());
         }
     }
-    // if we did not find one, use IPv4 localhost
-    if (ipAddress.isEmpty())
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-    statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
-                            "Run remote player now.")
-                             .arg(ipAddress)
-                             .arg(tcpServer->serverPort()));
+    statusLabel->setText(tr("The server is running on IP: "));
+    portLabel->setText(tr("port: %1").arg(tcpServer->serverPort()));
+    address_list->show();
+    portLabel->show();
+
 }
 
-void Server::destruct_server() {
+void Server::destruct_server() const {
     tcpServer->deleteLater();
 }
 
 void Server::on_shutdown_clicked() {
+    address_list->clear();
+    address_list->hide();
+    portLabel->hide();
     statusLabel->setText(tr("Server is not running"));
     destruct_server();
     runButton->setEnabled(true);
@@ -119,7 +122,9 @@ void Server::new_connection() {
         auto player = new RemotePlayer(tcpServer, socket, id);
         m_player_manager->add_keyboard(id, player->get_keyboard());
         m_player_manager->add_screen(id, player->get_screen());
-        connect(player, &RemotePlayer::disconnected, m_player_manager, &PlayerManager::remove_player);
-
+        connect(player,
+                &RemotePlayer::disconnected,
+                m_player_manager,
+                &PlayerManager::remove_player);
     }
 }
