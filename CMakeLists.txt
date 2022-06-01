@@ -20,23 +20,6 @@ find_package(Qt6 COMPONENTS
 find_package(SQLite3)
 
 add_executable(NADNES
-        src/environment/connection_window.cpp
-        include/environment/connection_window.h
-        include/remote_emulator.h
-        include/remote_player.h
-        src/gamepad.cpp
-        include/gamepad.h
-        include/environment/player_select_window.h
-        src/environment/player_select_window.cpp
-        include/main_controller.h
-        include/environment/keymap_window.h
-        src/environment/keymap_window.cpp
-        include/environment/main_window.h
-        src/environment/main_window.cpp
-        include/environment/cheating/cheat_window.h
-        src/environment/cheating/cheat_window.cpp
-        include/nes.h
-        src/nes.cpp
         src/main.cpp
         src/nes_devices/cartridge.cpp
         src/nes_devices/ppu.cpp
@@ -71,7 +54,7 @@ add_executable(NADNES
         src/Apu.cpp
         src/ApuExceptions.cpp
         src/Pulse.cpp
-        include/Pulse.h)
+        include/Pulse.h include/apu_frame_counter.h src/apu_frame_counter.cpp)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")
