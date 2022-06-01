@@ -6,7 +6,7 @@
 RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent),timer(this) {
     UDP_socket = new QUdpSocket(this);
     TCP_socket = new QTcpSocket(this);
-    UDP_socket->bind(QHostAddress::Any, 10001);
+    UDP_socket->bind(QHostAddress::Any, 45454);
     screen = screen_;
     timer.setInterval(
         std::chrono::milliseconds(lround(125.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
@@ -34,6 +34,7 @@ void RemoteEmulator::data_arrived() {
     int size_of_screen = (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH;
     QByteArray data;
     data.resize(size_of_screen);
+//    qDebug() << UDP_socket->pendingDatagramSize() << "of " << size_of_screen << '\n';
     while(UDP_socket->pendingDatagramSize() >= size_of_screen) {
         UDP_socket->readDatagram(data.data(),data.size());
         for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {

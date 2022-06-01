@@ -1,11 +1,14 @@
 #include "remote_player.h"
 #include "colors_map.h"
+#include <QDebug>
 
 RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_)
     : QObject(parent), btn(0) {
     TCP_socket = socket_;
     UDP_socket = new QUdpSocket(this);
-    //UDP_socket->connectToHost(TCP_socket->peerAddress(), 10001);
+    auto res = UDP_socket->bind(TCP_socket->localAddress(), 45454);
+    qDebug() << res;
+//  UDP_socket->connectToHost(TCP_socket->peerAddress(), 10001);
     id = id_;
     image.resize((NES::SCREEN_HEIGHT-1)*NES::SCREEN_WIDTH);
     connect(TCP_socket, SIGNAL(readyRead()), SLOT(data_arrived()));
@@ -39,7 +42,10 @@ void RemotePlayer::disconnect_wrapper() {
 }
 
 void RemotePlayer::refresh_screen() {
-    UDP_socket->writeDatagram(image.data(),image.size(),QHostAddress(TCP_socket->peerAddress().toIPv4Address()), 10001);
+//    qDebug() << "sent: ";
+    auto res = UDP_socket->writeDatagram(image.data(),image.size(),TCP_socket->peerAddress(), 45454);
+//    qDebug() << res << '\n';
+    UDP_socket->flush();
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {
