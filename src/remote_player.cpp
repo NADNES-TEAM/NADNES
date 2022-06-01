@@ -39,7 +39,7 @@ void RemotePlayer::disconnect_wrapper() {
 }
 
 void RemotePlayer::refresh_screen() {
-    UDP_socket->writeDatagram(image.data(),image.size(),TCP_socket->localAddress(),10001);
+    UDP_socket->writeDatagram(image.data(),image.size(),QHostAddress(TCP_socket->peerAddress().toIPv4Address()), 10001);
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {
