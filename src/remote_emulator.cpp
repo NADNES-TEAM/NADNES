@@ -42,8 +42,8 @@ void RemoteEmulator::data_arrived() {
                 screen->set_pixel(i + 1, j + 1, colors[data[i * NES::SCREEN_WIDTH + j]]);
             }
         }
+        screen->refresh_screen();
     }
-    screen->refresh_screen();
 }
 
 void RemoteEmulator::show_connection_window() {

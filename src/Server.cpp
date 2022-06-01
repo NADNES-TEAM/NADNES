@@ -81,8 +81,8 @@ void Server::init_server() {
         }
     }
     // if we did not find one, use IPv4 localhost
-    if (ipAddress.isEmpty())
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
+    //if (ipAddress.isEmpty())
+        ipAddress = QHostAddress(QHostAddress::Any).toString();
     statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
                             "Run remote player now.")
                              .arg(ipAddress)

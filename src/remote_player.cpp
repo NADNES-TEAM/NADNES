@@ -45,7 +45,7 @@ void RemotePlayer::refresh_screen() {
 //    qDebug() << "sent: ";
     auto res = UDP_socket->writeDatagram(image.data(),image.size(),TCP_socket->peerAddress(), 45454);
 //    qDebug() << res << '\n';
-    UDP_socket->flush();
+    //UDP_socket->flush();
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {
