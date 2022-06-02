@@ -68,19 +68,25 @@ void Server::init_server() {
     m_next_id = START_ID;
     tcpServer = new QTcpServer(this);
     open_connections();
-    if (!tcpServer->listen()) {
+    QHostAddress address(config::get_value("server.ip", QString("0.0.0.0")));
+    auto port = config::get_value("server.port", 0);
+    if (!tcpServer->listen(address, port)) {
         QMessageBox::critical(this,
                               tr("Server error"),
                               tr("Unable to start the server: %1.").arg(tcpServer->errorString()));
         close();
         return;
     }
-    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-    // use the first non-localhost IPv4 address
-    for (const auto &i : ipAddressesList) {
-        if (i != QHostAddress::LocalHost && i.toIPv4Address()) {
-            address_list->addItem(i.toString());
+    if(address == QHostAddress::Any) {
+        auto ipAddressesList = QNetworkInterface::allAddresses();
+        // use the first non-localhost IPv4 address
+        for (const auto &i : ipAddressesList) {
+            if (i != QHostAddress::LocalHost && i.toIPv4Address()) {
+                address_list->addItem(i.toString());
+            }
         }
+    } else {
+        address_list->addItem(address.toString());
     }
     statusLabel->setText(tr("The server is running on IP: "));
     portLabel->setText(tr("port: %1").arg(tcpServer->serverPort()));

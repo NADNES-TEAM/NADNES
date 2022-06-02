@@ -2,11 +2,12 @@
 
 #include <QDialog>
 #include <QLabel>
-#include <QTcpServer>
 #include <QListWidget>
+#include <QTcpServer>
+#include <QVBoxLayout>
+#include "config_reader.h"
 #include "environment/player_select_window.h"
 #include "remote_player.h"
-#include <QVBoxLayout>
 
 class Server : public QDialog {
 public:

@@ -16,6 +16,7 @@ find_package(Qt6 COMPONENTS
         Network
         REQUIRED)
 find_package(SQLite3)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 add_executable(NADNES
         src/environment/connection_window.cpp
@@ -50,20 +51,16 @@ add_executable(NADNES
         src/local_emulator.cpp
         include/local_emulator.h
         src/remote_emulator.cpp
-        include/remote_player.h
         src/remote_player.cpp
         include/colors_map.h
         src/colors_map.cpp
         include/Server.h
         src/Server.cpp
-#        include/cheat_db_handler.h src/cheat_db_handler.cpp
         include/environment/cheating/cheat_fwd.h
         include/cheat_db_handler2.h src/cheat_db_handler2.cpp
         include/environment/cheating/apply_cheat.h
-        include/environment/cheating/cheat_window.h
         include/environment/cheating/search_cheat.h
         src/environment/cheating/apply_cheat.cpp
-        src/environment/cheating/cheat_window.cpp
         src/environment/cheating/search_cheat.cpp)
 
 if (SQLITE3_FOUND)
@@ -77,4 +74,5 @@ target_link_libraries(NADNES
         Qt::Gui
         Qt::Widgets
         Qt::UiTools
-        Qt::Network)
+        Qt::Network
+        Boost::program_options)

@@ -12,9 +12,6 @@ PlayerManager::PlayerManager() {
 
     m_player1_select = findChild<QComboBox *>("player1_select");
     m_player2_select = findChild<QComboBox *>("player2_select");
-    m_ok_btn = findChild<QPushButton *>("ok_btn");
-    m_cancel_btn = findChild<QPushButton *>("cancel_btn");
-    make_connections();
 }
 
 void PlayerManager::on_ok_btn_clicked() {
@@ -66,10 +63,6 @@ void PlayerManager::remove_player(int index) {
     update_view_and_indexes();
 }
 
-void PlayerManager::show_settings() {
-    show();
-}
-
 void PlayerManager::add_screen(int id, NES::ScreenInterface *screen) {
     assert(m_screens_map.count(id) == 0);
     m_screens_map[id] = screen;
@@ -114,11 +107,6 @@ void PlayerManager::refresh_screen() {
     }
 }
 
-void PlayerManager::make_connections() {
-    connect(m_ok_btn, SIGNAL(clicked()), this, SLOT(on_ok_btn_clicked()));
-    connect(m_cancel_btn, SIGNAL(clicked()), this, SLOT(on_cancel_btn_clicked()));
-}
-
 NES::KeyboardInterface *PlayerManager::get_gamepad_wrapper1() {
     return dynamic_cast<NES::KeyboardInterface *>(&m_gamepad_wrapper1);
 }
@@ -134,11 +122,11 @@ NES::ScreenInterface *PlayerManager::get_screen() {
 void PlayerManager::update_gamepads() {
 //    std::unique_lock lock(m_mutex);
     m_gamepad_wrapper1.set_gamepad(m_gamepads_map[m_player1_id]);
-    m_gamepad_wrapper2.set_gamepad(m_gamepads_map[m_player2_id]);
+    m_gamepad_wrapper2.set_gamepad((m_player2_select->isEnabled() ? m_gamepads_map[m_player2_id] : nullptr));
 }
 
 uint8_t PlayerManager::GamepadWrapper::get_pressed_keys() const {
-    return m_gamepad->get_pressed_keys();
+    return (m_gamepad ? m_gamepad->get_pressed_keys() : 0);
 }
 void PlayerManager::GamepadWrapper::set_gamepad(NES::KeyboardInterface *new_gamepad) {
     m_gamepad = new_gamepad;

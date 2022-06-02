@@ -2,6 +2,7 @@
 #include <fstream>
 #include "nes_exceptions.h"
 #include <iostream>
+#include <unordered_map>
 #include "reset_token.h"
 namespace NES {
 

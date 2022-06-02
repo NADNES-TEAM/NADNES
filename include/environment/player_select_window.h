@@ -10,6 +10,7 @@
 class PlayerManager : public QWidget, public NES::ScreenInterface {
     Q_OBJECT
 
+
 public:
     PlayerManager();
     ~PlayerManager() override = default;
@@ -30,11 +31,11 @@ public:
 
 public slots:
     void remove_player(int index);
-    void on_cancel_btn_clicked();
     void update_view_and_indexes();
+    void on_cancel_btn_clicked();
+
 private slots:
     void on_ok_btn_clicked();
-    void show_settings();
 
 private:
 //    std::mutex m_mutex;

@@ -36,7 +36,7 @@ void RemotePlayer::disconnect_wrapper() {
 }
 
 void RemotePlayer::refresh_screen() {
-    if(frame_count++ % 3 == 0) {
+    if(frame_count++ % send_rate == 0) {
         socket->flush();
         socket->write(image);
     }
