@@ -166,7 +166,7 @@ void SearchCheat::onExportButtonClicked() {
     if (!nes) {
         return;
     }
-    QFile defaultSaveFile("../uis/cheating/save_cheat_window.ui");
+    QFile defaultSaveFile("../UI/cheating/save_cheat_window.ui");
     QUiLoader qUiLoader;
     defaultSaveFile.open(QIODevice::ReadOnly | QIODevice::Text);
     save_default = new QWidget();
