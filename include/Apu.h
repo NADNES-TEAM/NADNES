@@ -2,7 +2,6 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
-#include "ApuRegisters.h"
 
 class Apu {
 public:
@@ -10,5 +9,7 @@ public:
 
     uint8_t cpuRead(uint16_t addr);
 
-    int get_clock_count();
+    uint32_t get_clock_count();
+
+
 };
