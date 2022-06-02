@@ -8,7 +8,7 @@ namespace NES::Cheating {
 
 ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes_) : QWidget(parent), nes(nes_) {
     QUiLoader loader;
-    QFile fileApply("../uis/cheating/apply_cheat.ui");
+    QFile fileApply("../UI/cheating/apply_cheat.ui");
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileApply, this);
     fileApply.close();

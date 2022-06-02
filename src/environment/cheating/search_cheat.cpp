@@ -10,7 +10,7 @@ namespace NES::Cheating {
 SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(nes) {
     QUiLoader loader;
 
-    QFile fileSearch("../uis/cheating/search_cheat.ui");
+    QFile fileSearch("../UI/cheating/search_cheat.ui");
     fileSearch.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileSearch, this);
     fileSearch.close();

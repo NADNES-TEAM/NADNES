@@ -10,7 +10,7 @@ Cheating::CheatWindow::CheatWindow(QWidget *parent,
                                    Cheating::ApplyCheat *apply_cheat)
     : QWidget(parent) {
     QUiLoader loader;
-    QFile fileMain("../uis/cheating/cheat_window.ui");  // just uis/... doesn't work
+    QFile fileMain("../UI/cheating/cheat_window.ui");  // just uis/... doesn't work
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileMain, this);
     this->tabWidget = this->findChild<QTabWidget *>("tabWidget");
