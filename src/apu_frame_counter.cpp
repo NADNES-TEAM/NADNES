@@ -1,8 +1,9 @@
 #include <cassert>
 #include <limits>
 #include "apu_frame_counter.h"
+#include "Apu.h"
 
-ApuFrameCounter::ApuFrameCounter() {
+ApuFrameCounter::ApuFrameCounter(ApuContainer *apu_container) : apu_container(apu_container) {
     reset(true);
 }
 
@@ -21,11 +22,11 @@ void ApuFrameCounter::reset(bool reset_mode) {
     prev_cycle = 0;
 }
 
-void ApuFrameCounter::write_data(uint16_t addr, uint8_t data, uint64_t cpu_cycle_count) {
+void ApuFrameCounter::write_data(uint16_t addr, uint8_t data) {
     assert(addr == 0x4017);
     write_value = data;
     inhibit_irq = bool((write_value >> 6) & 1);
-    if (cpu_cycle_count & 1) {  // wait next odd cycle
+    if (apu_container->get_apu()->get_clock_count() & 1) {  // wait next odd cycle
         skip_write_cycles = 4;
     } else {
         skip_write_cycles = 3;
