@@ -6,9 +6,9 @@
 #include "apu_container.h"
 #include "apu_base_channel.h"
 
-class ApuChannelWithLengthCounter : public ApuBaseChannel {
+class ApuLengthCounter : public ApuBaseChannel {
 public:
-    ApuChannelWithLengthCounter(ApuChannelType channel_type, ApuContainer *apu_container);
+    ApuLengthCounter(ApuChannelType channel_type, ApuContainer *apu_container);
 
     void reset(bool soft) override;
 
@@ -20,13 +20,15 @@ public:
 
     void write_halt(bool new_halt);
 
+    void reload_counter();
+
 private:
     static const std::array<uint8_t, 32> length_table;
-    bool enabled;
-    bool halt;
-    bool reload_halt;
-    uint8_t length_counter;
-    uint8_t reload_length_counter;
-    uint8_t prev_length_counter;
+    bool enabled{};
+    bool halt{};
+    bool reload_halt{};
+    uint8_t length_counter{};
+    uint8_t reload_length_counter{};
+    uint8_t prev_length_counter{};
 
 };
