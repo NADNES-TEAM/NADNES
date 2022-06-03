@@ -210,10 +210,8 @@ void LocalEmulator::create_search_window() {
         return;
     }
 
-    if (cheat_window) {
-        return;
+    if (!cheat_window) {
+        cheat_window = new NES::Cheating::CheatWindow(nullptr, m_nes.get());
+        cheat_window->show();
     }
-
-    cheat_window = new NES::Cheating::CheatWindow(nullptr, m_nes.get());
-    cheat_window->show();
 }
