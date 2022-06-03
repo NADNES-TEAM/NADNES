@@ -96,7 +96,12 @@ void LocalEmulator::load_rom(QString path) {
         m_clock.callOnTimeout([&]() {
             try {
                 this->m_nes->tick();
-            } catch (NES::NesError &e) { handle_exception(e); }
+            }catch (NES::IncorrectOpcodeError &e){
+                return;
+            }
+            catch (NES::NesError &e) {
+                handle_exception(e);
+            }
         });
         m_last_rom_path = path;
         m_last_save_path = "";
