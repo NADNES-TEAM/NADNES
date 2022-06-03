@@ -43,6 +43,8 @@ void SearchCheat::init() {
     search_cheat->tableWidget = search_cheat->findChild<QTableWidget *>("tableWidget");
     search_cheat->compareWith = search_cheat->findChild<QLineEdit *>("compareWith");
 
+//    search_cheat->tableWidget->
+
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
     connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
     connect(exportButton, &QPushButton::clicked, this, &SearchCheat::onExportButtonClicked);

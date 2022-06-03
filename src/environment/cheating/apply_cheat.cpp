@@ -6,7 +6,7 @@
 
 namespace NES::Cheating {
 
-ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes_) : QWidget(parent), nes(nes_) {
+ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(nes) {
     QUiLoader loader;
     QFile fileApply("../UI/cheating/apply_cheat.ui");
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);

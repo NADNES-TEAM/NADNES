@@ -5,10 +5,17 @@
 #include "environment/cheating/search_cheat.h"
 
 namespace NES {
-Cheating::CheatWindow::CheatWindow(QWidget *parent,
-                                   Cheating::SearchCheat *search_cheat,
-                                   Cheating::ApplyCheat *apply_cheat)
+Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
     : QWidget(parent) {
+
+    search_cheat = new NES::Cheating::SearchCheat(nullptr, nes);
+    apply_cheat = new NES::Cheating::ApplyCheat(nullptr, nes);
+
+    search_cheat->cheatDbHandler = &cheatDbHandler;
+    apply_cheat->cheatDbHandler = &cheatDbHandler;
+    search_cheat->init();
+    apply_cheat->init();
+
     QUiLoader loader;
     QFile fileMain("../UI/cheating/cheat_window.ui");  // just uis/... doesn't work
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -19,5 +26,12 @@ Cheating::CheatWindow::CheatWindow(QWidget *parent,
     cheat_window->tabWidget->clear();
     cheat_window->tabWidget->addTab(search_cheat, "searchTab");
     cheat_window->tabWidget->addTab(apply_cheat, "applyTab");
+}
+
+Cheating::CheatWindow::~CheatWindow() {
+    search_cheat->close();
+    apply_cheat->close();
+    search_cheat->deleteLater();
+    apply_cheat->deleteLater();
 }
 }  // namespace NES

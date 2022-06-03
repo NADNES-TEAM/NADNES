@@ -10,13 +10,17 @@ class CheatWindow : public QWidget {
     Q_OBJECT
 public:
     explicit CheatWindow(QWidget *parent,
-                         SearchCheat *search_cheat,
-                         ApplyCheat *apply_cheat);
-    ~CheatWindow() override = default;
+                         Nes *nes);
+    ~CheatWindow() override;
 public slots:
 
 public:
     QTabWidget *tabWidget{};
+
+private:
+    SearchCheat *search_cheat{};
+    ApplyCheat *apply_cheat{};
+    CheatDbHandler cheatDbHandler{};
 };
 
 }  // namespace NES::Cheating
