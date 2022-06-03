@@ -9,6 +9,7 @@
 #include <QSignalMapper>
 #include <QTableWidget>
 #include <QWidget>
+#include <QTimer>
 #include "cheat_db_handler2.h"
 #include "nes.h"
 #include "search.h"
@@ -34,6 +35,9 @@ public slots:
     void onCellChanged(int row, int column);
     void some_slot();
     void handleButton(int id);
+
+public slots:
+    void fill_part_of_table();
 
 public:
     QPushButton *newButton{};
@@ -71,6 +75,7 @@ public:
     Nes *nes;
     std::vector<ResultRaw> result;
     CheatDbHandler *cheatDbHandler{};
+    int result_printed;
 };
 
 }  // namespace NES::Cheating

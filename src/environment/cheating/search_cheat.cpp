@@ -6,6 +6,7 @@
 #include <QSizePolicy>
 #include <QUiLoader>
 #include <iostream>
+#include <thread>
 
 namespace NES::Cheating {
 
@@ -136,43 +137,10 @@ ParamsOfSearch SearchCheat::getParams() const {
     return paramsOfSearch;
 }
 void SearchCheat::fillTable() {
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
-
-    tableWidget->setRowCount(0);
-    tableWidget->setRowCount(result.size());
-    int i = 0;
-    for (const auto &it : result) {
-        QTableWidgetItem *item;
-        item = new QTableWidgetItem(tr("%1").arg(it.cur_value));
-        tableWidget->setItem(i, 0, item);
-
-        item = new QTableWidgetItem(tr("%1").arg(it.old_value));
-        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-        tableWidget->setItem(i, 1, item);
-
-        item = new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM")));
-        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-        tableWidget->setItem(i, 2, item);
-
-        item = new QTableWidgetItem(tr("%1").arg(it.address));
-        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-        tableWidget->setItem(i, 3, item);
-
-        auto widget = new QPushButton(tr("Del"));
-        connect(widget, SIGNAL(clicked()), &qSignalMapper, SLOT(map()));
-        qSignalMapper.setMapping(widget, i);
-        tableWidget->setCellWidget(i, 4, widget);
-
-        i++;
-    }
-    connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
-
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    qDebug() << "Time difference = "
-             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-             << "[ms]";
+    tableWidget->clear();
+    fill_part_of_table();
 }
+
 void SearchCheat::onExportButtonClicked() {
     if (!nes) {
         return;
@@ -255,9 +223,53 @@ void SearchCheat::onCellChanged(int row, int column) {
 }
 
 void SearchCheat::handleButton(int id) {
-    //    qDebug() << id;
     result.erase(result.begin() + id);
     fillTable();
+}
+
+void SearchCheat::fill_part_of_table() {
+    const int rows = 500;
+    disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
+
+    if (tableWidget->rowCount() > 1) {
+        tableWidget->removeRow(tableWidget->rowCount() - 1);
+    }
+
+    int &i = result_printed;
+    int finish = std::min(rows + result_printed, (int)result.size());
+    tableWidget->setRowCount(finish);
+    for (; i < finish; ++i) {
+        const auto it = result[i];
+        QTableWidgetItem *item;
+        item = new QTableWidgetItem(tr("%1").arg(it.cur_value));
+        tableWidget->setItem(i, 0, item);
+
+        item = new QTableWidgetItem(tr("%1").arg(it.old_value));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 1, item);
+
+        item = new QTableWidgetItem(tr("%1").arg((it.place.id == 0 ? "RAM" : "ROM")));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 2, item);
+
+        item = new QTableWidgetItem(tr("%1").arg(it.address));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        tableWidget->setItem(i, 3, item);
+
+        auto widget = new QPushButton(tr("Del"));
+        connect(widget, SIGNAL(clicked()), &qSignalMapper, SLOT(map()));
+        qSignalMapper.setMapping(widget, i);
+        tableWidget->setCellWidget(i, 4, widget);
+    }
+
+    if (result_printed < (int)result.size()) {
+        tableWidget->setRowCount(finish + 1);
+        auto btn = new QPushButton(tr("Add/%1").arg(result.size()));
+        tableWidget->setCellWidget(finish, 0, btn);
+        connect(btn, &QPushButton::clicked, this, &SearchCheat::fill_part_of_table);
+    }
+
+    connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 }
 
 }  // namespace NES::Cheating
