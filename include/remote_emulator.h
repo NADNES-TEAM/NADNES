@@ -26,7 +26,6 @@ private:
     void ask_for_reconnection(const QString &msg = "");
     QTimer timer;
     ConnectionWindow *connection_window;
-    QDataStream stream;
     QTcpSocket *socket;
     NES::ScreenInterface *screen;
     QString last_address;

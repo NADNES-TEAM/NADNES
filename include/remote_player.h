@@ -33,7 +33,6 @@ private:
     const int send_rate = NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ /
                           config::get_value("server.send_framerate", 20);
     QByteArray image;
-    QDataStream stream;
     QTcpSocket *socket;
     size_t id;
     uint8_t btn;

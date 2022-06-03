@@ -16,8 +16,6 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) :
 
     connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
     connect(socket, &QAbstractSocket::errorOccurred, this, &RemoteEmulator::handle_error);
-    stream.setDevice(socket);
-    stream.setVersion(QDataStream::Qt_4_6);
     connection_window = new ConnectionWindow();
     connect(connection_window,
             &ConnectionWindow::connect_btn_pressed,
