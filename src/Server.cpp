@@ -8,12 +8,15 @@
 #include <QStyleHints>
 
 Server::Server(PlayerManager *player_manager, QWidget *parent)
-    : QDialog(parent), statusLabel(new QLabel(this)), m_player_manager(player_manager) {
+    : QDialog(parent),
+      statusLabel(new QLabel(this)),
+      portLabel(new QLabel(this)),
+      m_player_manager(player_manager) {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     statusLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    portLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
     //    init_server();
-    portLabel = new QLabel(this);
     statusLabel->setText(tr("Server is not running"));
     shutdownButton = new QPushButton(tr("Shutdown"), this);
     hideButton = new QPushButton(tr("Hide"), this);
@@ -53,7 +56,7 @@ Server::Server(PlayerManager *player_manager, QWidget *parent)
     } else {
         main_layout = new QVBoxLayout(this);
     }
-    
+
     main_layout->addWidget(statusLabel);
     main_layout->addWidget(address_list);
     main_layout->addWidget(portLabel);
@@ -78,7 +81,7 @@ void Server::init_server() {
         close();
         return;
     }
-    if(address.isEqual(QHostAddress::Any)) {
+    if (address.isEqual(QHostAddress::Any)) {
         auto ipAddressesList = QNetworkInterface::allAddresses();
         // use the first non-localhost IPv4 address
         for (const auto &i : ipAddressesList) {

@@ -34,9 +34,12 @@ void ConnectionWindow::on_cancel_btn_clicked() {
     m_port_edit->clear();
     m_address_edit->clear();
     m_connect_btn->setDisabled(true);
-    close();
+//    qDebug() << "canceled\n";
+    hide();
 }
 
 void ConnectionWindow::closeEvent(QCloseEvent *event) {
     on_cancel_btn_clicked();
+//    qDebug() << "closed\n";
+
 }

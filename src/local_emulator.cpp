@@ -48,7 +48,6 @@ LocalEmulator::LocalEmulator(QObject *parent,
     m_player_manager->on_cancel_btn_clicked();
 
     m_server = new Server(m_player_manager);
-    m_server->hide();
 
     read_settings();
     QString tmp = m_last_save_path;
@@ -189,9 +188,11 @@ void LocalEmulator::close() {
     m_server->deleteLater();
     m_server = nullptr;
 
-    cheat_window->close();
-    cheat_window->deleteLater();
-    cheat_window = nullptr;
+    if(cheat_window) {
+        cheat_window->close();
+        cheat_window->deleteLater();
+        cheat_window = nullptr;
+    }
 
     write_settings();
 }

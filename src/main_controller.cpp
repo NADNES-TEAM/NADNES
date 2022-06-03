@@ -93,7 +93,7 @@ void MainController::close() {
     }
     if(m_remote_emulator) {
         m_remote_emulator->close();
-        m_local_emulator->deleteLater();
+        m_remote_emulator->deleteLater();
     }
     m_player1.close();
     m_player2.close();

@@ -62,6 +62,8 @@ void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
 }
 
 void RemoteEmulator::close() {
+    socket->abort();
+    timer.stop();
     write_settings();
     connection_window->close();
     connection_window->deleteLater();
