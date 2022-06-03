@@ -2,6 +2,8 @@
 
 #include <boost/program_options.hpp>
 #include <string>
+#include <ios>
+#include <fstream>
 
 const char *const CONFIG_FILE = "../nadnes.conf";
 
@@ -24,6 +26,7 @@ po::variables_map read_config() {
     all_options.add(server_options).add(client_options);
 
     po::variables_map conf_map;
+    auto file = std::ofstream(CONFIG_FILE, std::ios_base::app);
     po::store(po::parse_config_file(CONFIG_FILE, all_options), conf_map);
     po::notify(conf_map);
     return conf_map;

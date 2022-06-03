@@ -48,6 +48,5 @@ private:
     QString m_last_save_path;
 
     Server *m_server;
-    CheatDbHandler cheatDbHandler;
     NES::Cheating::CheatWindow *cheat_window{};
 };
