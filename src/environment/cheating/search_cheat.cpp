@@ -46,7 +46,7 @@ void SearchCheat::init() {
     search_cheat->tableWidget = search_cheat->findChild<QTableWidget *>("tableWidget");
     search_cheat->compareWith = search_cheat->findChild<QLineEdit *>("compareWith");
 
-//    search_cheat->tableWidget->
+    //    search_cheat->tableWidget->
 
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
     connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
@@ -136,6 +136,7 @@ ParamsOfSearch SearchCheat::getParams() const {
     return paramsOfSearch;
 }
 void SearchCheat::fillTable() {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 
     tableWidget->setRowCount(0);
@@ -166,6 +167,11 @@ void SearchCheat::fillTable() {
         i++;
     }
     connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    qDebug() << "Time difference = "
+             << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+             << "[ms]";
 }
 void SearchCheat::onExportButtonClicked() {
     if (!nes) {
@@ -178,7 +184,7 @@ void SearchCheat::onExportButtonClicked() {
     save_default->setWindowModality(Qt::ApplicationModal);
     qUiLoader.load(&defaultSaveFile, save_default);
     defaultSaveFile.close();
-    auto window_size = save_default ->findChild<QWidget *>("Form")->size();
+    auto window_size = save_default->findChild<QWidget *>("Form")->size();
     save_default->setFixedSize(window_size);
     buttonBox = save_default->findChild<QDialogButtonBox *>("buttonBox");
     defaultSaveEdit = save_default->findChild<QLineEdit *>("lineEdit");
@@ -188,27 +194,27 @@ void SearchCheat::onExportButtonClicked() {
     save_default->show();
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(onOkButtonClicked()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(closeDialog()));
-//    bool ok = false;
-//    auto res = QInputDialog::getText(this,
-//                                     "Save cheat",
-//                                     "Cheat name:",
-//                                     QLineEdit::Normal,
-//                                     "",
-//                                     &ok,
-//                                     Qt::Dialog,
-//                                     ( Qt::ImhLatinOnly));
-//    if(ok && !res.isEmpty()) {
-//        onOkButtonClicked();
-//    }
+    //    bool ok = false;
+    //    auto res = QInputDialog::getText(this,
+    //                                     "Save cheat",
+    //                                     "Cheat name:",
+    //                                     QLineEdit::Normal,
+    //                                     "",
+    //                                     &ok,
+    //                                     Qt::Dialog,
+    //                                     ( Qt::ImhLatinOnly));
+    //    if(ok && !res.isEmpty()) {
+    //        onOkButtonClicked();
+    //    }
 }
 
 void SearchCheat::onOkButtonClicked() {
     cheatDbHandler->clear_name(defaultSaveEdit->text());
-//    cheatDbHandler->clear_name(name);
+    //    cheatDbHandler->clear_name(name);
     auto hash = nes->get_hash();
     //    qDebug() << "hash: " << hash;
     auto cheat_num = cheatDbHandler->add_name(defaultSaveEdit->text());
-//    auto cheat_num = cheatDbHandler->add_name(name);
+    //    auto cheat_num = cheatDbHandler->add_name(name);
     //    qDebug() << "cheat_num: " << cheat_num;
     cheatDbHandler->add_cheat(hash, cheat_num);
     //    qDebug() << "add_cheat: " << hash << " " << cheat_num;
@@ -218,6 +224,7 @@ void SearchCheat::onOkButtonClicked() {
         //        qDebug() << "address: " << address;
         cheatDbHandler->add_address(cheat_num, address);
     }
+    cheatDbHandler->save_data();
     closeDialog();
 }
 
