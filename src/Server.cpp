@@ -78,7 +78,7 @@ void Server::init_server() {
         close();
         return;
     }
-    if(address == QHostAddress::Any) {
+    if(address.isEqual(QHostAddress::Any)) {
         auto ipAddressesList = QNetworkInterface::allAddresses();
         // use the first non-localhost IPv4 address
         for (const auto &i : ipAddressesList) {
