@@ -18,7 +18,6 @@ public:
 public slots:
     void key_changed(uint8_t btn);
     void show_connection_window();
-    void handle_error(QAbstractSocket::SocketError error);
 
 private:
     void read_settings();
@@ -34,4 +33,5 @@ private:
 private slots:
     void try_connect(const QString &address, int port);
     void data_arrived();
+    void handle_error(QAbstractSocket::SocketError error);
 };

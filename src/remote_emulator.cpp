@@ -14,8 +14,9 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) :
     }
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
 
-    connect(socket, SIGNAL(disconnected()), SLOT(deleteLater()));
     connect(socket, &QAbstractSocket::errorOccurred, this, &RemoteEmulator::handle_error);
+    connect(socket, &QAbstractSocket::connected, this, [this](){qDebug() << "start\n"; this->timer.start();});
+
     connection_window = new ConnectionWindow();
     connect(connection_window,
             &ConnectionWindow::connect_btn_pressed,
@@ -23,7 +24,6 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) :
             &RemoteEmulator::try_connect);
     read_settings();
     ask_for_reconnection();
-    timer.start();
 }
 
 void RemoteEmulator::key_changed(uint8_t btn) {
@@ -49,13 +49,16 @@ void RemoteEmulator::show_connection_window() {
 
 void RemoteEmulator::try_connect(const QString &address, int port) {
     socket->abort();
-    socket->connectToHost(address, port);
+    socket->connectToHost(QHostAddress(address), port);
+    qDebug() << "Connecting to: " << address << ' ' << port  << "\n";
     last_address = address;
     last_port = port;
-    qDebug() << "Try connect: status = " << socket->state() << "\n";
+
+
 }
 
 void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
+    timer.stop();
     ask_for_reconnection("Following error occurred: " + socket->errorString() + "\n");
 }
 
@@ -91,7 +94,7 @@ void RemoteEmulator::ask_for_reconnection(const QString &msg) {
                                   msg + "Would you like to reconnect to the last game?",
                                   (QMessageBox::Yes | QMessageBox::No),
                                   QMessageBox::Yes)) {
-        try_connect(last_address, last_port);
+        QTimer::singleShot(0, this, [this](){try_connect(last_address, last_port);});
     } else {
         connection_window->show();
     }

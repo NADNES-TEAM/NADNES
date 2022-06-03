@@ -23,7 +23,7 @@ ConnectionWindow::ConnectionWindow() {
 
 void ConnectionWindow::on_connect_btn_clicked() {
     emit connect_btn_pressed(m_address_edit->text(), m_port_edit->text().toInt());
-    close();
+    hide();
 }
 
 void ConnectionWindow::enable_connect_btn() {
@@ -31,8 +31,8 @@ void ConnectionWindow::enable_connect_btn() {
 }
 
 void ConnectionWindow::on_cancel_btn_clicked() {
-    m_port_edit->clear();
-    m_address_edit->clear();
+//    m_port_edit->clear();
+//    m_address_edit->clear();
     m_connect_btn->setDisabled(true);
 //    qDebug() << "canceled\n";
     hide();
