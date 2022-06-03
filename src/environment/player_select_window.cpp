@@ -8,10 +8,10 @@ PlayerManager::PlayerManager() {
     QUiLoader loader;
     loader.load(&file, this);
     QMetaObject::connectSlotsByName(this);
-//    setFixedSize(size());
-
+    setFixedSize(findChild<QWidget *>("Form")->size());
     m_player1_select = findChild<QComboBox *>("player1_select");
     m_player2_select = findChild<QComboBox *>("player2_select");
+    m_player2_check = findChild<QCheckBox *>("player2_check");
 }
 
 void PlayerManager::on_ok_btn_clicked() {
@@ -23,6 +23,7 @@ void PlayerManager::on_ok_btn_clicked() {
     }
     m_player1_id = player1_cur;
     m_player2_id = player2_cur;
+    m_player2_enabled = m_player2_select->isEnabled();
     update_gamepads();
     close();
 }
@@ -33,7 +34,7 @@ void PlayerManager::on_cancel_btn_clicked() {
         std::find(m_view_ids.begin(), m_view_ids.end(), m_player1_id) - m_view_ids.begin();
     size_t m_player2_index =
         std::find(m_view_ids.begin(), m_view_ids.end(), m_player2_id) - m_view_ids.begin();
-
+    m_player2_check->setChecked(m_player2_enabled);
     m_player2_select->setCurrentIndex(int(m_player2_index));
     m_player1_select->setCurrentIndex(int(m_player1_index));
     close();

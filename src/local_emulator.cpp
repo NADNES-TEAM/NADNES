@@ -181,6 +181,8 @@ void LocalEmulator::quickload() {
 
 void LocalEmulator::close() {
     m_clock.stop();
+    cheat_window->close();
+    cheat_window->deleteLater();
     m_player_manager->close();
     m_player_manager->deleteLater();
     m_server->close();
@@ -201,15 +203,16 @@ void LocalEmulator::create_search_window() {
     if (m_nes == nullptr) {
         return;
     }
-    auto *search_cheat = new NES::Cheating::SearchCheat(nullptr, m_nes.get());
-    auto *apply_cheat = new NES::Cheating::ApplyCheat(nullptr, m_nes.get());
-
-    search_cheat->cheatDbHandler = &cheatDbHandler;
-    apply_cheat->cheatDbHandler = &cheatDbHandler;
-    search_cheat->init();
-    apply_cheat->init();
-    cheat_window = new NES::Cheating::CheatWindow(nullptr, search_cheat, apply_cheat);
-
+    if(!cheat_window) {
+        cheat_window = new NES::Cheating::CheatWindow(nullptr);
+        auto *search_cheat = new NES::Cheating::SearchCheat(cheat_window, m_nes.get());
+        auto *apply_cheat = new NES::Cheating::ApplyCheat(cheat_window, m_nes.get());
+        search_cheat->cheatDbHandler = &cheatDbHandler;
+        apply_cheat->cheatDbHandler = &cheatDbHandler;
+        cheat_window->init(search_cheat, apply_cheat);
+        search_cheat->init();
+        apply_cheat->init();
+    }
     cheat_window->show();
 }
 

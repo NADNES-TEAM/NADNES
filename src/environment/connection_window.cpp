@@ -7,6 +7,7 @@ ConnectionWindow::ConnectionWindow() {
     QUiLoader loader;
     loader.load(&file, this);
     QMetaObject::connectSlotsByName(this);
+    setFixedSize(findChild<QWidget *>("Form")->size());
 
     m_connect_btn = findChild<QPushButton *>("connect_btn");
     m_connect_btn->setDisabled(true);

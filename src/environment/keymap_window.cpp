@@ -5,12 +5,13 @@ KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
                            QMap<NES::Keys, Qt::Key> &btn_to_key_)
     : m_key_to_btn(key_to_btn_), m_btn_to_key(btn_to_key_) {
     //    setWindowTitle(title);
-    setFixedSize(509, 280);  // TODO: config?
     QFile file("../UI/keymap.ui");
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);
     QMetaObject::connectSlotsByName(this);
+    setFixedSize(findChild<QWidget *>("Form")->size());
+
     m_sequence = findChild<QKeySequenceEdit *>("sequence_edit");
     m_table = findChild<QTableWidget *>("table_widget");
     update_table();

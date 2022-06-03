@@ -5,19 +5,21 @@
 #include "environment/cheating/search_cheat.h"
 
 namespace NES {
-Cheating::CheatWindow::CheatWindow(QWidget *parent,
-                                   Cheating::SearchCheat *search_cheat,
-                                   Cheating::ApplyCheat *apply_cheat)
+Cheating::CheatWindow::CheatWindow(QWidget *parent)
     : QWidget(parent) {
     QUiLoader loader;
     QFile fileMain("../UI/cheating/cheat_window.ui");  // just uis/... doesn't work
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileMain, this);
-    this->tabWidget = this->findChild<QTabWidget *>("tabWidget");
+    tabWidget = findChild<QTabWidget*>("tabWidget");
     fileMain.close();
-    auto cheat_window = this;
-    cheat_window->tabWidget->clear();
-    cheat_window->tabWidget->addTab(search_cheat, "searchTab");
-    cheat_window->tabWidget->addTab(apply_cheat, "applyTab");
+    setFixedSize(findChild<QWidget*>("Form")->size());
+
+}
+
+void Cheating::CheatWindow::init(Cheating::SearchCheat *search, Cheating::ApplyCheat *apply) {
+    tabWidget->clear();
+    tabWidget->addTab(search, "searchTab");
+    tabWidget->addTab(apply, "apply");
 }
 }  // namespace NES

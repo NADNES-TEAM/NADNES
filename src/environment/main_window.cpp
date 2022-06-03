@@ -173,6 +173,7 @@ void MainWindow::create_actions() {
 
     m_mem_search_act = new QAction("Cheat", this);
     m_mem_search_act->setStatusTip("Open a window with cheat options");
+    m_mem_search_act->setShortcut(QKeySequence("Ctrl+Shift+M"));
     m_all_actions.emplace_back(m_mem_search_act, ActionRole::Host);
 }
 

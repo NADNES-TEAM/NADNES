@@ -1,7 +1,9 @@
 #include "environment/cheating/search_cheat.h"
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QRegularExpression>
+#include <QSizePolicy>
 #include <QUiLoader>
 #include <iostream>
 
@@ -14,6 +16,7 @@ SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(
     fileSearch.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileSearch, this);
     fileSearch.close();
+    setFixedSize(findChild<QWidget *>("Form")->size());
 }
 
 void SearchCheat::init() {
@@ -170,30 +173,47 @@ void SearchCheat::onExportButtonClicked() {
     QUiLoader qUiLoader;
     defaultSaveFile.open(QIODevice::ReadOnly | QIODevice::Text);
     save_default = new QWidget();
+    save_default->setWindowModality(Qt::ApplicationModal);
     qUiLoader.load(&defaultSaveFile, save_default);
     defaultSaveFile.close();
+    auto window_size = save_default ->findChild<QWidget *>("Form")->size();
+    save_default->setFixedSize(window_size);
     buttonBox = save_default->findChild<QDialogButtonBox *>("buttonBox");
     defaultSaveEdit = save_default->findChild<QLineEdit *>("lineEdit");
-    QRegularExpression re("^[-_a-zA-Z]+$");
+    QRegularExpression re("^[-_a-zA-Z0-9]+$");
     auto validator = new QRegularExpressionValidator(re, this);
     defaultSaveEdit->setValidator(validator);
     save_default->show();
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(onOkButtonClicked()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(closeDialog()));
+//    bool ok = false;
+//    auto res = QInputDialog::getText(this,
+//                                     "Save cheat",
+//                                     "Cheat name:",
+//                                     QLineEdit::Normal,
+//                                     "",
+//                                     &ok,
+//                                     Qt::Dialog,
+//                                     ( Qt::ImhLatinOnly));
+//    if(ok && !res.isEmpty()) {
+//        onOkButtonClicked();
+//    }
 }
 
 void SearchCheat::onOkButtonClicked() {
     cheatDbHandler->clear_name(defaultSaveEdit->text());
+//    cheatDbHandler->clear_name(name);
     auto hash = nes->get_hash();
-//    qDebug() << "hash: " << hash;
+    //    qDebug() << "hash: " << hash;
     auto cheat_num = cheatDbHandler->add_name(defaultSaveEdit->text());
-//    qDebug() << "cheat_num: " << cheat_num;
+//    auto cheat_num = cheatDbHandler->add_name(name);
+    //    qDebug() << "cheat_num: " << cheat_num;
     cheatDbHandler->add_cheat(hash, cheat_num);
-//    qDebug() << "add_cheat: " << hash << " " << cheat_num;
+    //    qDebug() << "add_cheat: " << hash << " " << cheat_num;
     for (const auto &it : result) {
         quint64 address = (quint64(it.address) << 18) + (it.place.id == Place::RAM.id ? 0 : 2) +
                           (this->oneByte->isChecked() ? 0 : 1);
-//        qDebug() << "address: " << address;
+        //        qDebug() << "address: " << address;
         cheatDbHandler->add_address(cheat_num, address);
     }
     closeDialog();
@@ -202,6 +222,7 @@ void SearchCheat::onOkButtonClicked() {
 void SearchCheat::closeDialog() const {
     save_default->deleteLater();
 }
+
 void SearchCheat::onCellChanged(int row, int column) {
     if (column != 0) {
         qDebug() << column << "\n";

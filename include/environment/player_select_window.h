@@ -3,6 +3,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
+#include <QCheckBox>
 #include <mutex>
 #include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
@@ -41,11 +42,11 @@ private:
 //    std::mutex m_mutex;
     int m_player1_id = 0;
     int m_player2_id = 1;
+    bool m_player2_enabled = false;
     QComboBox *m_player1_select;
     QComboBox *m_player2_select;
+    QCheckBox *m_player2_check;
     std::vector<int> m_view_ids;
-    QPushButton *m_ok_btn;
-    QPushButton *m_cancel_btn;
 
     std::map<int, NES::ScreenInterface *> m_screens_map;
     std::map<int, NES::KeyboardInterface *> m_gamepads_map;

@@ -9,13 +9,11 @@ namespace NES::Cheating {
 class CheatWindow : public QWidget {
     Q_OBJECT
 public:
-    explicit CheatWindow(QWidget *parent,
-                         SearchCheat *search_cheat,
-                         ApplyCheat *apply_cheat);
+    explicit CheatWindow(QWidget *parent);
     ~CheatWindow() override = default;
-public slots:
+    void init(SearchCheat * search, ApplyCheat *apply);
 
-public:
+private:
     QTabWidget *tabWidget{};
 };
 

@@ -12,6 +12,7 @@ ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes_) : QWidget(parent), nes(n
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileApply, this);
     fileApply.close();
+    setFixedSize(findChild<QWidget *>("Form")->size());
     connect(&qSignalMapperButton, &QSignalMapper::mappedInt, this, &ApplyCheat::on_ok_button);
     connect(&qSignalMapperDelete, &QSignalMapper::mappedInt, this, &ApplyCheat::on_del_button);
 }

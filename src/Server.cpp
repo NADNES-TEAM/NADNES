@@ -62,6 +62,7 @@ Server::Server(PlayerManager *player_manager, QWidget *parent)
     portLabel->hide();
 
     setWindowTitle(QGuiApplication::applicationDisplayName());
+    setFixedSize(main_layout->sizeHint());
 }
 
 void Server::init_server() {
@@ -92,7 +93,7 @@ void Server::init_server() {
     portLabel->setText(tr("port: %1").arg(tcpServer->serverPort()));
     address_list->show();
     portLabel->show();
-
+    setFixedSize(main_layout->sizeHint());
 }
 
 void Server::destruct_server() const {
@@ -107,6 +108,7 @@ void Server::on_shutdown_clicked() {
     destruct_server();
     runButton->setEnabled(true);
     shutdownButton->setEnabled(false);
+    setFixedSize(main_layout->sizeHint());
 }
 
 void Server::on_run_clicked() {
