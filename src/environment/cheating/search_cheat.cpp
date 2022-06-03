@@ -137,6 +137,7 @@ ParamsOfSearch SearchCheat::getParams() const {
     return paramsOfSearch;
 }
 void SearchCheat::fillTable() {
+    result_printed = 0;
     tableWidget->clear();
     fill_part_of_table();
 }
