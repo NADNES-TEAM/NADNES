@@ -14,10 +14,35 @@ find_package(Qt6 COMPONENTS
         UiTools
         Network
         REQUIRED)
+#find_package(SQLite3)
 find_package(Boost COMPONENTS program_options REQUIRED)
 
-add_executable(NADNES
-        src/environment/connection_window.cpp
+if (APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE nadnes.icns)
+    set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/icons/nadnes.icns")
+    set_source_files_properties(${app_icon_macos} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set(common_ui_files
+            "UI/connect_window.ui"
+            "UI/keymap.ui"
+            "UI/player_select.ui")
+
+    set(cheat_ui_files
+            "UI/cheating/apply_cheat.ui"
+            "UI/cheating/search_cheat.ui"
+            "UI/cheating/save_cheat_window.ui"
+            "UI/cheating/cheat_window.ui")
+    set_source_files_properties(${common_ui_files} PROPERTIES MACOSX_PACKAGE_LOCATION "UI")
+    set_source_files_properties(${cheat_ui_files} PROPERTIES MACOSX_PACKAGE_LOCATION "UI/cheating")
+endif ()
+
+
+if(APPLE)
+    add_executable(NADNES MACOSX_BUNDLE ${app_icon_macos} ${common_ui_files} ${cheat_ui_files})
+else()
+    add_executable(NADNES)
+endif()
+
+target_sources(NADNES PUBLIC src/environment/connection_window.cpp
         include/environment/connection_window.h
         include/remote_emulator.h
         include/remote_player.h
@@ -61,11 +86,11 @@ add_executable(NADNES
         src/environment/cheating/apply_cheat.cpp
         src/environment/cheating/search_cheat.cpp include/utils.h src/utils.cpp)
 
-if (SQLITE3_FOUND)
-    message("Found sqlite3!")
-    include_directories(${SQLite3_INCLUDE_DIR})
-    target_link_libraries (NADNES ${SQLite3_LIBRARY})
-endif()
+#if (SQLITE3_FOUND)
+#    message("Found sqlite3!")
+#    include_directories(${SQLite3_INCLUDE_DIR})
+#    target_link_libraries (NADNES ${SQLite3_LIBRARY})
+#endif()
 
 target_link_libraries(NADNES
         Qt::Core
