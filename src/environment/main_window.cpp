@@ -44,7 +44,6 @@ void MainWindow::refresh_screen() {
     QSize qSize(NES::SCREEN_WIDTH * 5, NES::SCREEN_HEIGHT * 5);
     m_image_label->setPixmap(
         QPixmap::fromImage(m_screen_image.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));
-    m_image_label->update();
 }
 
 void MainWindow::create_menus() {
