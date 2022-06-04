@@ -2,12 +2,17 @@
 #include <QMessageBox>
 #include <QSettings>
 #include "colors_map.h"
-#include "config_reader.h"
+#include "nes_utils.h"
+#include "nes_config.h"
 
 RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent),timer(this) {
     socket = new QTcpSocket(this);
+    int port = config::get_value("client.port", defaults::client_port);
+    if(port) {
+        socket->bind(port);
+    }
     screen = screen_;
-    auto update_interval = config::get_value("client.force_update_interval_ms", 4);
+    auto update_interval = config::get_value("client.force_update_interval_ms", defaults::client_update_interval);
     if(update_interval > -1) {
         timer.setInterval(std::chrono::milliseconds(update_interval));
         timer.callOnTimeout([this](){this->data_arrived();});
@@ -66,8 +71,7 @@ void RemoteEmulator::close() {
     socket->abort();
     timer.stop();
     write_settings();
-    connection_window->close();
-    connection_window->deleteLater();
+    utils::free_qptr(&connection_window);
 }
 
 void RemoteEmulator::read_settings() {

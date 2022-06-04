@@ -7,6 +7,7 @@
 #include "environment/cheating/search_cheat.h"
 #include "environment/player_manager_window.h"
 #include "nes_properties.h"
+#include "nes_utils.h"
 
 void handle_exception(std::exception &e) {
     std::cout << e.what() << '\n';
@@ -36,8 +37,8 @@ LocalEmulator::LocalEmulator(QObject *parent,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
     : QObject(parent), m_clock(this) {
-    m_clock.setInterval(
-        std::chrono::milliseconds(lround(1000.0 / NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ)));
+    int clock_rate = config::get_value("emulator.main_clock_rate_hz", NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ);
+    m_clock.setInterval(std::chrono::milliseconds(lround(1000.0 / clock_rate)));
 
     m_player_manager = new PlayerManager();
     m_player_manager->add_screen(0, screen);
@@ -180,20 +181,9 @@ void LocalEmulator::quick_load() {
 
 void LocalEmulator::close() {
     m_clock.stop();
-    m_player_manager->close();
-    m_player_manager->deleteLater();
-    m_player_manager = nullptr;
-
-    m_server->close();
-    m_server->deleteLater();
-    m_server = nullptr;
-
-    if(cheat_window) {
-        cheat_window->close();
-        cheat_window->deleteLater();
-        cheat_window = nullptr;
-    }
-
+    utils::free_qptr(&m_player_manager);
+    utils::free_qptr(&m_server);
+    utils::free_qptr(&m_cheat_window);
     write_settings();
 }
 
@@ -211,8 +201,8 @@ void LocalEmulator::create_search_window() {
         return;
     }
 
-    if (!cheat_window) {
-        cheat_window = new NES::Cheating::CheatWindow(nullptr, m_nes.get());
+    if (!m_cheat_window) {
+        m_cheat_window = new NES::Cheating::CheatWindow(nullptr, m_nes.get());
     }
-    cheat_window->show();
+    m_cheat_window->show();
 }

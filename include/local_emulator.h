@@ -4,7 +4,7 @@
 #include <QString>
 #include <QTimer>
 #include <QWidget>
-#include "Server.h"
+#include "server.h"
 #include "cheat_db_handler_files.h"
 #include "environment/cheating/cheat_window.h"
 #include "environment/player_manager_window.h"
@@ -48,5 +48,5 @@ private:
     QString m_last_save_path;
 
     Server *m_server;
-    NES::Cheating::CheatWindow *cheat_window{};
+    NES::Cheating::CheatWindow *m_cheat_window{};
 };

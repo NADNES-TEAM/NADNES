@@ -7,8 +7,10 @@
 #include <QWidget>
 #include <QtGui>
 #include "interfaces/screen_interface.h"
+#include "nes_config.h"
+#include "nes_properties.h"
 
-enum ActionRole : int { Host = 1, Guest = 2, None = 4 }; //degrees of 2
+enum ActionRole : int { Host = 1, Guest = 2, None = 4 };  // degrees of 2
 
 class MainWindow : public QMainWindow, public NES::ScreenInterface {
     Q_OBJECT
@@ -73,4 +75,10 @@ private:
     QMenu *m_network_menu;
     QActionGroup *m_profile_group;
     std::vector<std::pair<QAction *, int>> m_all_actions;
+
+    const int frame_rate =
+        std::max(1,
+                 NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ /
+                     config::get_value("emulator.render_rate_hz", defaults::emulator_render_rate));
+    uint64_t frame_count = 0;
 };

@@ -23,7 +23,6 @@ private:
     void make_host_connections();
     void make_common_connections();
     void make_guest_connections();
-    void free_qptr();
     MainWindow m_main_window;
     Gamepad m_player1;
     Gamepad m_player2;

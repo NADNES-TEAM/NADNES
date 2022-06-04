@@ -3,21 +3,19 @@
 #include <QUiLoader>
 #include "environment/cheating/apply_cheat.h"
 #include "environment/cheating/search_cheat.h"
+#include "nes_config.h"
 
 namespace NES {
 Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
     : QWidget(parent) {
 
-    search_cheat = new NES::Cheating::SearchCheat(nullptr, nes);
-    apply_cheat = new NES::Cheating::ApplyCheat(nullptr, nes);
-
-    search_cheat->cheatDbHandler = &cheatDbHandler;
-    apply_cheat->cheatDbHandler = &cheatDbHandler;
+    search_cheat = new NES::Cheating::SearchCheat(nullptr, nes, &cheatDbHandler);
+    apply_cheat = new NES::Cheating::ApplyCheat(nullptr, nes, &cheatDbHandler);
     search_cheat->init();
     apply_cheat->init();
 
     QUiLoader loader;
-    QFile fileMain("../UI/cheating/cheat_window.ui");  // just uis/... doesn't work
+    QFile fileMain(config::get_value("ui_paths.cheat_window_path", defaults::ui_path_cheat_window).c_str());  // just uis/... doesn't work
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileMain, this);
     fileMain.close();

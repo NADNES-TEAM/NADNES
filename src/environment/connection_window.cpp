@@ -1,8 +1,9 @@
 #include "environment/connection_window.h"
 #include <QtUiTools>
+#include "nes_config.h"
 
 ConnectionWindow::ConnectionWindow() {
-    QFile file("../UI/connect_window.ui");
+    QFile file(config::get_value("ui_paths.connect_window_path", defaults::ui_path_connect_window).c_str());
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);

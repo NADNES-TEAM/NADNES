@@ -3,12 +3,13 @@
 #include <QLineEdit>
 #include <QTableWidgetItem>
 #include <QUiLoader>
+#include "nes_config.h"
 
 namespace NES::Cheating {
 
-ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(nes) {
+ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler) : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
     QUiLoader loader;
-    QFile fileApply("../UI/cheating/apply_cheat.ui");
+    QFile fileApply(config::get_value("ui_path.apply_cheat_path", defaults::ui_path_apply_cheat).c_str());
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileApply, this);
     fileApply.close();
@@ -18,7 +19,7 @@ ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(ne
 }
 
 void ApplyCheat::init() {
-//    !DEBUG!
+//    future:
 //    selectAll = this->findChild<QPushButton *>("selectAll");
 //    unselectAll = this->findChild<QPushButton *>("unselectAll");
 //    applyButton = this->findChild<QPushButton *>("applyButton");

@@ -7,7 +7,7 @@
 #include "interfaces/screen_interface.h"
 #include <QImage>
 #include "nes_properties.h"
-#include "config_reader.h"
+#include "nes_config.h"
 
 class RemotePlayer : public QObject, public NES::ScreenInterface, public NES::KeyboardInterface {
     Q_OBJECT
@@ -31,7 +31,7 @@ public:
 
 private:
     const int send_rate = NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ /
-                          config::get_value("server.send_framerate", 20);
+                          config::get_value("server.send_rate_hz", defaults::server_send_rate);
     QByteArray image;
     QTcpSocket *socket;
     int id;

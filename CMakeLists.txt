@@ -77,14 +77,16 @@ target_sources(NADNES PUBLIC src/environment/connection_window.cpp
         src/remote_player.cpp
         include/colors_map.h
         src/colors_map.cpp
-        include/Server.h
-        src/Server.cpp
+        include/server.h
+        src/server.cpp
         include/environment/cheating/cheat_fwd.h
-        include/cheat_db_handler_files.h src/cheat_db_handler_files.cpp
+        src/cheat_db_handler_files.cpp
         include/environment/cheating/apply_cheat.h
         include/environment/cheating/search_cheat.h
         src/environment/cheating/apply_cheat.cpp
-        src/environment/cheating/search_cheat.cpp include/utils.h src/utils.cpp)
+        src/environment/cheating/search_cheat.cpp
+        src/nes_config.cpp
+        src/nes_utils.cpp)
 
 #if (SQLITE3_FOUND)
 #    message("Found sqlite3!")

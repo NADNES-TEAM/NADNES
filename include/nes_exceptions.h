@@ -4,7 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include "utils.h"
+#include "nes_utils.h"
 namespace NES {
 
 struct NesError : std::runtime_error {
@@ -37,7 +37,7 @@ struct UnknownMapperTypeError : CartridgeError {
 
 struct AddressOutOfBoundsError : CartridgeError {
     [[nodiscard]] explicit AddressOutOfBoundsError(uint16_t address, const std::string &type)
-        : CartridgeError("Address '" + Utils::to_hex_addr(address) + "' can't be mapped to " + type +
+        : CartridgeError("Address '" + utils::to_hex_addr(address) + "' can't be mapped to " + type +
                          " address space") {}
 };
 
@@ -47,13 +47,13 @@ struct WritingToRomError : CartridgeError {
 
 struct ControllerWriteError : NesError {
     [[nodiscard]] ControllerWriteError(uint16_t addr, uint8_t value)
-        : NesError(std::string("Invalid Controller write: address: ") + Utils::to_hex_addr(addr) +
-                   ", value: " + Utils::to_hex8(value)) {}
+        : NesError(std::string("Invalid Controller write: address: ") + utils::to_hex_addr(addr) +
+                   ", value: " + utils::to_hex8(value)) {}
 };
 
 struct IncorrectOpcodeError : NesError {
     [[nodiscard]] explicit IncorrectOpcodeError(uint8_t opcode)
-        : NesError("Incorrect opcode! Number: " + Utils::to_hex8(opcode)) {}
+        : NesError("Incorrect opcode! Number: " + utils::to_hex8(opcode)) {}
 };
 
 struct UninitializedController1InterfaceError : NesError {

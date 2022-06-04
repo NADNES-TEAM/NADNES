@@ -1,10 +1,7 @@
 #include "main_controller.h"
 #include <QAction>
-void MainController::free_qptr() {
-    m_local_emulator->close();
-    m_local_emulator->deleteLater();
-    m_local_emulator = nullptr;
-}
+#include "nes_utils.h"
+
 MainController::MainController() {
     make_common_connections();
     become_host();
@@ -91,14 +88,8 @@ void MainController::make_guest_connections() {
 }
 
 void MainController::close() {
-    if(m_local_emulator) {
-        m_local_emulator->close();
-        m_local_emulator->deleteLater();
-    }
-    if(m_remote_emulator) {
-        m_remote_emulator->close();
-        m_remote_emulator->deleteLater();
-    }
+    utils::free_qptr(&m_local_emulator);
+    utils::free_qptr(&m_remote_emulator);
     m_player1.close();
     m_player2.close();
 }
@@ -106,11 +97,7 @@ void MainController::close() {
 void MainController::become_host() {
     m_main_window.enable_actions(ActionRole::Host);
     m_main_window.clear();
-    if(m_remote_emulator) {
-        m_remote_emulator->close();
-        m_remote_emulator->deleteLater();
-        m_remote_emulator = nullptr;
-    }
+    utils::free_qptr(&m_remote_emulator);
     m_local_emulator = new LocalEmulator(this,
                                          m_main_window.get_screen_interface(),
                                          m_player1.get_keyboard_interface(),
@@ -121,11 +108,7 @@ void MainController::become_host() {
 void MainController::become_guest() {
     m_main_window.enable_actions(ActionRole::Guest);
     m_main_window.clear();
-    if(m_local_emulator) {
-        m_local_emulator->close();
-        m_local_emulator->deleteLater();
-        m_local_emulator = nullptr;
-    }
+    utils::free_qptr(&m_local_emulator);
     m_remote_emulator = new RemoteEmulator(this, m_main_window.get_screen_interface());
     make_guest_connections();
 }

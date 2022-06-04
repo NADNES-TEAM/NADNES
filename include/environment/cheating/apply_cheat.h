@@ -10,7 +10,7 @@ namespace NES::Cheating {
 class ApplyCheat : public QWidget {
     Q_OBJECT
 public:
-    explicit ApplyCheat(QWidget *parent, NES::Nes *nes_);
+    explicit ApplyCheat(QWidget *parent, NES::Nes *nes_, CheatDbHandler *db_handler);
     ~ApplyCheat() override = default;
     void init();
 
@@ -19,18 +19,12 @@ public slots:
     void on_ok_button(int i);
     void on_del_button(int i);
 
-public:
-//    QPushButton *selectAll{};
-//    QPushButton *unselectAll{};
-//    QPushButton *applyButton{};
+private:
     QPushButton *loadCheatsButton{};
-
     QTableWidget *cheatTable{};
     CheatDbHandler *cheatDbHandler{};
     QSignalMapper qSignalMapperButton;
     QSignalMapper qSignalMapperDelete;
-
-private:
     NES::Nes *nes{};
     std::vector<QString> names;
     std::vector<QLineEdit *> line_edit;

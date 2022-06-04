@@ -19,7 +19,7 @@ namespace NES::Cheating {
 class SearchCheat : public QWidget {
     Q_OBJECT
 public:
-    explicit SearchCheat(QWidget *parent, NES::Nes *nes);
+    explicit SearchCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler);
     ~SearchCheat() override = default;
 
     void init();
@@ -37,7 +37,7 @@ public slots:
     void fillPartOfTable();
     void debugSlot();
 
-public:
+private:
     QPushButton *newButton{};
     QPushButton *filterButton{};
     QPushButton *exportButton{};
@@ -77,4 +77,3 @@ public:
 };
 
 }  // namespace NES::Cheating
-

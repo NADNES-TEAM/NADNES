@@ -2,7 +2,7 @@
 #include <QFile>
 
 CheatDbHandler::CheatDbHandler() {
-    QFile file("db.dat");
+    QFile file(db_path);
     file.open(QIODevice::ReadOnly);
     QDataStream in(&file);
     in >> cheat_by_hash >> address_by_cheat >> name_by_cheat;
@@ -50,7 +50,7 @@ std::vector<quint64> CheatDbHandler::get_cheats(quint64 hash) {
 }
 
 void CheatDbHandler::save_data() {
-    QFile file("db.dat");
+    QFile file(db_path);
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
     out << cheat_by_hash << address_by_cheat << name_by_cheat;

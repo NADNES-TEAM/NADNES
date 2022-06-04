@@ -1,11 +1,12 @@
 #include "environment/keymap_window.h"
 #include <QtUiTools>
+#include "nes_config.h"
 
 KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
                            QMap<NES::Keys, Qt::Key> &btn_to_key_)
     : m_key_to_btn(key_to_btn_), m_btn_to_key(btn_to_key_) {
     //    setWindowTitle(title);
-    QFile file("../UI/keymap.ui");
+    QFile file(config::get_value("ui_paths.keymap_window_path", defaults::ui_path_keymap_window).c_str());
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);

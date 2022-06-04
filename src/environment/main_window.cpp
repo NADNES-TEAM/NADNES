@@ -1,6 +1,5 @@
 #include "environment/main_window.h"
 #include <QMenuBar>
-#include "nes_properties.h"
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     emit key_pressed(Qt::Key(event->key()));
@@ -41,6 +40,9 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MainWindow::refresh_screen() {
+    if(frame_count % frame_rate != 0) {
+        return;
+    }
     QSize qSize(NES::SCREEN_WIDTH * 5, NES::SCREEN_HEIGHT * 5);
     m_image_label->setPixmap(
         QPixmap::fromImage(m_screen_image.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));

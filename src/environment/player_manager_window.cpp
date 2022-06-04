@@ -1,9 +1,10 @@
 #include "environment/player_manager_window.h"
 #include <QMessageBox>
 #include <QtUiTools>
+#include "nes_config.h"
 
 PlayerManager::PlayerManager() {
-    QFile file("../UI/player_select.ui");
+    QFile file(config::get_value("ui_paths.player_select_path", defaults::ui_path_player_select).c_str());
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);
