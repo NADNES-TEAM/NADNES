@@ -1,4 +1,4 @@
-#include "environment/player_select_window.h"
+#include "environment/player_manager_window.h"
 #include <QMessageBox>
 #include <QtUiTools>
 
@@ -37,7 +37,7 @@ void PlayerManager::on_cancel_btn_clicked() {
     m_player2_check->setChecked(m_player2_enabled);
     m_player2_select->setCurrentIndex(int(m_player2_index));
     m_player1_select->setCurrentIndex(int(m_player1_index));
-    close();
+    hide();
 }
 
 void PlayerManager::add_pseudonym(int index, const QString &name) {

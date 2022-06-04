@@ -6,6 +6,7 @@ ConnectionWindow::ConnectionWindow() {
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);
+    file.close();
     QMetaObject::connectSlotsByName(this);
     setFixedSize(findChild<QWidget *>("Form")->size());
 

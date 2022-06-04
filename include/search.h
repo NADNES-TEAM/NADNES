@@ -18,6 +18,7 @@ enum class Action {
     l_num,
     leq_num
 };
+
 struct Place {
     int id{};  // 0 1 2
     static size_t rom_size;
@@ -27,6 +28,7 @@ struct Place {
     [[nodiscard]] uint8_t *get_mem() const;
     static Place RAM, ROM, RAM_AND_ROM;
 };
+
 enum class ByteCount : std::size_t { ONE = 1, TWO = 2 };
 struct ResultRaw {
     Place place{};
@@ -34,16 +36,19 @@ struct ResultRaw {
     long long old_value{}, cur_value{};
     static long long get_value(uint8_t *first, ByteCount byteCount);
 };
+
 struct Params {
     Place place{};
     ByteCount byteCount{};
     long long data_in{};
 };
+
 struct ParamsOfSearch : Params {
     bool is_initial{true};
     Action event{};
     bool check_coincidence(ResultRaw &raw) const;
 };
+
 struct ParamsOfChange : Params {
     std::size_t index{};
 };

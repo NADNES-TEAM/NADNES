@@ -6,7 +6,7 @@
 #include <QTcpServer>
 #include <QVBoxLayout>
 #include "config_reader.h"
-#include "environment/player_select_window.h"
+#include "environment/player_manager_window.h"
 #include "remote_player.h"
 
 class Server : public QDialog {

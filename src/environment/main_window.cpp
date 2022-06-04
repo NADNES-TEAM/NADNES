@@ -54,10 +54,10 @@ void MainWindow::create_menus() {
     m_nes_menu->addAction(m_mem_search_act);
 
     m_saves_menu = menuBar()->addMenu("Saves");
-    m_saves_menu->addAction(m_quicksave_act);
+    m_saves_menu->addAction(m_quick_save_act);
     m_saves_menu->addAction(m_save_to_act);
     m_saves_menu->addSeparator();
-    m_saves_menu->addAction(m_quickload_act);
+    m_saves_menu->addAction(m_quick_load_act);
     m_saves_menu->addAction(m_load_from_act);
 
     m_settings_menu = menuBar()->addMenu("Controls");
@@ -99,20 +99,20 @@ void MainWindow::create_actions() {
     m_save_to_act->setStatusTip("Save game to selected file");
     m_all_actions.emplace_back(m_save_to_act, ActionRole::Host);
 
-    m_quicksave_act = new QAction("Quicksave", this);
-    m_quicksave_act->setShortcut(QKeySequence("Ctrl+S"));
-    m_quicksave_act->setStatusTip("Save game to last selected file");
-    m_all_actions.emplace_back(m_quicksave_act, ActionRole::Host);
+    m_quick_save_act = new QAction("Quicksave", this);
+    m_quick_save_act->setShortcut(QKeySequence("Ctrl+S"));
+    m_quick_save_act->setStatusTip("Save game to last selected file");
+    m_all_actions.emplace_back(m_quick_save_act, ActionRole::Host);
 
     m_load_from_act = new QAction("Load game from...", this);
     m_load_from_act->setShortcut(QKeySequence("Ctrl+Shift+L"));
     m_load_from_act->setStatusTip("Load game from selected save file");
     m_all_actions.emplace_back(m_load_from_act, ActionRole::Host);
 
-    m_quickload_act = new QAction("Quickload", this);
-    m_quickload_act->setShortcut(QKeySequence("Ctrl+L"));
-    m_quickload_act->setStatusTip("Load game from last selected save file");
-    m_all_actions.emplace_back(m_quickload_act, ActionRole::Host);
+    m_quick_load_act = new QAction("Quickload", this);
+    m_quick_load_act->setShortcut(QKeySequence("Ctrl+L"));
+    m_quick_load_act->setStatusTip("Load game from last selected save file");
+    m_all_actions.emplace_back(m_quick_load_act, ActionRole::Host);
 
     m_open_pl1_keymap_act = new QAction("Player 1...", this);
     m_open_pl1_keymap_act->setShortcut(QKeySequence("Ctrl+1"));
@@ -184,8 +184,5 @@ void MainWindow::enable_actions(ActionRole role) const {
 
 void MainWindow::clear() {
     m_screen_image.fill(QColor("black"));
-    QSize qSize(NES::SCREEN_WIDTH * 5, NES::SCREEN_HEIGHT * 5);
-    m_image_label->setPixmap(
-        QPixmap::fromImage(m_screen_image.scaled(qSize, Qt::AspectRatioMode::KeepAspectRatio)));
-    m_image_label->update();
+    refresh_screen();
 }

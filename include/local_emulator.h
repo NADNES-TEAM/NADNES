@@ -5,9 +5,9 @@
 #include <QTimer>
 #include <QWidget>
 #include "Server.h"
-#include "cheat_db_handler2.h"
+#include "cheat_db_handler_files.h"
 #include "environment/cheating/cheat_window.h"
-#include "environment/player_select_window.h"
+#include "environment/player_manager_window.h"
 #include "nes.h"
 
 class LocalEmulator : public QObject {
@@ -28,8 +28,8 @@ public slots:
     void pause_nes();
     void save_game_to();
     void load_game_from();
-    void quicksave();
-    void quickload();
+    void quick_save();
+    void quick_load();
     void show_player_select();
     void run_server();
     void create_search_window();

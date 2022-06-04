@@ -1,6 +1,6 @@
 #include "colors_map.h"
 
-const std::vector<NES::Color> colors = {
+const std::vector<NES::Color> colors_to_bytes = {
     {84, 84, 84},    {0, 30, 116},    {8, 16, 144},    {48, 0, 136},    {68, 0, 100},
     {92, 0, 48},     {84, 4, 0},      {60, 24, 0},     {32, 42, 0},     {8, 58, 0},
     {0, 64, 0},      {0, 60, 0},      {0, 50, 60},     {0, 0, 0},       {0, 0, 0},
@@ -15,10 +15,10 @@ const std::vector<NES::Color> colors = {
     {228, 196, 144}, {204, 210, 120}, {180, 222, 120}, {168, 226, 144}, {152, 226, 180},
     {160, 214, 228}, {160, 162, 160}, {0, 0, 0},       {0, 0, 0}};
 
-const std::map< NES::Color, uint8_t> bytes = []() {
+const std::map< NES::Color, uint8_t> bytes_to_colors = []() {
     std::map< NES::Color, uint8_t> answer;
-    for (int i = int(colors.size() - 1); i >= 0; --i) {
-        answer[colors[i]] = uint8_t(i);
+    for (int i = int(colors_to_bytes.size() - 1); i >= 0; --i) {
+        answer[colors_to_bytes[i]] = uint8_t(i);
     }
     return answer;
 }();

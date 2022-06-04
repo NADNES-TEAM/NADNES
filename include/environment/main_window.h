@@ -8,7 +8,7 @@
 #include <QtGui>
 #include "interfaces/screen_interface.h"
 
-enum ActionRole : int { Host = 1 << 0, Guest = 1 << 1, None = 1 << 2 };
+enum ActionRole : int { Host = 1, Guest = 2, None = 4 }; //degrees of 2
 
 class MainWindow : public QMainWindow, public NES::ScreenInterface {
     Q_OBJECT
@@ -43,8 +43,8 @@ public:
 
     QAction *m_save_to_act;
     QAction *m_load_from_act;
-    QAction *m_quickload_act;
-    QAction *m_quicksave_act;
+    QAction *m_quick_load_act;
+    QAction *m_quick_save_act;
 
     QAction *m_open_pl1_keymap_act;
     QAction *m_open_pl2_keymap_act;

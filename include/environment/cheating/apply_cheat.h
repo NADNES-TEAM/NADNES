@@ -4,7 +4,7 @@
 #include <QTableWidget>
 #include <QWidget>
 #include "apply_cheat.h"
-#include "cheat_db_handler2.h"
+#include "cheat_db_handler_files.h"
 
 namespace NES::Cheating {
 class ApplyCheat : public QWidget {
@@ -33,7 +33,7 @@ public:
 private:
     NES::Nes *nes{};
     std::vector<QString> names;
-    std::vector<QLineEdit *> setTo;
+    std::vector<QLineEdit *> line_edit;
     std::vector<QString> labels;
     std::vector<quint64> cheats;
 };

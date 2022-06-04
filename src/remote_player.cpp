@@ -1,7 +1,7 @@
 #include "remote_player.h"
 #include "colors_map.h"
 
-RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_): QObject(parent), btn(0) {
+RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, int id_): QObject(parent), btn(0) {
     socket = socket_;
     id = id_;
     image.resize((NES::SCREEN_HEIGHT-1)*NES::SCREEN_WIDTH);
@@ -11,7 +11,7 @@ RemotePlayer::RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id_): QO
 
 void RemotePlayer::set_pixel(int row, int column, NES::Color color) {
     if (0 < row && row < NES::SCREEN_HEIGHT && 0 < column && column <= NES::SCREEN_WIDTH) {
-        image[(row - 1) * NES::SCREEN_WIDTH + column - 1] = bytes.at(color);
+        image[(row - 1) * NES::SCREEN_WIDTH + column - 1] = bytes_to_colors.at(color);
     }
 }
 
@@ -36,7 +36,6 @@ void RemotePlayer::refresh_screen() {
         socket->flush();
         socket->write(image);
     }
-//socket->write(image);
 }
 
 NES::ScreenInterface *RemotePlayer::get_screen() {

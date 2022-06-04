@@ -12,7 +12,6 @@ struct Gamepad : public QObject, NES::KeyboardInterface {
 
 public slots:
     void key_pressed(Qt::Key key);
-
     void key_released(Qt::Key key);
 
     void show_editor() const;
@@ -22,13 +21,9 @@ signals:
 
 public:
     ~Gamepad() override = default;
-
     void close();
-
     [[nodiscard]] uint8_t get_pressed_keys() const override;
-
     NES::KeyboardInterface *get_keyboard_interface();
-
     void load_player(NES::Players new_player);
 
 private:

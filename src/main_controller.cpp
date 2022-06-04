@@ -1,6 +1,10 @@
 #include "main_controller.h"
 #include <QAction>
-
+void MainController::free_qptr() {
+    m_local_emulator->close();
+    m_local_emulator->deleteLater();
+    m_local_emulator = nullptr;
+}
 MainController::MainController() {
     make_common_connections();
     become_host();
@@ -54,18 +58,18 @@ void MainController::make_host_connections() {
             &QAction::triggered,
             m_local_emulator,
             &LocalEmulator::save_game_to);
-    connect(m_main_window.m_quicksave_act,
+    connect(m_main_window.m_quick_save_act,
             &QAction::triggered,
             m_local_emulator,
-            &LocalEmulator::quicksave);
+            &LocalEmulator::quick_save);
     connect(m_main_window.m_load_from_act,
             &QAction::triggered,
             m_local_emulator,
             &LocalEmulator::load_game_from);
-    connect(m_main_window.m_quickload_act,
+    connect(m_main_window.m_quick_load_act,
             &QAction::triggered,
             m_local_emulator,
-            &LocalEmulator::quickload);
+            &LocalEmulator::quick_load);
     connect(m_main_window.m_open_player_select_act,
             &QAction::triggered,
             m_local_emulator,

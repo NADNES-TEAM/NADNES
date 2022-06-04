@@ -1,7 +1,7 @@
-#include "cheat_db_handler.h"
 #include <QString>
 #include <iostream>
 #include <string>
+#include "cheat_db_handler_sqlite.h"
 
 int CheatDbHandler::return_value;
 

@@ -22,7 +22,7 @@ public slots:
 public:
     NES::ScreenInterface * get_screen();
     NES::KeyboardInterface * get_keyboard();
-    RemotePlayer(QObject *parent, QTcpSocket *socket_, size_t id);
+    RemotePlayer(QObject *parent, QTcpSocket *socket_, int id);
     void set_pixel(int row, int column, NES::Color color) override;
     uint8_t get_pressed_keys() const override;
     void refresh_screen() override;
@@ -34,7 +34,7 @@ private:
                           config::get_value("server.send_framerate", 20);
     QByteArray image;
     QTcpSocket *socket;
-    size_t id;
+    int id;
     uint8_t btn;
     uint64_t frame_count = 0;
 };

@@ -5,8 +5,6 @@ namespace NES {
 
 struct UnromMapper : AbstractMapper {
     Mirroring mirror_type;
-    uint8_t PRG_ROM_size;
-    uint8_t CHR_ROM_size;
     uint8_t low_bank_select = 0;
     uint8_t high_bank_select;
 

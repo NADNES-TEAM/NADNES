@@ -36,7 +36,7 @@ void RemoteEmulator::data_arrived() {
         QByteArray data = socket->read(size_of_screen);
         for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {
             for (int j = 0; j < NES::SCREEN_WIDTH; j++) {
-                screen->set_pixel(i + 1, j + 1, colors[data[i * NES::SCREEN_WIDTH + j]]);
+                screen->set_pixel(i + 1, j + 1, colors_to_bytes[data[i * NES::SCREEN_WIDTH + j]]);
             }
         }
     }

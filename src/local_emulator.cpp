@@ -5,7 +5,7 @@
 #include <iostream>
 #include "environment/cheating/apply_cheat.h"
 #include "environment/cheating/search_cheat.h"
-#include "environment/player_select_window.h"
+#include "environment/player_manager_window.h"
 #include "nes_properties.h"
 
 void handle_exception(std::exception &e) {
@@ -64,7 +64,7 @@ LocalEmulator::LocalEmulator(QObject *parent,
     }
     m_last_save_path = tmp;
     if (!m_last_save_path.isEmpty()) {
-        quickload();
+        quick_load();
     }
 }
 
@@ -141,7 +141,7 @@ void LocalEmulator::save_game_to() {
     m_nes->save(save_path.toStdString());
 }
 
-void LocalEmulator::quicksave() {
+void LocalEmulator::quick_save() {
     if (!m_nes) {
         return;
     }
@@ -166,7 +166,7 @@ void LocalEmulator::load_game_from() {
     m_nes->load(load_path.toStdString());
 }
 
-void LocalEmulator::quickload() {
+void LocalEmulator::quick_load() {
     if (!m_nes) {
         return;
     }

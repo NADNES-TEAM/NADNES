@@ -9,6 +9,7 @@ KeymapWindow::KeymapWindow(QMap<Qt::Key, NES::Keys> &key_to_btn_,
     file.open(QIODevice::ReadOnly);
     QUiLoader loader;
     loader.load(&file, this);
+    file.close();
     QMetaObject::connectSlotsByName(this);
     setFixedSize(findChild<QWidget *>("Form")->size());
 

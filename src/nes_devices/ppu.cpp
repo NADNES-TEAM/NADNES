@@ -272,7 +272,7 @@ bool Ppu::tick() {
             (x_pos >= (1 + 8 * !left_8_enable)) && (x_pos <= HOR_VISIBLE_END) && (x_pos != 255);
     }
 
-    screen->set_pixel(y_pos, x_pos, colors[PPU_read(0x3F00 + cur_palette + cur_color)]);
+    screen->set_pixel(y_pos, x_pos, colors_to_bytes[PPU_read(0x3F00 + cur_palette + cur_color)]);
 
     if (++x_pos >= 341) {
         x_pos = 0;

@@ -23,31 +23,31 @@ SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(
 void SearchCheat::init() {
     auto search_cheat = this;
 
-    search_cheat->newButton = search_cheat->findChild<QPushButton *>("newButton");
-    search_cheat->filterButton = search_cheat->findChild<QPushButton *>("filterButton");
-    search_cheat->exportButton = search_cheat->findChild<QPushButton *>("exportButton");
-    search_cheat->hexRadio = search_cheat->findChild<QRadioButton *>("hexRadio");
-    search_cheat->decRadio = search_cheat->findChild<QRadioButton *>("decRadio");
-    search_cheat->twoBytes = search_cheat->findChild<QRadioButton *>("twoBytes");
-    search_cheat->oneByte = search_cheat->findChild<QRadioButton *>("oneByte");
-    search_cheat->eqRadio = search_cheat->findChild<QRadioButton *>("eqRadio");
-    search_cheat->all = search_cheat->findChild<QRadioButton *>("all");
-    search_cheat->leRadio = search_cheat->findChild<QRadioButton *>("leRadio");
-    search_cheat->leeqRadio = search_cheat->findChild<QRadioButton *>("leeqRadio");
-    search_cheat->grRadio = search_cheat->findChild<QRadioButton *>("grRadio");
-    search_cheat->greqRadio = search_cheat->findChild<QRadioButton *>("greqRadio");
-    search_cheat->decreased = search_cheat->findChild<QRadioButton *>("decreased");
-    search_cheat->increased = search_cheat->findChild<QRadioButton *>("increased");
-    search_cheat->decreased_or_save = search_cheat->findChild<QRadioButton *>("decreased_save");
-    search_cheat->increased_or_save = search_cheat->findChild<QRadioButton *>("increased_save");
-    search_cheat->save = search_cheat->findChild<QRadioButton *>("save");
-    search_cheat->changed = search_cheat->findChild<QRadioButton *>("changed");
-    search_cheat->checkRam = search_cheat->findChild<QCheckBox *>("checkRAM");
-    search_cheat->checkRom = search_cheat->findChild<QCheckBox *>("checkROM");
-    search_cheat->tableWidget = search_cheat->findChild<QTableWidget *>("tableWidget");
-    search_cheat->compareWith = search_cheat->findChild<QLineEdit *>("compareWith");
+    newButton = findChild<QPushButton *>("newButton");
+    filterButton = findChild<QPushButton *>("filterButton");
+    exportButton = findChild<QPushButton *>("exportButton");
+    hexRadio = findChild<QRadioButton *>("hexRadio");
+    decRadio = findChild<QRadioButton *>("decRadio");
+    twoBytes = findChild<QRadioButton *>("twoBytes");
+    oneByte = findChild<QRadioButton *>("oneByte");
+    eqRadio = findChild<QRadioButton *>("eqRadio");
+    all = findChild<QRadioButton *>("all");
+    leRadio = findChild<QRadioButton *>("leRadio");
+    leeqRadio = findChild<QRadioButton *>("leeqRadio");
+    grRadio = findChild<QRadioButton *>("grRadio");
+    greqRadio = findChild<QRadioButton *>("greqRadio");
+    decreased = findChild<QRadioButton *>("decreased");
+    increased = findChild<QRadioButton *>("increased");
+    decreased_or_save = findChild<QRadioButton *>("decreased_save");
+    increased_or_save = findChild<QRadioButton *>("increased_save");
+    save = findChild<QRadioButton *>("save");
+    changed = findChild<QRadioButton *>("changed");
+    checkRam = findChild<QCheckBox *>("checkRAM");
+    checkRom = findChild<QCheckBox *>("checkROM");
+    tableWidget = findChild<QTableWidget *>("tableWidget");
+    compareWith = findChild<QLineEdit *>("compareWith");
 
-    //    search_cheat->tableWidget->
+    //    tableWidget->
 
     connect(newButton, &QPushButton::clicked, this, &SearchCheat::onNewButtonClicked);
     connect(filterButton, &QPushButton::clicked, this, &SearchCheat::onFilterButtonClicked);
@@ -75,7 +75,7 @@ void SearchCheat::onNewButtonClicked() {
     fillTable();
 }
 
-void SearchCheat::some_slot() {
+void SearchCheat::debugSlot() {
     std::cout << "cout" << std::endl;
     qDebug() << "qDebug\n";
 }
@@ -139,7 +139,7 @@ ParamsOfSearch SearchCheat::getParams() const {
 void SearchCheat::fillTable() {
     result_printed = 0;
     tableWidget->clear();
-    fill_part_of_table();
+    fillPartOfTable();
 }
 
 void SearchCheat::onExportButtonClicked() {
@@ -179,6 +179,7 @@ void SearchCheat::onExportButtonClicked() {
 
 void SearchCheat::onOkButtonClicked() {
     cheatDbHandler->clear_name(defaultSaveEdit->text());
+    //!DEBUG
     //    cheatDbHandler->clear_name(name);
     auto hash = nes->get_hash();
     //    qDebug() << "hash: " << hash;
@@ -206,21 +207,21 @@ void SearchCheat::onCellChanged(int row, int column) {
         qDebug() << column << "\n";
         return;
     }
-    ParamsOfChange paramsOfChange;
-    paramsOfChange.place.id = result[row].place.id;
+    ParamsOfChange params_of_change;
+    params_of_change.place.id = result[row].place.id;
     // TODO save params
-    paramsOfChange.byteCount = ByteCount{size_t(oneByte->isChecked() ? 1 : 2)};
+    params_of_change.byteCount = ByteCount{size_t(oneByte->isChecked() ? 1 : 2)};
     auto s = tableWidget->itemAt(row, column)->text().toStdString();
     if (hexRadio->isChecked()) {
         std::reverse(s.begin(), s.end());
-        paramsOfChange.data_in = std::stoi(s, nullptr, 16);
+        params_of_change.data_in = std::stoi(s, nullptr, 16);
     } else {
-        paramsOfChange.data_in = std::stoi(s);
+        params_of_change.data_in = std::stoi(s);
     }
     result[row].old_value = result[row].cur_value;
-    result[row].cur_value = paramsOfChange.data_in;
-    paramsOfChange.index = result[row].address;
-    Nes::change_memory_value(paramsOfChange);
+    result[row].cur_value = params_of_change.data_in;
+    params_of_change.index = result[row].address;
+    Nes::change_memory_value(params_of_change);
 }
 
 void SearchCheat::handleButton(int id) {
@@ -228,8 +229,8 @@ void SearchCheat::handleButton(int id) {
     fillTable();
 }
 
-void SearchCheat::fill_part_of_table() {
-    const int rows = 500;
+void SearchCheat::fillPartOfTable() {
+    constexpr int rows = 500;
     disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 
     if (tableWidget->rowCount() > 1) {
@@ -267,7 +268,7 @@ void SearchCheat::fill_part_of_table() {
         tableWidget->setRowCount(finish + 1);
         auto btn = new QPushButton(tr("Add/%1").arg(result.size()));
         tableWidget->setCellWidget(finish, 0, btn);
-        connect(btn, &QPushButton::clicked, this, &SearchCheat::fill_part_of_table);
+        connect(btn, &QPushButton::clicked, this, &SearchCheat::fillPartOfTable);
     }
 
     connect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);

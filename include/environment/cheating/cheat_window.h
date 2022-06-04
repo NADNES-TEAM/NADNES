@@ -11,8 +11,7 @@ class CheatWindow : public QWidget {
 public:
     explicit CheatWindow(QWidget *parent, Nes *nes);
     ~CheatWindow() override;
-public slots:
-
+    
 private:
     QTabWidget *tabWidget{};
     SearchCheat *search_cheat{};

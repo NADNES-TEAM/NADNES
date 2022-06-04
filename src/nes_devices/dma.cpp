@@ -38,11 +38,11 @@ void Dma::reset() {
 }
 
 void Dma::save(std::ostream &file) {
-    file.write(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
+    file.write(reinterpret_cast<char *>(this), sizeof(Dma) - sizeof(bus));
 }
 
 void Dma::load(std::istream &file) {
-    file.read(reinterpret_cast<char *>(this), sizeof(Dma) - 8);
+    file.read(reinterpret_cast<char *>(this), sizeof(Dma) - sizeof(bus));
 }
 
 }  // namespace NES

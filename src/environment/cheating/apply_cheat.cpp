@@ -18,18 +18,18 @@ ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes) : QWidget(parent), nes(ne
 }
 
 void ApplyCheat::init() {
-    auto apply_cheat = this;
-//    apply_cheat->selectAll = this->findChild<QPushButton *>("selectAll");
-//    apply_cheat->unselectAll = this->findChild<QPushButton *>("unselectAll");
-//    apply_cheat->applyButton = this->findChild<QPushButton *>("applyButton");
-    apply_cheat->cheatTable = this->findChild<QTableWidget *>("cheatTable");
-    apply_cheat->loadCheatsButton = this->findChild<QPushButton *>("loadCheats");
+//    !DEBUG!
+//    selectAll = this->findChild<QPushButton *>("selectAll");
+//    unselectAll = this->findChild<QPushButton *>("unselectAll");
+//    applyButton = this->findChild<QPushButton *>("applyButton");
+    cheatTable = this->findChild<QTableWidget *>("cheatTable");
+    loadCheatsButton = this->findChild<QPushButton *>("loadCheats");
     connect(loadCheatsButton, SIGNAL(clicked()), this, SLOT(fill_table()));
     fill_table();
 }
 
 void ApplyCheat::fill_table() {
-    setTo.clear();
+    line_edit.clear();
     labels.clear();
     cheatTable->clear();
     uint64_t hash = nes->get_hash();
@@ -42,7 +42,7 @@ void ApplyCheat::fill_table() {
         labels.push_back(it);
 
         auto qLineEdit = new QLineEdit();
-        setTo.push_back(qLineEdit);
+        line_edit.push_back(qLineEdit);
         cheatTable->setCellWidget(i, 1, qLineEdit);
 
         auto ok_button = new QPushButton(tr("Set"));
@@ -60,14 +60,14 @@ void ApplyCheat::fill_table() {
 }
 
 void ApplyCheat::on_ok_button(int j) {
-    auto value = setTo[j]->text();
+    auto value = line_edit[j]->text();
     auto addr = cheatDbHandler->get_addresses(cheats[j]);
     ParamsOfChange paramsOfChange;
     for (auto i : addr) {
         paramsOfChange.index = (i >> 18);
         paramsOfChange.place = (((i >> 1) & 1) ? Place::ROM : Place::RAM);
         paramsOfChange.byteCount = ((i & 1) ? ByteCount::TWO : ByteCount::ONE);
-        paramsOfChange.data_in = setTo[j]->text().toLong();
+        paramsOfChange.data_in = line_edit[j]->text().toLong();
         nes->change_memory_value(paramsOfChange);
     }
 }

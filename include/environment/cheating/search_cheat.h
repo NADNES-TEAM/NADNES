@@ -8,9 +8,9 @@
 #include <QRadioButton>
 #include <QSignalMapper>
 #include <QTableWidget>
-#include <QWidget>
 #include <QTimer>
-#include "cheat_db_handler2.h"
+#include <QWidget>
+#include "cheat_db_handler_files.h"
 #include "nes.h"
 #include "search.h"
 
@@ -33,11 +33,9 @@ public slots:
     void onOkButtonClicked();
     void closeDialog() const;
     void onCellChanged(int row, int column);
-    void some_slot();
     void handleButton(int id);
-
-public slots:
-    void fill_part_of_table();
+    void fillPartOfTable();
+    void debugSlot();
 
 public:
     QPushButton *newButton{};

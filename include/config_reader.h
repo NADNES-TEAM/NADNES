@@ -2,10 +2,9 @@
 
 #include <boost/program_options.hpp>
 #include <string>
-#include <ios>
 #include <fstream>
-
-const char *const CONFIG_FILE = "../nadnes.conf";
+#include <string>
+const std::string CONFIG_FILE = "../nadnes.conf";
 
 namespace {
 namespace po = boost::program_options;
@@ -27,7 +26,7 @@ po::variables_map read_config() {
 
     po::variables_map conf_map;
     auto file = std::ofstream(CONFIG_FILE, std::ios_base::app);
-    po::store(po::parse_config_file(CONFIG_FILE, all_options), conf_map);
+    po::store(po::parse_config_file(CONFIG_FILE.c_str(), all_options), conf_map);
     po::notify(conf_map);
     return conf_map;
 };

@@ -272,7 +272,7 @@
             </sizepolicy>
            </property>
            <property name="title">
-            <string>Search bytes</string>
+            <string>Search bytes_to_colors</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>

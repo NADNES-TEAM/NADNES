@@ -43,7 +43,7 @@ struct CpuData {
 
     // DMA
 
-    bool dma_is_active = false;
+    bool dma_is_active{false};
 
     // Additional variables
 

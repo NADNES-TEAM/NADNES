@@ -8,12 +8,12 @@
 namespace NES {
 
 class Dma {
-    uint8_t start_address = 0;
-    int counter = 0;
-    bool activated = false;
-    bool started = false;
-    uint8_t transfer_data = 0;
-    Bus *bus = nullptr;
+    uint8_t start_address{0};
+    int counter{0};
+    bool activated{false};
+    bool started{false};
+    uint8_t transfer_data{0};
+    Bus *bus{nullptr};
 
 public:
     void connect(Bus *bus_, ConnectToken) noexcept;

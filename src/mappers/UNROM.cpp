@@ -3,7 +3,7 @@
 namespace NES {
 
 UnromMapper::UnromMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
-    : mirror_type(mirror_type_), PRG_ROM_size(prg), CHR_ROM_size(chr), high_bank_select(prg - 1) {}
+    : mirror_type(mirror_type_), high_bank_select(prg - 1) {}
 
 void UnromMapper::map_write_from_CPU(uint16_t address, uint8_t data) {
     if (address < 0x8000) {

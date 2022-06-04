@@ -39,10 +39,9 @@ private slots:
     void on_ok_btn_clicked();
 
 private:
-//    std::mutex m_mutex;
-    int m_player1_id = 0;
-    int m_player2_id = 1;
-    bool m_player2_enabled = false;
+    int m_player1_id{0};
+    int m_player2_id{1};
+    bool m_player2_enabled{false};
     QComboBox *m_player1_select;
     QComboBox *m_player2_select;
     QCheckBox *m_player2_check;

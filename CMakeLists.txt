@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
 include_directories(include/mappers)
-include_directories(uis)
 
 find_package(Qt6 COMPONENTS
         Core
@@ -15,7 +14,6 @@ find_package(Qt6 COMPONENTS
         UiTools
         Network
         REQUIRED)
-find_package(SQLite3)
 find_package(Boost COMPONENTS program_options REQUIRED)
 
 add_executable(NADNES
@@ -25,8 +23,8 @@ add_executable(NADNES
         include/remote_player.h
         src/gamepad.cpp
         include/gamepad.h
-        include/environment/player_select_window.h
-        src/environment/player_select_window.cpp
+        include/environment/player_manager_window.h
+        src/environment/player_manager_window.cpp
         include/main_controller.h
         include/environment/keymap_window.h
         src/environment/keymap_window.cpp
@@ -57,11 +55,11 @@ add_executable(NADNES
         include/Server.h
         src/Server.cpp
         include/environment/cheating/cheat_fwd.h
-        include/cheat_db_handler2.h src/cheat_db_handler2.cpp
+        include/cheat_db_handler_files.h src/cheat_db_handler_files.cpp
         include/environment/cheating/apply_cheat.h
         include/environment/cheating/search_cheat.h
         src/environment/cheating/apply_cheat.cpp
-        src/environment/cheating/search_cheat.cpp)
+        src/environment/cheating/search_cheat.cpp include/utils.h src/utils.cpp)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")

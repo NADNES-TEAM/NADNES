@@ -4,5 +4,5 @@
 #include <vector>
 #include <map>
 
-extern const std::vector<NES::Color> colors;
-extern const std::map<NES::Color, uint8_t> bytes;
+extern const std::vector<NES::Color> colors_to_bytes;
+extern const std::map<NES::Color, uint8_t> bytes_to_colors;
