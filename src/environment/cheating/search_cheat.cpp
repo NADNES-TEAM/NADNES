@@ -14,7 +14,7 @@ namespace NES::Cheating {
 SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler) : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
     QUiLoader loader;
 
-    QFile fileSearch(config::get_value("ui_paths.search_cheat_path", defaults::ui_path_search_cheat).c_str());
+    QFile fileSearch(Config::get_value().ui_path_search_cheat.c_str());
     fileSearch.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileSearch, this);
     fileSearch.close();
@@ -147,7 +147,7 @@ void SearchCheat::onExportButtonClicked() {
     if (!nes) {
         return;
     }
-    QFile defaultSaveFile(config::get_value("ui_path.save_window_path", defaults::ui_path_save_cheat).c_str());
+    QFile defaultSaveFile(Config::get_value().ui_path_save_cheat.c_str());
     QUiLoader qUiLoader;
     defaultSaveFile.open(QIODevice::ReadOnly | QIODevice::Text);
     save_default = new QWidget();
@@ -231,7 +231,7 @@ void SearchCheat::handleButton(int id) {
 }
 
 void SearchCheat::fillPartOfTable() {
-    int rows = config::get_value("cheats.rows_count", defaults::cheats_rows_count);
+    int rows = Config::get_value().cheats_rows_count;
     disconnect(tableWidget, &QTableWidget::cellChanged, this, &SearchCheat::onCellChanged);
 
     if (tableWidget->rowCount() > 1) {

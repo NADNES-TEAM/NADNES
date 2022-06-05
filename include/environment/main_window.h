@@ -78,7 +78,6 @@ private:
 
     const int frame_rate =
         std::max(1,
-                 NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ /
-                     config::get_value("emulator.render_rate_hz", defaults::emulator_render_rate));
+                 NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ / Config::get_value().emulator_render_rate);
     uint64_t frame_count = 0;
 };

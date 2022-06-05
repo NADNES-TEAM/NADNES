@@ -72,8 +72,8 @@ void Server::init_server() {
     nextId = START_ID;
     tcpServer = new QTcpServer(this);
     make_connections();
-    QHostAddress address(config::get_value("server.ip", QString(defaults::server_ip.c_str())));
-    auto port = config::get_value("server.port", defaults::server_port);
+    QHostAddress address(Config::get_value().server_ip.c_str());
+    auto port = Config::get_value().server_port;
     if (!tcpServer->listen(address, port)) {
         QMessageBox::critical(this,
                               tr("Server error"),
@@ -83,7 +83,6 @@ void Server::init_server() {
     }
     if (address.isEqual(QHostAddress::Any)) {
         auto ipAddressesList = QNetworkInterface::allAddresses();
-        // use the first non-localhost IPv4 address
         for (const auto &i : ipAddressesList) {
             if (i != QHostAddress::LocalHost && i.toIPv4Address()) {
                 addressList->addItem(i.toString());

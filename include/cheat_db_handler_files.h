@@ -25,5 +25,5 @@ public:
 private:
     QMultiMap<quint64, quint64> cheat_by_hash, address_by_cheat;
     QMap<quint64, QString> name_by_cheat;
-    QString db_path = config::get_value("cheats.db_path", defaults::cheats_db_path).c_str();
+    QString db_path = Config::get_value().cheats_db_path.c_str();
 };

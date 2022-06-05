@@ -7,12 +7,12 @@
 
 RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent),timer(this) {
     socket = new QTcpSocket(this);
-    int port = config::get_value("client.port", defaults::client_port);
+    int port = Config::get_value().client_port;
     if(port) {
         socket->bind(port);
     }
     screen = screen_;
-    auto update_interval = config::get_value("client.force_update_interval_ms", defaults::client_update_interval);
+    auto update_interval = Config::get_value().client_update_interval;
     if(update_interval > -1) {
         timer.setInterval(std::chrono::milliseconds(update_interval));
         timer.callOnTimeout([this](){this->data_arrived();});

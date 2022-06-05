@@ -15,7 +15,7 @@ Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
     apply_cheat->init();
 
     QUiLoader loader;
-    QFile fileMain(config::get_value("ui_paths.cheat_window_path", defaults::ui_path_cheat_window).c_str());  // just uis/... doesn't work
+    QFile fileMain(Config::get_value().ui_path_cheat_window.c_str());  // just uis/... doesn't work
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileMain, this);
     fileMain.close();
@@ -23,8 +23,8 @@ Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
     setFixedSize(findChild<QWidget*>("Form")->size());
 
     tabWidget->clear();
-    tabWidget->addTab(search_cheat, "searchTab");
-    tabWidget->addTab(apply_cheat, "applyTab");
+    tabWidget->addTab(search_cheat, "Search");
+    tabWidget->addTab(apply_cheat, "Apply");
 }
 
 Cheating::CheatWindow::~CheatWindow() {

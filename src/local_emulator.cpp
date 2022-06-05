@@ -37,7 +37,7 @@ LocalEmulator::LocalEmulator(QObject *parent,
                              NES::KeyboardInterface *gp1,
                              NES::KeyboardInterface *gp2)
     : QObject(parent), m_clock(this) {
-    int clock_rate = config::get_value("emulator.main_clock_rate_hz", NES::PPU_VERTICAL_FRAME_RATE_FREQ_HZ);
+    int clock_rate = Config::get_value().emulator_clock_rate;
     m_clock.setInterval(std::chrono::milliseconds(lround(1000.0 / clock_rate)));
 
     m_player_manager = new PlayerManager();
@@ -96,10 +96,7 @@ void LocalEmulator::load_rom(QString path) {
         m_clock.callOnTimeout([&]() {
             try {
                 this->m_nes->tick();
-            }catch (NES::IncorrectOpcodeError &e){
-                return;
-            }
-            catch (NES::NesError &e) {
+            } catch (NES::IncorrectOpcodeError &e) { return; } catch (NES::NesError &e) {
                 handle_exception(e);
             }
         });
@@ -133,8 +130,10 @@ void LocalEmulator::save_game_to() {
         return;
     }
     PauseHolder ph(m_clock);
-    QString save_path =
-        QFileDialog::getSaveFileName(nullptr, "Select save file", "", "NADNES saves (*.save)");
+    QString save_path = QFileDialog::getSaveFileName(nullptr,
+                                                     "Select save file",
+                                                     Config::get_value().saves_dir.c_str(),
+                                                     "NADNES saves (*.save)");
     if (save_path.isEmpty()) {
         return;
     }
@@ -158,8 +157,10 @@ void LocalEmulator::load_game_from() {
         return;
     }
     PauseHolder ph(m_clock);
-    QString load_path =
-        QFileDialog::getOpenFileName(nullptr, "Select save file", "", "NADNES saves (*.save)");
+    QString load_path = QFileDialog::getOpenFileName(nullptr,
+                                                     "Select save file",
+                                                     Config::get_value().saves_dir.c_str(),
+                                                     "NADNES saves (*.save)");
     if (load_path.isEmpty()) {
         return;
     }
@@ -194,7 +195,6 @@ void LocalEmulator::show_player_select() {
 void LocalEmulator::run_server() {
     QTimer::singleShot(0, m_server, SLOT(show()));
 }
-
 
 void LocalEmulator::create_search_window() {
     if (m_nes == nullptr) {

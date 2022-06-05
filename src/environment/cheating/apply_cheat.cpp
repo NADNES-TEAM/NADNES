@@ -9,7 +9,7 @@ namespace NES::Cheating {
 
 ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler) : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
     QUiLoader loader;
-    QFile fileApply(config::get_value("ui_path.apply_cheat_path", defaults::ui_path_apply_cheat).c_str());
+    QFile fileApply(Config::get_value().ui_path_apply_cheat.c_str());
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileApply, this);
     fileApply.close();
