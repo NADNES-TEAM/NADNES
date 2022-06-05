@@ -27,7 +27,8 @@ quint64 CheatDbHandler::add_name(const QString &name) {
 }
 std::vector<QString> CheatDbHandler::get_names(quint64 hash) {
     std::vector<QString> ans;
-    for (auto it = cheat_by_hash.lowerBound(hash); it != cheat_by_hash.end() && it.key() == hash; it++) {
+    for (auto it = cheat_by_hash.lowerBound(hash); it != cheat_by_hash.end() && it.key() == hash;
+         it++) {
         ans.push_back(name_by_cheat[it.value()]);
     }
     return ans;
@@ -35,7 +36,9 @@ std::vector<QString> CheatDbHandler::get_names(quint64 hash) {
 
 std::vector<quint64> CheatDbHandler::get_addresses(quint64 cheat) {
     std::vector<quint64> ans;
-    for (auto it = address_by_cheat.lowerBound(cheat); it != address_by_cheat.end() && it.key() == cheat; ++it) {
+    for (auto it = address_by_cheat.lowerBound(cheat);
+         it != address_by_cheat.end() && it.key() == cheat;
+         ++it) {
         ans.push_back(it.value());
     }
     return ans;
@@ -43,7 +46,8 @@ std::vector<quint64> CheatDbHandler::get_addresses(quint64 cheat) {
 
 std::vector<quint64> CheatDbHandler::get_cheats(quint64 hash) {
     std::vector<quint64> ans;
-    for (auto it = cheat_by_hash.lowerBound(hash); it != cheat_by_hash.end() && it.key() == hash; it++) {
+    for (auto it = cheat_by_hash.lowerBound(hash); it != cheat_by_hash.end() && it.key() == hash;
+         it++) {
         ans.push_back(it.value());
     }
     return ans;

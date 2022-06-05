@@ -98,7 +98,7 @@ uint8_t *Cartridge::get_ROM() {
     return &PRG_ROM[0];
 }
 size_t Cartridge::get_ROM_size() {
-    return  PRG_ROM.size();
+    return PRG_ROM.size();
 }
 uint64_t Cartridge::get_hash() const {
     return m_hash;

@@ -1,7 +1,6 @@
 #include "search.h"
 #include <cassert>
 #include "algorithm"
-#include <string>
 
 namespace NES::Cheating {
 
@@ -58,4 +57,4 @@ long long ResultRaw::get_value(uint8_t *first, ByteCount byteCount) {
         assert(false);
     }
 }
-}
+}  // namespace NES::Cheating

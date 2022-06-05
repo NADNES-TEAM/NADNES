@@ -25,8 +25,8 @@ struct PpuToCartridgeInterface {
 };
 
 struct iNesHeader {
-    uint32_t id_str{0};            // bytes 0-3
-    uint8_t PRG_ROM_banks_lsb{0};  // byte 4
+    uint32_t id_str{0};             // bytes 0-3
+    uint8_t PRG_ROM_banks_lsb{0};   // byte 4
     uint8_t CHR_ROM_banks_lsb = 0;  // byte 5
     uint8_t mirror_type       : 1;  // byte 6
     uint8_t non_volatile_mem  : 1;

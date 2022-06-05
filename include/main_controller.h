@@ -18,7 +18,6 @@ public slots:
     void become_host();
     void become_guest();
 
-
 private:
     void make_host_connections();
     void make_common_connections();
@@ -26,6 +25,6 @@ private:
     MainWindow m_main_window;
     Gamepad m_player1;
     Gamepad m_player2;
-    LocalEmulator* m_local_emulator{};
-    RemoteEmulator* m_remote_emulator{};
+    LocalEmulator *m_local_emulator{};
+    RemoteEmulator *m_remote_emulator{};
 };

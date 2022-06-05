@@ -1,5 +1,6 @@
 #include "mappers/NROM.h"
-#include<iostream>
+#include <iostream>
+
 namespace NES {
 NromMapper::NromMapper(Mirroring mirror_type_, uint8_t prg, uint8_t chr)
     : mirror_type(mirror_type_), PRG_banks_count(prg), CHR_banks_count(chr) {

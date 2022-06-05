@@ -1,9 +1,10 @@
 #include "nes.h"
 #include <fstream>
-#include "nes_exceptions.h"
 #include <iostream>
 #include <unordered_map>
+#include "nes_exceptions.h"
 #include "reset_token.h"
+
 namespace NES {
 
 void Nes::tick() {
@@ -60,13 +61,13 @@ void print_counter(uint8_t *data, size_t len) {
     }
     std::cout << "}\n";
 }
-}
+}  // namespace
 
 std::vector<Cheating::ResultRaw> Nes::search(
     const Cheating::ParamsOfSearch &params,
     const std::vector<Cheating::ResultRaw> &old_result_data) {
-//    print_counter(bus.get_RAM(), (1 << 11));
-//    print_counter(cartridge.get_ROM(), cartridge.get_ROM_size());
+    //    print_counter(bus.get_RAM(), (1 << 11));
+    //    print_counter(cartridge.get_ROM(), cartridge.get_ROM_size());
     std::vector<Cheating::ResultRaw> new_result_data;
     if (params.is_initial) {
         for (int where = 0; where < 2; ++where) {
@@ -86,7 +87,8 @@ std::vector<Cheating::ResultRaw> Nes::search(
     } else {
         for (auto raw : old_result_data) {
             raw.old_value = raw.cur_value;
-            raw.cur_value = Cheating::ResultRaw::get_value(raw.place.get_mem() + raw.address, params.byteCount);
+            raw.cur_value =
+                Cheating::ResultRaw::get_value(raw.place.get_mem() + raw.address, params.byteCount);
             if (params.check_coincidence(raw)) {
                 new_result_data.push_back(raw);
             }

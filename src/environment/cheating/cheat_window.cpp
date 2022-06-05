@@ -6,9 +6,7 @@
 #include "nes_config.h"
 
 namespace NES {
-Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
-    : QWidget(parent) {
-
+Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes) : QWidget(parent) {
     search_cheat = new NES::Cheating::SearchCheat(nullptr, nes, &cheatDbHandler);
     apply_cheat = new NES::Cheating::ApplyCheat(nullptr, nes, &cheatDbHandler);
     search_cheat->init();
@@ -19,8 +17,8 @@ Cheating::CheatWindow::CheatWindow(QWidget *parent, NES::Nes *nes)
     fileMain.open(QIODevice::ReadOnly | QIODevice::Text);
     loader.load(&fileMain, this);
     fileMain.close();
-    tabWidget = findChild<QTabWidget*>("tabWidget");
-    setFixedSize(findChild<QWidget*>("Form")->size());
+    tabWidget = findChild<QTabWidget *>("tabWidget");
+    setFixedSize(findChild<QWidget *>("Form")->size());
 
     tabWidget->clear();
     tabWidget->addTab(search_cheat, "Search");

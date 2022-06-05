@@ -40,7 +40,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MainWindow::refresh_screen() {
-    if(frame_count % frame_rate != 0) {
+    if (frame_count % frame_rate != 0) {
         return;
     }
     QSize qSize(NES::SCREEN_WIDTH * 5, NES::SCREEN_HEIGHT * 5);

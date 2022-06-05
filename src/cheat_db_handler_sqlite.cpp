@@ -1,10 +1,9 @@
+#include "cheat_db_handler_sqlite.h"
 #include <QString>
 #include <iostream>
 #include <string>
-#include "cheat_db_handler_sqlite.h"
 
 int CheatDbHandler::return_value;
-
 
 CheatDbHandler::CheatDbHandler() {
     int rc = sqlite3_open("cheats.db", &m_database);
@@ -52,9 +51,7 @@ void CheatDbHandler::add_address(uint64_t cheat, uint8_t address) {
 }
 
 uint64_t CheatDbHandler::add_name(const QString &name) {
-    exec(QString("INSERT INTO name_by_cheat (name) VALUES('%1');")
-             .arg(name)
-             .toStdString());
+    exec(QString("INSERT INTO name_by_cheat (name) VALUES('%1');").arg(name).toStdString());
     char *error_message;
     int rc = sqlite3_exec(m_database,
                           "select last_insert_rowid();",

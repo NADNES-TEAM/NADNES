@@ -1,5 +1,4 @@
 #include "nes_devices/R6502.h"
-#include <iostream>
 #include <iosfwd>
 #include <utility>
 

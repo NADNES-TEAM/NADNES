@@ -1,4 +1,6 @@
 #include "nes_utils.h"
+#include <iomanip>
+#include <sstream>
 
 namespace utils {
 
@@ -13,4 +15,5 @@ std::string to_hex_addr(uint16_t addr) {
     ss << "$" << std::hex << std::setfill('0') << std::setw(4) << addr;
     return ss.str();
 }
-}
+
+}  // namespace utils

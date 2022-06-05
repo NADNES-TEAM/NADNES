@@ -36,7 +36,7 @@ struct Defaults {
 };
 
 struct Config : Defaults {
-    static const Config& get_value();
+    static const Config &get_value();
 
     Config(const Config &other) = delete;
     Config(Config &&other) = delete;
@@ -45,7 +45,7 @@ struct Config : Defaults {
     ~Config() = default;
 
     std::string error_str{};
-private:
 
+private:
     Config();
 };

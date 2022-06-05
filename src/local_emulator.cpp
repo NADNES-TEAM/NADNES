@@ -6,7 +6,6 @@
 #include "environment/cheating/apply_cheat.h"
 #include "environment/cheating/search_cheat.h"
 #include "environment/player_manager_window.h"
-#include "nes_properties.h"
 #include "nes_utils.h"
 
 void handle_exception(std::exception &e) {

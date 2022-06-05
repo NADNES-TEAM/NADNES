@@ -2,25 +2,29 @@
 #include <QMessageBox>
 #include <QSettings>
 #include "colors_map.h"
-#include "nes_utils.h"
 #include "nes_config.h"
+#include "nes_utils.h"
 
-RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) : QObject(parent),timer(this) {
+RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
+    : QObject(parent), timer(this) {
     socket = new QTcpSocket(this);
     int port = Config::get_value().client_port;
-    if(port) {
+    if (port) {
         socket->bind(port);
     }
     screen = screen_;
     auto update_interval = Config::get_value().client_update_interval;
-    if(update_interval > -1) {
+    if (update_interval > -1) {
         timer.setInterval(std::chrono::milliseconds(update_interval));
-        timer.callOnTimeout([this](){this->data_arrived();});
+        timer.callOnTimeout([this]() { this->data_arrived(); });
     }
     connect(socket, SIGNAL(readyRead()), SLOT(data_arrived()));
 
     connect(socket, &QAbstractSocket::errorOccurred, this, &RemoteEmulator::handle_error);
-    connect(socket, &QAbstractSocket::connected, this, [this](){qDebug() << "start\n"; this->timer.start();});
+    connect(socket, &QAbstractSocket::connected, this, [this]() {
+        qDebug() << "start\n";
+        this->timer.start();
+    });
 
     connection_window = new ConnectionWindow();
     connect(connection_window,
@@ -32,12 +36,12 @@ RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_) :
 }
 
 void RemoteEmulator::key_changed(uint8_t btn) {
-    socket->write(reinterpret_cast<char *>(&btn),sizeof(uint8_t));
+    socket->write(reinterpret_cast<char *>(&btn), sizeof(uint8_t));
 }
 
 void RemoteEmulator::data_arrived() {
     int size_of_screen = (NES::SCREEN_HEIGHT - 1) * NES::SCREEN_WIDTH;
-    while(socket->bytesAvailable() >= size_of_screen) {
+    while (socket->bytesAvailable() >= size_of_screen) {
         QByteArray data = socket->read(size_of_screen);
         for (int i = 0; i < NES::SCREEN_HEIGHT - 1; i++) {
             for (int j = 0; j < NES::SCREEN_WIDTH; j++) {
@@ -55,11 +59,9 @@ void RemoteEmulator::show_connection_window() {
 void RemoteEmulator::try_connect(const QString &address, int port) {
     socket->abort();
     socket->connectToHost(QHostAddress(address), port);
-    qDebug() << "Connecting to: " << address << ' ' << port  << "\n";
+    qDebug() << "Connecting to: " << address << ' ' << port << "\n";
     last_address = address;
     last_port = port;
-
-
 }
 
 void RemoteEmulator::handle_error(QAbstractSocket::SocketError error) {
@@ -98,7 +100,7 @@ void RemoteEmulator::ask_for_reconnection(const QString &msg) {
                                   msg + "Would you like to reconnect to the last game?",
                                   (QMessageBox::Yes | QMessageBox::No),
                                   QMessageBox::Yes)) {
-        QTimer::singleShot(0, this, [this](){try_connect(last_address, last_port);});
+        QTimer::singleShot(0, this, [this]() { try_connect(last_address, last_port); });
     } else {
         connection_window->show();
     }

@@ -1,16 +1,15 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <QCheckBox>
 #include <mutex>
 #include "interfaces/keyboard_interface.h"
 #include "interfaces/screen_interface.h"
 
 class PlayerManager : public QWidget, public NES::ScreenInterface {
     Q_OBJECT
-
 
 public:
     PlayerManager();
@@ -20,8 +19,6 @@ public:
     void add_screen(int id, NES::ScreenInterface *screen);
     void add_keyboard(int id, NES::KeyboardInterface *gamepad);
     void update_gamepads();
-
-    void make_connections();
 
     void set_pixel(int row, int column, NES::Color color) override;
     void refresh_screen() override;

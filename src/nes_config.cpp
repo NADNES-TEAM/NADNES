@@ -43,13 +43,10 @@ auto file = std::ofstream(CONFIG_FILE, std::ios_base::app);
 try {
     po::store(po::parse_config_file(CONFIG_FILE.c_str(), all_options), conf_map);
     po::notify(conf_map);
-} catch (boost::program_options::error &e){
-    error_str = e.what();
-}
+} catch (boost::program_options::error &e) { error_str = e.what(); }
 }
 
-const Config& Config::get_value() {
+const Config &Config::get_value() {
     static Config config;
     return config;
 };
-

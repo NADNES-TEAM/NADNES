@@ -5,8 +5,8 @@
 #include <QListWidget>
 #include <QTcpServer>
 #include <QVBoxLayout>
-#include "nes_config.h"
 #include "environment/player_manager_window.h"
+#include "nes_config.h"
 #include "remote_player.h"
 
 class Server : public QDialog {

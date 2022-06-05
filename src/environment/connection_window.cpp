@@ -18,7 +18,6 @@ ConnectionWindow::ConnectionWindow() {
     connect(m_port_edit, &QLineEdit::textChanged, this, &ConnectionWindow::enable_connect_btn);
     m_port_edit->setValidator(new QIntValidator(1, 65535, this));
 
-
     m_address_edit = findChild<QLineEdit *>("address_edit");
     connect(m_address_edit, &QLineEdit::textChanged, this, &ConnectionWindow::enable_connect_btn);
 }
@@ -33,15 +32,14 @@ void ConnectionWindow::enable_connect_btn() {
 }
 
 void ConnectionWindow::on_cancel_btn_clicked() {
-//    m_port_edit->clear();
-//    m_address_edit->clear();
+    //    m_port_edit->clear();
+    //    m_address_edit->clear();
     m_connect_btn->setDisabled(true);
-//    qDebug() << "canceled\n";
+    //    qDebug() << "canceled\n";
     hide();
 }
 
 void ConnectionWindow::closeEvent(QCloseEvent *event) {
     on_cancel_btn_clicked();
-//    qDebug() << "closed\n";
-
+    //    qDebug() << "closed\n";
 }

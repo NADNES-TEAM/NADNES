@@ -7,7 +7,8 @@
 
 namespace NES::Cheating {
 
-ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler) : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
+ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler)
+    : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
     QUiLoader loader;
     QFile fileApply(Config::get_value().ui_path_apply_cheat.c_str());
     fileApply.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -19,10 +20,10 @@ ApplyCheat::ApplyCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handle
 }
 
 void ApplyCheat::init() {
-//    future:
-//    selectAll = this->findChild<QPushButton *>("selectAll");
-//    unselectAll = this->findChild<QPushButton *>("unselectAll");
-//    applyButton = this->findChild<QPushButton *>("applyButton");
+    //    future:
+    //    selectAll = this->findChild<QPushButton *>("selectAll");
+    //    unselectAll = this->findChild<QPushButton *>("unselectAll");
+    //    applyButton = this->findChild<QPushButton *>("applyButton");
     cheatTable = this->findChild<QTableWidget *>("cheatTable");
     loadCheatsButton = this->findChild<QPushButton *>("loadCheats");
     connect(loadCheatsButton, SIGNAL(clicked()), this, SLOT(fill_table()));

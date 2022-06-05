@@ -3,7 +3,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QRegularExpression>
-#include <QSizePolicy>
 #include <QUiLoader>
 #include <iostream>
 #include <thread>
@@ -11,7 +10,8 @@
 
 namespace NES::Cheating {
 
-SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler) : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
+SearchCheat::SearchCheat(QWidget *parent, NES::Nes *nes, CheatDbHandler *db_handler)
+    : QWidget(parent), nes(nes), cheatDbHandler(db_handler) {
     QUiLoader loader;
 
     QFile fileSearch(Config::get_value().ui_path_search_cheat.c_str());
@@ -180,7 +180,7 @@ void SearchCheat::onExportButtonClicked() {
 
 void SearchCheat::onOkButtonClicked() {
     cheatDbHandler->clear_name(defaultSaveEdit->text());
-    //!DEBUG
+    //! DEBUG
     //    cheatDbHandler->clear_name(name);
     auto hash = nes->get_hash();
     //    qDebug() << "hash: " << hash;

@@ -15,8 +15,8 @@ const std::vector<NES::Color> colors_to_bytes = {
     {228, 196, 144}, {204, 210, 120}, {180, 222, 120}, {168, 226, 144}, {152, 226, 180},
     {160, 214, 228}, {160, 162, 160}, {0, 0, 0},       {0, 0, 0}};
 
-const std::map< NES::Color, uint8_t> bytes_to_colors = []() {
-    std::map< NES::Color, uint8_t> answer;
+const std::map<NES::Color, uint8_t> bytes_to_colors = []() {
+    std::map<NES::Color, uint8_t> answer;
     for (int i = int(colors_to_bytes.size() - 1); i >= 0; --i) {
         answer[colors_to_bytes[i]] = uint8_t(i);
     }

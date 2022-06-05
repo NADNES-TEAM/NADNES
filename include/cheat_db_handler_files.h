@@ -22,6 +22,7 @@ public:
     std::vector<QString> get_names(quint64 hash);
     std::vector<quint64> get_addresses(quint64 cheat);
     std::vector<quint64> get_cheats(quint64 hash);
+
 private:
     QMultiMap<quint64, quint64> cheat_by_hash, address_by_cheat;
     QMap<quint64, QString> name_by_cheat;

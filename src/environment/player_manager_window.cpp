@@ -30,7 +30,7 @@ void PlayerManager::on_ok_btn_clicked() {
 }
 
 void PlayerManager::on_cancel_btn_clicked() {
-//    m_mutex
+    //    m_mutex
     size_t m_player1_index =
         std::find(m_view_ids.begin(), m_view_ids.end(), m_player1_id) - m_view_ids.begin();
     size_t m_player2_index =
@@ -42,13 +42,13 @@ void PlayerManager::on_cancel_btn_clicked() {
 }
 
 void PlayerManager::add_pseudonym(int index, const QString &name) {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     m_name_by_id[index] = name;
     update_view_and_indexes();
 }
 
 void PlayerManager::remove_player(int index) {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     if (index <= 1) {
         qDebug() << QString("Removed index %1").arg(index);
         return;
@@ -78,7 +78,7 @@ void PlayerManager::add_keyboard(int id, NES::KeyboardInterface *gamepad) {
 }
 
 void PlayerManager::update_view_and_indexes() {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     m_view_ids.clear();
     for (const auto &id_ptr : m_gamepads_map) {
         m_view_ids.push_back(id_ptr.first);
@@ -88,22 +88,22 @@ void PlayerManager::update_view_and_indexes() {
         QComboBox *comboBox = (player == 1 ? m_player1_select : m_player2_select);
         comboBox->clear();
         for (int id : m_view_ids) {
-            QString name = (m_name_by_id.count(id) ? QString(tr("name: %1")).arg(m_name_by_id[id]) :
-                            QString(tr("id: %1")).arg(id));
+            QString name = (m_name_by_id.count(id) ? QString(tr("name: %1")).arg(m_name_by_id[id])
+                                                   : QString(tr("id: %1")).arg(id));
             comboBox->addItem(name);
         }
     }
 }
 
 void PlayerManager::set_pixel(int row, int column, NES::Color color) {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     for (const auto &pr : m_screens_map) {
         pr.second->set_pixel(row, column, color);
     }
 }
 
 void PlayerManager::refresh_screen() {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     for (const auto &pr : m_screens_map) {
         pr.second->refresh_screen();
     }
@@ -122,9 +122,10 @@ NES::ScreenInterface *PlayerManager::get_screen() {
 }
 
 void PlayerManager::update_gamepads() {
-//    std::unique_lock lock(m_mutex);
+    //    std::unique_lock lock(m_mutex);
     m_gamepad_wrapper1.set_gamepad(m_gamepads_map[m_player1_id]);
-    m_gamepad_wrapper2.set_gamepad((m_player2_select->isEnabled() ? m_gamepads_map[m_player2_id] : nullptr));
+    m_gamepad_wrapper2.set_gamepad(
+        (m_player2_select->isEnabled() ? m_gamepads_map[m_player2_id] : nullptr));
 }
 
 uint8_t PlayerManager::GamepadWrapper::get_pressed_keys() const {

@@ -1,9 +1,7 @@
 #include "nes_devices/ppu.h"
-#include <iomanip>
-#include <iostream>
+#include "colors_map.h"
 #include "interfaces/screen_interface.h"
 #include "nes_devices/R6502.h"
-#include "colors_map.h"
 
 namespace NES {
 

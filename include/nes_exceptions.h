@@ -37,8 +37,8 @@ struct UnknownMapperTypeError : CartridgeError {
 
 struct AddressOutOfBoundsError : CartridgeError {
     [[nodiscard]] explicit AddressOutOfBoundsError(uint16_t address, const std::string &type)
-        : CartridgeError("Address '" + utils::to_hex_addr(address) + "' can't be mapped to " + type +
-                         " address space") {}
+        : CartridgeError("Address '" + utils::to_hex_addr(address) + "' can't be mapped to " +
+                         type + " address space") {}
 };
 
 struct WritingToRomError : CartridgeError {
