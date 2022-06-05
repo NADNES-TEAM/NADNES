@@ -1,5 +1,6 @@
 #include "main_controller.h"
 #include <QAction>
+#include <QMessageBox>
 #include "nes_utils.h"
 
 MainController::MainController() {
@@ -7,6 +8,12 @@ MainController::MainController() {
     become_host();
     m_player1.load_player(NES::Players::SinglePlayer);
     m_main_window.show();
+    QString config_err = Config::get_value().error_str.c_str();
+    if (!config_err.isEmpty()) {
+        QMessageBox::warning(&m_main_window,
+                             "Config error",
+                             ("Configuration error: " + config_err));
+    }
 }
 
 void MainController::make_common_connections() {
