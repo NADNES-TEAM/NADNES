@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include "environment/main_window.h"
+#include "widgets/main_window.h"
 #include "gamepad.h"
 #include "local_emulator.h"
 #include "remote_emulator.h"

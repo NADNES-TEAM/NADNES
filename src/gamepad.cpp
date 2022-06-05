@@ -1,6 +1,6 @@
 #include "gamepad.h"
 #include <QSettings>
-#include "environment/keymap_window.h"
+#include "widgets/keymap_window.h"
 
 uint8_t Gamepad::get_pressed_keys() const {
     return pressed_keys_bitset;

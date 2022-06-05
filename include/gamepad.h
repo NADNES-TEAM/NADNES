@@ -3,8 +3,8 @@
 #include <QObject>
 #include <QWidget>
 #include <Qt>
-#include "default_keymaps.h"
-#include "environment/keymap_window.h"
+#include "settings/default_keymaps.h"
+#include "widgets/keymap_window.h"
 #include "interfaces/keyboard_interface.h"
 
 struct Gamepad : public QObject, NES::KeyboardInterface {

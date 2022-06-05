@@ -4,11 +4,11 @@
 #include <QString>
 #include <QTimer>
 #include <QWidget>
-#include "cheat_db_handler_files.h"
-#include "environment/cheating/cheat_window.h"
-#include "environment/player_manager_window.h"
-#include "nes.h"
-#include "server.h"
+#include "cheating/cheat_db_handler_files.h"
+#include "cheating/cheat_window.h"
+#include "widgets/player_manager_window.h"
+#include "nes_core/nes.h"
+#include "network/server.h"
 
 class LocalEmulator : public QObject {
     Q_OBJECT

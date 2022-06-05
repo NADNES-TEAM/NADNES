@@ -5,7 +5,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
-include_directories(include/mappers)
+include_directories(include/nes_core/mappers)
+include_directories(include/nes_core)
 
 find_package(Qt6 COMPONENTS
         Core
@@ -42,50 +43,50 @@ else()
     add_executable(NADNES)
 endif()
 
-target_sources(NADNES PUBLIC src/environment/connection_window.cpp
-        include/environment/connection_window.h
+target_sources(NADNES PUBLIC src/widgets/connection_window.cpp
+        include/widgets/connection_window.h
         include/remote_emulator.h
-        include/remote_player.h
+        include/network/remote_player.h
         src/gamepad.cpp
         include/gamepad.h
-        include/environment/player_manager_window.h
-        src/environment/player_manager_window.cpp
+        include/widgets/player_manager_window.h
+        src/widgets/player_manager_window.cpp
         include/main_controller.h
-        include/environment/keymap_window.h
-        src/environment/keymap_window.cpp
-        include/environment/main_window.h
-        src/environment/main_window.cpp
-        include/environment/cheating/cheat_window.h
-        src/environment/cheating/cheat_window.cpp
-        include/nes.h
-        src/nes.cpp
+        include/widgets/keymap_window.h
+        src/widgets/keymap_window.cpp
+        include/widgets/main_window.h
+        src/widgets/main_window.cpp
+        include/cheating/cheat_window.h
+        src/cheating/cheat_window.cpp
+        include/nes_core/nes.h
+        src/nes_core/nes.cpp
         src/main.cpp
-        src/nes_devices/cartridge.cpp
-        src/nes_devices/ppu.cpp
-        src/mappers/NROM.cpp
-        src/mappers/UNROM.cpp
-        src/nes_devices/bus.cpp
-        src/nes_devices/controller.cpp
+        src/nes_core/nes_devices/cartridge.cpp
+        src/nes_core/nes_devices/ppu.cpp
+        src/nes_core/mappers/NROM.cpp
+        src/nes_core/mappers/UNROM.cpp
+        src/nes_core/nes_devices/bus.cpp
+        src/nes_core/nes_devices/controller.cpp
         src/main_controller.cpp
-        src/nes_devices/R6502.cpp
-        include/search.h
-        src/nes_devices/search.cpp
-        src/nes_devices/dma.cpp
+        src/nes_core/nes_devices/R6502.cpp
+        include/cheating/search.h
+        src/nes_core/nes_devices/search.cpp
+        src/nes_core/nes_devices/dma.cpp
         src/local_emulator.cpp
         include/local_emulator.h
         src/remote_emulator.cpp
-        src/remote_player.cpp
-        include/colors_map.h
-        src/colors_map.cpp
-        include/server.h
-        src/server.cpp
-        include/environment/cheating/cheat_fwd.h
-        src/cheat_db_handler_files.cpp
-        include/environment/cheating/apply_cheat.h
-        include/environment/cheating/search_cheat.h
-        src/environment/cheating/apply_cheat.cpp
-        src/environment/cheating/search_cheat.cpp
-        src/nes_config.cpp
+        src/network/remote_player.cpp
+        include/settings/colors_map.h
+        src/settings/colors_map.cpp
+        include/network/server.h
+        src/network/server.cpp
+        include/cheating/cheat_fwd.h
+        src/cheating/cheat_db_handler_files.cpp
+        include/cheating/apply_cheat.h
+        include/cheating/search_cheat.h
+        src/cheating/apply_cheat.cpp
+        src/cheating/search_cheat.cpp
+        src/settings/nes_config.cpp
         src/nes_utils.cpp)
 
 #if (SQLITE3_FOUND)

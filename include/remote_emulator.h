@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTimer>
-#include "environment/connection_window.h"
-#include "nes.h"
-#include "nes_properties.h"
+#include "widgets/connection_window.h"
+#include "nes_core/nes.h"
+#include "settings/nes_properties.h"
 struct RemoteEmulator : public QObject {
     Q_OBJECT
 

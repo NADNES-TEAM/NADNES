@@ -1,8 +1,8 @@
 #include "remote_emulator.h"
 #include <QMessageBox>
 #include <QSettings>
-#include "colors_map.h"
-#include "nes_config.h"
+#include "settings/colors_map.h"
+#include "settings/nes_config.h"
 #include "nes_utils.h"
 
 RemoteEmulator::RemoteEmulator(QObject *parent, NES::ScreenInterface *screen_)
