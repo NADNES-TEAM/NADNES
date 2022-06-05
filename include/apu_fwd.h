@@ -3,6 +3,8 @@
 
 namespace NES {
 class Nes;
+class Cpu;
+class Ppu;
 }
 class ApuBaseChannel;
 class Apu;

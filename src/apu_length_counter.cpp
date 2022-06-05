@@ -1,5 +1,6 @@
 #include "apu_length_counter.h"
 #include "apu_enums.h"
+#include "apu.h"
 
 const std::array<uint8_t, 32> ApuLengthCounter::length_table{
     {10, 254, 20, 2,  40, 4,  80, 6,  160, 8,  60, 10, 14, 12, 26, 14,
@@ -40,6 +41,7 @@ void ApuLengthCounter::set_length_counter(uint8_t value) {
 }
 
 void ApuLengthCounter::write_halt(bool new_halt) {
+    apu_container->get_apu()->set_need_to_run();
     reload_halt = new_halt;
 }
 

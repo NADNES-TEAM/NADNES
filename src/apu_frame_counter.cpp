@@ -1,7 +1,7 @@
+#include "apu_frame_counter.h"
 #include <cassert>
 #include <limits>
-#include "apu_frame_counter.h"
-#include "Apu.h"
+#include "apu.h"
 
 ApuFrameCounter::ApuFrameCounter(ApuContainer *apu_container) : apu_container(apu_container) {
     reset(true);
@@ -76,7 +76,7 @@ ApufcRunResult ApuFrameCounter::run_cycles(int cycles_available) {
             step = 0;
             prev_cycle = 0;
             skip_write_cycles = std::numeric_limits<int>::max();  // --skip_write_cycles is negative
-            write_value = 0xFF;  // "-1" in uint8_t
+            write_value = 0xFF;                                   // "-1" in uint8_t
 
             if (step_mode == StepMode::FIVE_STEP && skip_clock == 0) {
                 res.need_to_clock_half = true;
@@ -90,4 +90,8 @@ ApufcRunResult ApuFrameCounter::run_cycles(int cycles_available) {
     }
 
     return res;
+}
+bool ApuFrameCounter::need_to_run(uint32_t cycles_to_run) {
+    return write_value >= 0 || skip_write_cycles > 0 ||
+           (prev_cycle + (int32_t)cycles_to_run >= m_cycles[(int)step_mode][step] - 1);
 }

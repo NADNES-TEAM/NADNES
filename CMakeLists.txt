@@ -68,10 +68,31 @@ add_executable(NADNES
         src/environment/cheating/cheat_window.cpp
         src/environment/cheating/search_cheat.cpp
         src/ApuUnits.cpp
-        src/Apu.cpp
+        src/apu.cpp
         src/ApuExceptions.cpp
         src/Pulse.cpp
-        include/Pulse.h include/apu_frame_counter.h src/apu_frame_counter.cpp include/apu_base_channel.h include/apu_length_counter.h include/apu_enums.h src/apu_length_counter.cpp src/apu_base_channel.cpp include/apu_container.h include/apu_fwd.h include/apu_mixer.h src/apu_mixer.cpp include/apu_envelope.h src/apu_envelope.cpp)
+        include/Pulse.h
+        include/apu_frame_counter.h
+        src/apu_frame_counter.cpp
+        include/apu_base_channel.h
+        include/apu_length_counter.h
+        include/apu_enums.h
+        src/apu_length_counter.cpp
+        src/apu_base_channel.cpp
+        include/apu_container.h
+        include/apu_fwd.h
+        include/apu_mixer.h
+        src/apu_mixer.cpp
+        include/apu_envelope.h
+        src/apu_envelope.cpp
+        include/apu_pulse.h
+        src/apu_pulse.cpp
+        include/apu_triangle.h
+        src/apu_triangle.cpp
+        include/apu_noise.h
+        src/apu_noise.cpp
+        include/apu_dmc.h
+        src/apu_dmc.cpp)
 
 if (SQLITE3_FOUND)
     message("Found sqlite3!")

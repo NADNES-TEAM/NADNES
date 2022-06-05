@@ -17,6 +17,7 @@ struct ApuFrameCounter {
     void write_data(uint16_t addr, uint8_t data);
     ApufcRunResult run_cycles(int cycles_available);  // cycles_available - how many cpu
     // need to run
+    bool need_to_run(uint32_t need_to_run);
 
 private:
     const std::array<std::array<int, 6>, 2> m_cycles{

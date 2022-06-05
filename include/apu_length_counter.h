@@ -12,8 +12,6 @@ public:
 
     void reset(bool soft) override;
 
-    void clock_length_counter();
-
     void set_length_counter(uint8_t value);
 
     void write_enabled(bool new_enabled);
@@ -22,7 +20,9 @@ public:
 
     void reload_counter();
 
-private:
+    void clock_length_counter();
+
+protected:
     static const std::array<uint8_t, 32> length_table;
     bool enabled{};
     bool halt{};
