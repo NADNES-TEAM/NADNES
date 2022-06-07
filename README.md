@@ -1,5 +1,6 @@
 #  :video_game::video_game::video_game: NADNES :video_game::video_game::video_game:
-
+</br>
+ <img src="https://github.com/Iandmee/NADNES/blob/mem_search/UI/logo.png" alt="alt text" title="image Title" width="450"/>
 </br>
 
 * [Общее описание](#Общее-описание)
