@@ -89,26 +89,26 @@ On unix-like systems open the terminal. If you are on MacOs and don't have brew 
 
 On Linux use your defualt package manager (`apt`, `pamac`, `pacman`, `deb`, `snap`, `flatpack`)
 
-Then install `qt6`, `boost` by writing:
+Then install `qt6`, `boost`: 
 
+on `macOS`
 ```bash
 brew install qt6 boost
 ```
-on `macOS` or
+on `Ubuntu`
 
 ```bash
 sudo apt update && sudo apt upgrade
 sudo apt install qt6 boost
 ```
 
-on `Ubuntu` or
+on `Manjaro`
 
 
 ```bash
 pamac update
 pamac install qt6 boost
 ```
-on `Manjaro`
 
 Locate to the directory where you want to install our project and write:
 
@@ -134,6 +134,6 @@ Congratulations, you can run the project by writing
 
 Or on *Windows*
 
-```bash
+```powershell
 .\NADNES.exe
 ```
