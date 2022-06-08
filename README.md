@@ -45,7 +45,7 @@
 
 </br>
 
-### :satellite: Networking
+### :satellite: Network
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Also *NADNES* allows to play through the network: application can be swicthed to the host or to the guest mode. The host will be listening for incoming connections on every ip listed in the box after running the server. Client can connect to server by entering correct destination port and ip.
 
