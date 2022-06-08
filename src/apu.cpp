@@ -64,7 +64,7 @@ bool Apu::need_to_run(uint32_t cur_cycle) {
     return frame_counter->need_to_run (cycles_to_run) || dmc_channel->irq_pending(cycles_to_run);
 }
 
-void Apu::FrameCounterTick(Frame type) {
+void Apu::clock_frame_counter(Frame type) {
     pulse_channel[0]->clock_envelope();
     pulse_channel[1]->clock_envelope();
     triangle_channel->clock_linear_counter();
@@ -122,4 +122,8 @@ void Apu::end_frame() {
 
     current_cycle = 0;
     previous_cycle = 0;
+}
+
+bool Apu::is_apu_enabled() {
+    return apu_enabled;
 }

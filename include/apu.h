@@ -10,6 +10,8 @@ class Apu {
 public:
     explicit Apu(NES::Cpu *cpu);
 
+    void frame_counter_clock(Frame type);
+
     void CPU_write(std::uint16_t addr, std::uint8_t value);
 
     uint32_t get_clock_count();
@@ -25,6 +27,8 @@ public:
     void process_cpu_clock();
 
     void end_frame();
+
+    bool is_apu_enabled();
 
 private:
     bool is_need_to_run{};
@@ -46,5 +50,5 @@ private:
 
     bool need_to_run(uint32_t cur_cycle);
 
-    void FrameCounterTick(Frame type);
+    void clock_frame_counter(Frame type);
 };

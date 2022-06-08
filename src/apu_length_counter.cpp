@@ -17,8 +17,8 @@ void ApuLengthCounter::reset(bool soft) {
 
     enabled = false;
     if (channel_type == ApuChannelType::TRIANGLE || !soft) {
-        halt = false;
-        reload_halt = false;
+        length_counter_halt = false;
+        new_halt = false;
 
         length_counter = 0;
         reload_length_counter = 0;
@@ -27,12 +27,12 @@ void ApuLengthCounter::reset(bool soft) {
 }
 
 void ApuLengthCounter::clock_length_counter() {
-    if (!halt && length_counter > 0) {
+    if (!length_counter_halt && length_counter > 0) {
         length_counter--;
     }
 }
 
-void ApuLengthCounter::set_length_counter(uint8_t value) {
+void ApuLengthCounter::load_length_counter(uint8_t value) {
     if (enabled) {
         length_counter = length_table[value];
         prev_length_counter = length_counter;
@@ -40,9 +40,9 @@ void ApuLengthCounter::set_length_counter(uint8_t value) {
     }
 }
 
-void ApuLengthCounter::write_halt(bool new_halt) {
+void ApuLengthCounter::init_length_counter(bool halt) {
     apu_container->get_apu()->set_need_to_run();
-    reload_halt = new_halt;
+    new_halt = halt;
 }
 
 void ApuLengthCounter::write_enabled(bool new_enabled) {
@@ -53,7 +53,7 @@ void ApuLengthCounter::write_enabled(bool new_enabled) {
 }
 
 void ApuLengthCounter::reload_counter() {
-    halt = reload_halt;
+    length_counter_halt = new_halt;
     length_counter = reload_length_counter;
     reload_length_counter = 0;
 }

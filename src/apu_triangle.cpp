@@ -34,14 +34,14 @@ void ApuTriangle::CPU_write(uint16_t addr, uint8_t value) {
             linear_control_flag = bool((value >> 7) & 1);
             linear_counter_reload = value & 0x7F;
 
-            write_halt(linear_control_flag);
+            init_length_counter(linear_control_flag);
         } break;
         case 1: {
             period &= ~0x00FF;
             period |= value;
         } break;
         case 3: {
-            set_length_counter(value >> 3);
+            load_length_counter(value >> 3);
             period &= ~0xFF00;
             period |= (value & 0x07) << 8;
 

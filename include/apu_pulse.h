@@ -12,7 +12,7 @@ public:
 
     void set_period(uint16_t new_period);
 
-    bool is_muted() const;
+    [[nodiscard]] bool is_muted() const;
 
     void update_output();
     void clock() override;

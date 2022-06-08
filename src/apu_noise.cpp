@@ -35,7 +35,7 @@ void ApuNoise::CPU_write(uint16_t addr, uint8_t value) {
 
     switch (addr & 3) {
         case 0: {
-            write_halt((value >> 5) & 1);
+            init_length_counter((value >> 5) & 1);
             write_envelope(value);
         } break;
         case 2: {
@@ -43,7 +43,7 @@ void ApuNoise::CPU_write(uint16_t addr, uint8_t value) {
             noise_mode = ((value >> 7) & 1);
         } break;
         case 3: {
-            set_length_counter(value >> 3);
+            load_length_counter(value >> 3);
             reset_envelope();
         } break;
     }

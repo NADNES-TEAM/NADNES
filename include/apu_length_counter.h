@@ -12,11 +12,11 @@ public:
 
     void reset(bool soft) override;
 
-    void set_length_counter(uint8_t value);
+    void load_length_counter(uint8_t value);
 
     void write_enabled(bool new_enabled);
 
-    void write_halt(bool new_halt);
+    void init_length_counter(bool new_halt);
 
     void reload_counter();
 
@@ -25,10 +25,9 @@ public:
 protected:
     static const std::array<uint8_t, 32> length_table;
     bool enabled{};
-    bool halt{};
-    bool reload_halt{};
+    bool length_counter_halt{};
+    bool new_halt{};
     uint8_t length_counter{};
     uint8_t reload_length_counter{};
     uint8_t prev_length_counter{};
-
 };

@@ -84,7 +84,7 @@ void ApuPulse::CPU_write(uint16_t addr, uint8_t value) {
 
     switch (addr & 3) {
         case 0: {  // 4000 + 4004
-            write_halt(bool(value & 0x20));
+            init_length_counter(bool(value & 0x20));
             write_envelope(value);
 
             duty = (value >> 6);
@@ -99,7 +99,7 @@ void ApuPulse::CPU_write(uint16_t addr, uint8_t value) {
         } break;
 
         case 3: {  // 4003 + 4007
-            set_length_counter(value >> 3);
+            load_length_counter(value >> 3);
 
             set_period((real_period & 0xFF) | ((value & 0x07) << 8));
 
