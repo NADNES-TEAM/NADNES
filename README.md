@@ -11,7 +11,7 @@
     * [:space_invader: NES](#space_invader-NES)
     * [:floppy_disk: Saves](#floppy_disk-Saves)
     * [:mag_right: RAM/ROM search](#mag_right-RAM/ROM-search)
-    * [:satellite: Networking](#satellite-Network)
+    * [:satellite: Network](#satellite-Network)
 * [Settings](#Settings)
     * [:computer: Keymap binding](#computer-Keymap)
     * [:wrench: Configuration file](#wrench-Configuration-file)
