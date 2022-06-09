@@ -10,10 +10,10 @@
 * [General](#General)
     * [:space_invader: NES](#space_invader-NES)
     * [:floppy_disk: Saves](#floppy_disk-Saves)
-    * [:mag_right: RAM/ROM search](#mag_right-RAM/ROM-search)
+    * [:mag_right: RAM/ROM search](#mag_right-ramrom-search)
     * [:satellite: Network](#satellite-Network)
 * [Settings](#Settings)
-    * [:computer: Keymap binding](#computer-Keymap)
+    * [:computer: Keymap binding](#keyboard-Keymap-binding)
     * [:wrench: Configuration file](#wrench-Configuration-file)
 * [Installation](#Installation)
 
