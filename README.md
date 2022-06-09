@@ -16,9 +16,6 @@
     * [:computer: Keymap binding](#computer-Keymap)
     * [:wrench: Configuration file](#wrench-Configuration-file)
 * [Installation](#Installation)
-    * [:rainbow: Windows](#windows)
-    * [:apple: MacOS](#mac)
-    * [:penguin: Linux](#linux)
 
 
 </br>
